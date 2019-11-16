@@ -1,0 +1,33 @@
+<div class="row">
+    <div class="col">
+        <input #libro type="text" (keyup)="buscarLibro(libro.value)" class="form-control" placeholder="Buscar Libro">
+    </div>
+    <div class="col">
+        <input #cliente type="text" (keyup)="buscarCliente(cliente.value,libro.value)" class="form-control" placeholder="Buscar Cliente">
+    </div>
+</div>
+
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th width="25%" scope="col">Cliente</th>
+            <th width="15%" scope="col">Fecha</th>
+            <th width="10%" scope="col">Total</th>
+            <th width="10%" scope="col">Seña</th>
+            <th width="20%" scope="col">Observaciones</th>
+            <th width="20%" scope="col">Libros</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let pedido of pedidos">
+            <td>{{pedido.cliente.nombre}}</td>
+            <td>{{pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
+            <td align="right">${{pedido.total | number:'1.0':'es-AR'}}</td>
+            <td align="right">${{pedido.senia | number:'1.0':'es-AR'}}</td>
+            <td>{{pedido.observaciones}}</td>
+            <td>
+                <span [innerHTML]="pedido | pedidoLibros"></span>
+            </td>
+        </tr>
+    </tbody>
+</table>
