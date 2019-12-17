@@ -6,6 +6,7 @@ import { NavbarComponent } from './components/shared/navbar/navbar.component';
 import { ClientesComponent } from './components/clientes/clientes.component';
 import { HomeComponent } from './components/home/home.component';
 
+
 //routes
 import { RouterModule } from '@angular/router';
 import { ROUTES } from './app.routes';
@@ -21,6 +22,9 @@ registerLocaleData(localeAr);
 //pagination
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { FormsModule } from '@angular/forms';
+import { RegistroComponent } from './components/registro/registro.component';
+import { LoginComponent } from './components/login/login.component';
+import { from } from 'rxjs';
 
 
 @NgModule({
@@ -30,7 +34,9 @@ import { FormsModule } from '@angular/forms';
     ClientesComponent,
     HomeComponent,
     PedidosComponent,
-    PedidoLibrosPipe
+    PedidoLibrosPipe,
+    RegistroComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

@@ -20,6 +20,7 @@ export class ClientesComponent implements OnInit {
   last:string;
   currentPage:number;
   pagina:number;
+  
   constructor(private _activadedRoute:ActivatedRoute,private clientesService:ClientesServiceService) {
     this._activadedRoute.params.subscribe(params => {
       //this.heroes=_heroesService.buscarHeroes(params['termino'])
