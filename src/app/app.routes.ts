@@ -15,7 +15,7 @@ export const ROUTES: Routes = [
     { path: 'clientes', component: ClientesComponent, canActivate: [AuthGuard] },
     { path: 'clientes/:page', component: ClientesComponent, canActivate: [AuthGuard] },
     { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
-    { path: 'registro', component: RegistroComponent, canActivate: [AuthGuard] },
+    { path: 'registro', component: RegistroComponent },
     { path: 'login', component: LoginComponent },
     
     /* { path: 'movie/:id/:pag', component: MovieComponent }, */
