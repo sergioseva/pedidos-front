@@ -21,7 +21,7 @@ import localeAr from '@angular/common/locales/es-AR';
 registerLocaleData(localeAr);
 //pagination
 import { PaginationModule } from 'ngx-bootstrap/pagination';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegistroComponent } from './components/registro/registro.component';
 import { LoginComponent } from './components/login/login.component';
 import { from } from 'rxjs';
@@ -44,7 +44,8 @@ import { from } from 'rxjs';
     HttpClientJsonpModule,
     RouterModule.forRoot(ROUTES),
     PaginationModule.forRoot(),
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

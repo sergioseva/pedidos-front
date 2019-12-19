@@ -14,7 +14,7 @@
 						  id="inputEmail" 
 						  class="form-control"
 						  name="email"  
-						  placeholder="Usuario"  
+						  placeholder="Email"  
 						  [(ngModel)]="usuario.email"
 						  required autofocus>
                 </div>
@@ -26,7 +26,7 @@
                             class="form-control"
                             name="name"  
                             placeholder="Nombre"  
-                            [(ngModel)]="usuario.Nombre"
+                            [(ngModel)]="usuario.name"
                             required autofocus>
                   </div>
 
@@ -50,7 +50,14 @@
 					  required
 					  minlength="6"
 					  placeholder="Password" >
-				</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="role">Rol</label>
+                    <select   [(ngModel)]="usuario.role" name="role" class="form-control" id="role">
+                      <option *ngFor="let role of roles" [value]="role.codigo" >{{role.role}}</option>
+                    </select>
+                  </div>
   
 				<div class="custom-control custom-checkbox mb-3">
 				  <input type="checkbox" class="custom-control-input" id="customCheck1">
