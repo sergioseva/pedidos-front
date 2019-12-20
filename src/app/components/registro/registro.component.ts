@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { UsuarioModel } from 'src/app/models/usuario.model';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormGroup, Validators, FormControl } from '@angular/forms';
 
 import Swal from 'sweetalert2';
 import { UsuariosService } from '../../providers/usuarios.service';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.css']
 })
 export class RegistroComponent implements OnInit {
-
+  formRegistrar:FormGroup;
   usuario: UsuarioModel;
   roles =[ {
     codigo:"ROLE_USER",
@@ -21,20 +22,105 @@ export class RegistroComponent implements OnInit {
     codigo:"ROLE_ADMIN",
     role: "Admin"
   }];
+
+
   constructor(private usuariosService: UsuariosService,
-              private router: Router) { }
+              private router: Router) {
+
+      this.formRegistrar = new FormGroup({
+        'email': new FormControl('',   [
+          Validators.required,
+          Validators.pattern("[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$")
+        ], this.existeEmail.bind(this)),
+        'name': new FormControl('' ,  [
+          Validators.required,
+          Validators.minLength(3)
+        ]),
+        'username': new FormControl('', Validators.required, this.existeUsuario.bind(this)  ),
+        'password': new FormControl('', Validators.required),
+        'password2': new FormControl(),
+        'role': new FormControl('', Validators.required),
+      });
+
+      this.formRegistrar.controls['password2'].setValidators([
+        Validators.required,
+        this.noIgual.bind( this.formRegistrar )
+      ]);
+    }
+
+    noIgual( control: FormControl ): { [s:string]:boolean }  {
+      // console.log(this);
+      let forma:any = this;
+      if( control.value !== forma.controls['password'].value ){
+        return {
+          noiguales:true
+        }
+      }
+      return null;
+    }
+
 
   ngOnInit() {
     this.usuario = new UsuarioModel();
   }
 
+  existeUsuario( control: FormControl ): Promise<any>|Observable<any> {
+    // let promesaUsuario= new Promise (
+    //   ( resolve, reject ) =>{
+    //     this.usuariosService.validarUser( control.value ).subscribe( respuser => {
+    //       if (!respuser['available']) {
+    //         resolve( {existe: true});
+    //       } else {
+    //         resolve( null );
+    //       }
+    //     }
+    //     )
+    //   }
+    // )
+    // return promesaUsuario;
+    return this.validarExistencia(control,  UsuariosService.prototype.validarUser.bind(this.usuariosService));
+  }
+
+  existeEmail( control: FormControl ): Promise<any>|Observable<any> {
+    // let promesaUsuario= new Promise (
+    //   ( resolve, reject ) =>{
+    //     this.usuariosService.validarEmail( control.value ).subscribe( respuser => {
+    //       if (!respuser['available']) {
+    //         resolve( {existe: true});
+    //       } else {
+    //         resolve( null );
+    //       }
+    //     }
+    //     )
+    //   }
+    // )
+    // return promesaUsuario;
+
+    return this.validarExistencia(control, UsuariosService.prototype.validarEmail.bind(this.usuariosService));
+  }
+
+  validarExistencia(control: FormControl, validationFunction: (s: string) => Observable<any>): Promise<any>|Observable<any> {
+    let promesaUsuario= new Promise (
+      ( resolve, reject ) =>{
+        validationFunction( control.value ).subscribe( respuser => {
+          if (!respuser['available']) {
+            resolve( {existe: true});
+          } else {
+            resolve( null );
+          }
+        }
+        );
+      }
+    );
+    return promesaUsuario;
+  }
 
 
+  onSubmit() {
 
-  onSubmit(form:NgForm) {
-   
-    console.log(form);
-    if (form.invalid) {return;}
+    this.usuario = new UsuarioModel(this.formRegistrar.value);
+    console.log(this.usuario);
+    if (this.formRegistrar.invalid) {return;}
     Swal.fire({
       allowOutsideClick: false,
       type: 'info',
@@ -43,10 +129,10 @@ export class RegistroComponent implements OnInit {
     Swal.showLoading();
 
 
-    this.usuariosService.validarEmail( this.usuario )
+    this.usuariosService.validarEmail( this.usuario.email )
       .subscribe( respemail => {
         if (respemail['available']) {
-          this.usuariosService.validarUser( this.usuario ).subscribe( respuser => {
+          this.usuariosService.validarUser( this.usuario.username ).subscribe( respuser => {
             if (respuser['available']) {
               console.log(this.usuario);
               this.usuariosService.registrarUser( this.usuario ).subscribe(

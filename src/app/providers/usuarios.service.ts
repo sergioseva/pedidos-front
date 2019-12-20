@@ -15,13 +15,14 @@ export class UsuariosService {
               private auth: AuthService,
               private chttp: CustomHttpClientService) { }
 
-  validarEmail(usuario: UsuarioModel) {
-    const url = `${ this.URLUsuariosService }/user/checkEmailAvailability?email=${usuario.email}`;
+  validarEmail(email: string) {
+    const url = `${ this.URLUsuariosService }/user/checkEmailAvailability?email=${email}`;
     return this.http.get(url);
   }
 
-  validarUser(usuario: UsuarioModel) {
-    const url = `${ this.URLUsuariosService }/user/checkUsernameAvailability?username=${usuario.username}`;
+  validarUser(username: string) {
+    console.log('validar user1:' + this);
+    const url = `${ this.URLUsuariosService }/user/checkUsernameAvailability?username=${username}`;
     return this.http.get(url);
   }
 
