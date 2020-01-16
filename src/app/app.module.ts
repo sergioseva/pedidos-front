@@ -25,6 +25,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegistroComponent } from './components/registro/registro.component';
 import { LoginComponent } from './components/login/login.component';
 import { from } from 'rxjs';
+import { ClienteComponent } from './components/cliente/cliente/cliente.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { from } from 'rxjs';
     PedidosComponent,
     PedidoLibrosPipe,
     RegistroComponent,
-    LoginComponent
+    LoginComponent,
+    ClienteComponent
   ],
   imports: [
     BrowserModule,

@@ -65,36 +65,11 @@ export class RegistroComponent implements OnInit {
   }
 
   existeUsuario( control: FormControl ): Promise<any>|Observable<any> {
-    // let promesaUsuario= new Promise (
-    //   ( resolve, reject ) =>{
-    //     this.usuariosService.validarUser( control.value ).subscribe( respuser => {
-    //       if (!respuser['available']) {
-    //         resolve( {existe: true});
-    //       } else {
-    //         resolve( null );
-    //       }
-    //     }
-    //     )
-    //   }
-    // )
-    // return promesaUsuario;
+
     return this.validarExistencia(control,  UsuariosService.prototype.validarUser.bind(this.usuariosService));
   }
 
   existeEmail( control: FormControl ): Promise<any>|Observable<any> {
-    // let promesaUsuario= new Promise (
-    //   ( resolve, reject ) =>{
-    //     this.usuariosService.validarEmail( control.value ).subscribe( respuser => {
-    //       if (!respuser['available']) {
-    //         resolve( {existe: true});
-    //       } else {
-    //         resolve( null );
-    //       }
-    //     }
-    //     )
-    //   }
-    // )
-    // return promesaUsuario;
 
     return this.validarExistencia(control, UsuariosService.prototype.validarEmail.bind(this.usuariosService));
   }
