@@ -16,7 +16,7 @@ import { PedidosComponent } from './components/pedidos/pedidos.component';
 import { PedidoLibrosPipe } from './pipes/pedido-libros.pipe';
 
 //locale
-import { registerLocaleData } from '@angular/common';
+import { registerLocaleData, DatePipe } from '@angular/common';
 import localeAr from '@angular/common/locales/es-AR';
 registerLocaleData(localeAr);
 //pagination
@@ -49,7 +49,7 @@ import { ClienteComponent } from './components/cliente/cliente/cliente.component
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

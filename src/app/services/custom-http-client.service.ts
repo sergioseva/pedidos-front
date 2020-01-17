@@ -25,6 +25,19 @@ export class CustomHttpClientService {
     });
   }
 
+  put(url: string, data) {
+    return this.http.put(url, data, {
+      headers: this.getHeaders()
+    });
+  }
+
+  delete(url: string) {
+    return this.http.delete(url, {
+      headers: this.getHeaders()
+    });
+    }
+
+
 
   getHeaders(): HttpHeaders {
     let headers: HttpHeaders = new HttpHeaders();

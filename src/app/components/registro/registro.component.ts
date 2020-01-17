@@ -127,20 +127,20 @@ export class RegistroComponent implements OnInit {
               );
             } else {
               Swal.fire({
-                type: 'error',title: 'Error al agregar usuario',text:'El id del usuario ya existe'
+                type: 'error', title: 'Error al agregar usuario',text:'El id del usuario ya existe'
               });
             }
           }, (err) => {
 
 
             Swal.fire({
-              type: 'error',title: 'Error al agregar usuario',text: err.error.message
+              type: 'error', title: 'Error al agregar usuario',text: err.error.message
             });
           });
 
         } else {
           Swal.fire({
-            type: 'error',title: 'Error al agregar usuario',text:'El email del usuario ya existe'
+            type: 'error', title: 'Error al agregar usuario',text:'El email del usuario ya existe'
           });
         }
       }, (err) => {
@@ -153,9 +153,5 @@ export class RegistroComponent implements OnInit {
 
 
   }
-
-
-
-
 
 }

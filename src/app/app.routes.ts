@@ -13,13 +13,11 @@ import { ClienteComponent } from './components/cliente/cliente/cliente.component
 export const ROUTES: Routes = [
     { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
     { path: 'clientes', component: ClientesComponent, canActivate: [AuthGuard] },
-    { path: 'cliente', component: ClienteComponent, canActivate: [AuthGuard] },
+    { path: 'cliente/:id', component: ClienteComponent, canActivate: [AuthGuard] },
     { path: 'clientes/:page', component: ClientesComponent, canActivate: [AuthGuard] },
     { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
     { path: 'registro', component: RegistroComponent },
     { path: 'login', component: LoginComponent },
-    
-    /* { path: 'movie/:id/:pag', component: MovieComponent }, */
     { path: '**', component: HomeComponent },
 
 

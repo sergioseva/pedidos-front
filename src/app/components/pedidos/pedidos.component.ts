@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PedidosService } from 'src/app/providers/pedidos.service';
 
+import { DatePipe } from '@angular/common';
+
 @Component({
   selector: 'app-pedidos',
   templateUrl: './pedidos.component.html',
@@ -8,36 +10,37 @@ import { PedidosService } from 'src/app/providers/pedidos.service';
 })
 export class PedidosComponent implements OnInit {
 
-  pedidos:any[];
-  loading:boolean;
-  constructor(private ps:PedidosService) { }
+  pedidos: any[];
+  loading: boolean;
+  fromDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+  toDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+
+  constructor(private ps: PedidosService, private datePipe: DatePipe) { }
 
   ngOnInit() {
-    this.ps.getPedidos().subscribe(
-      (cs:any[])=>{
-        console.log(cs);
-        this.pedidos=cs;
-      }
-    )
+
   }
 
-  buscarLibro(libro:string){
-    this.loading=true;
-    this.ps.getPedidosConLibro(libro).subscribe( (data:any)=> {
+
+
+  buscarTermino(termino:string){
+    this.loading = true;
+    this.ps.buscarPedidos(termino,
+                          this.datePipe.transform( this.fromDate, 'yyyy-MM-dd'),
+                          this.datePipe.transform( this.toDate, 'yyyy-MM-dd') )
+      .subscribe( (data: any) => {
       console.log(data);
-      this.pedidos=data;
-      this.loading=false;
-    })
+      this.pedidos = data;
+      this.loading = false;
+    });
   }
 
-  buscarCliente(cliente:string,libro:string){
-    this.loading=true;
-    console.log("buscar cliente:"+ libro+ " " + cliente);
-    this.ps.getPedidosDeCliente(cliente).subscribe( (data:any)=> {
-      console.log(data);
-      this.pedidos=data;
-      this.loading=false;
-    })
+  dateFilter(days:number){
+    let past = new Date();
+    past.setDate(past.getDate()-days);
+    console.log(past);
+    this.fromDate = this.datePipe.transform(past, 'yyyy-MM-dd');
+    this.toDate=this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+    console.log(this.fromDate); 
   }
-
 }

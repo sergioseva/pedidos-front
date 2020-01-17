@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ClientesServiceService } from 'src/app/providers/clientes-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { ClienteModel } from 'src/app/models/cliente.model';
+import Swal from 'sweetalert2';
+import { promise } from 'protractor';
 
 
 @Component({
@@ -20,13 +23,11 @@ export class ClientesComponent implements OnInit {
   last:string;
   currentPage:number;
   pagina:number;
+  currentIndex: number;
   
   constructor(private _activadedRoute:ActivatedRoute,private clientesService:ClientesServiceService) {
     this._activadedRoute.params.subscribe(params => {
-      //this.heroes=_heroesService.buscarHeroes(params['termino'])
-      console.log(params);
       this.pagina=params['page'];
-      console.log(this.pagina);
     });
    }
 
@@ -85,5 +86,58 @@ export class ClientesComponent implements OnInit {
   pageChanged(event: any): void {
     this.setPage(event.page);
   }
+
+  buscarCliente(termino: string) {
+      this.clientesService.getClientesPorCualquier(termino).subscribe(
+        (cs: any) => {
+          console.log(cs);
+          this.clientes = cs;
+        }
+      );
+  }
+
+  validaryBorrarCliente( cliente: ClienteModel , i: number){
+    const promiseTienePedidos= new Promise<ClienteModel>((resolve, reject) => {
+          this.clientesService.checkPedidos(cliente.id)
+          .subscribe(
+            (valor: Boolean) => {
+                       if (valor) {
+                            reject(cliente);
+                        } else {
+                            this.currentIndex = i;
+                            resolve(cliente);
+                      }
+            }
+          );
+    });
+
+    promiseTienePedidos.then( (clientePromise: ClienteModel) => this.borrarCliente(clientePromise))
+                          .catch( idCliente => Swal.fire({
+                                                    title: 'Cliente',
+                                                    text: `El cliente tiene pedidos, no se puede eliminar` ,
+                                                    type: 'error'
+                                 }));
+}
+
+borrarCliente(cliente: ClienteModel) {
+      Swal.fire({
+        title: '¿Está seguro?',
+        text: `Está seguro que desea borrar a ${ cliente.nombre }`,
+        type: 'question',
+        showConfirmButton: true,
+        showCancelButton: true
+      }).then( resp => {
+          if ( resp.value ) {
+            this.clientesService.deleteCliente(cliente.id).subscribe(
+                resp => {this.clientes.splice(this.currentIndex, 1); },
+                err => {Swal.fire({
+                  title: 'Cliente',
+                  text: `Error al procesar la operacion` ,
+                  type: 'error'
+                });}
+            );
+          }
+      });
+}
 
 }

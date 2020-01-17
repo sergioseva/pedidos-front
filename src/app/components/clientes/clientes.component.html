@@ -1,6 +1,9 @@
 <div class="row">
+    <div class="col-8">
+        <input #termino type="text" (keyup.enter)="buscarCliente(termino.value)" class="form-control" placeholder="Buscar Cliente">
+    </div>
     <div class="col">
-        <input #termino type="text" (keyup)="buscarCliente(termino.value)" class="form-control" placeholder="Buscar Cliente">
+        <button class="btn btn-primary btn-sm my-1" [routerLink]="['/cliente','nuevo']" >Nuevo</button>
     </div>
 </div>
 
@@ -10,6 +13,7 @@
             <th scope="col">Nombre</th>
             <th scope="col">Celular</th>
             <th scope="col">Fijo</th>
+            <th scope="col">Email</th>
         </tr>
     </thead>
     <tbody>
@@ -17,6 +21,23 @@
             <td>{{cliente.nombre}}</td>
             <td>{{cliente.telefonoMovil}}</td>
             <td>{{cliente.telefonoFijo}}</td>
+            <td>{{cliente.email}}</td>
+            <td>
+                <div class="col">
+                    <div class="row">
+                        <button title="Modificar" [routerLink]="[ '/cliente', cliente.id] " type="button " class="btn btn-outline-info ">
+                                    <i class="fa fa-pencil "></i>
+                                </button>
+                        <button title="Eliminar" (click)="validaryBorrarCliente(cliente,i) " type="button " class="btn btn-outline-danger ">
+                                        <i class="fa fa-trash "></i>
+                                </button>
+
+
+                    </div>
+                </div>
+
+
+            </td>
         </tr>
     </tbody>
 </table>

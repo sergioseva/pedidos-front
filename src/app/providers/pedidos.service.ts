@@ -16,7 +16,7 @@ export class PedidosService {
               private chttp: CustomHttpClientService) { }
 
   getPedidos() {
-    let url:string=`${ this.URLPedidosService }`;
+    const url = `${ this.URLPedidosService }`;
 
     return this.chttp.get(url)
           .pipe(
@@ -24,28 +24,14 @@ export class PedidosService {
           );
   }
 
-  getPedidosConLibro(libro:String){
-    let url:string=`${ this.URLPedidosService }/search/findPedidosConLibro?libro=${libro}`;
-    return this.chttp.get(url)
-    .pipe(
-      map((pedidos: any) => pedidos._embedded.pedidoes)
-    );
-
+  buscarPedidos(termino: string, desde: string, hasta: string ) {
+    const url = `${ this.URLPedidosService }/search/findByAny?parametro=${termino}&fechaDesde=${desde}&fechaHasta=${hasta}`;
+    console.log('fecha desde:' + desde);
+    return this.chttp.get(url);
+          // .pipe(
+          //   map((pedidos: any) => pedidos._embedded.pedidoes)
+          // );
   }
 
-  getPedidosDeCliente(cliente:String){
-    let url: string = `${ this.URLPedidosService }/search/findByClienteNombreContainsAllIgnoreCase?cliente=${cliente}`;
-    return this.chttp.get(url)
-    .pipe(
-      map((pedidos: any ) => pedidos._embedded.pedidoes)
-    );
-  }
 
-  getPedidosDeClienteYLibro(cliente:String,libro:string){
-    let url:string=`${ this.URLPedidosService }/search/findByClienteAndLibro?cliente=${cliente}&libro=${libro}`;
-    return this.chttp.get(url)
-    .pipe(
-      map((pedidos: any) => pedidos._embedded.pedidoes)
-    );
-    }
 }

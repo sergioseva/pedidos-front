@@ -1,10 +1,26 @@
+<div class="row content-even center" >
+    <button class="btn btn-primary btn-sm my-1" (click)="dateFilter(1)">Ayer</button>
+    <button class="btn btn-primary btn-sm my-1" (click)="dateFilter(7)">Ultima Semana</button>
+    <button class="btn btn-primary btn-sm my-1" (click)="dateFilter(30)">Ultimo Mes</button>
+    <button class="btn btn-primary btn-sm my-1" (click)="dateFilter(365)">Ultimo Año</button>
+</div>
 <div class="row">
-    <div class="col">
+    <!-- <div class="col">
         <input #libro type="text" (keyup)="buscarLibro(libro.value)" class="form-control" placeholder="Buscar Libro">
     </div>
     <div class="col">
         <input #cliente type="text" (keyup)="buscarCliente(cliente.value,libro.value)" class="form-control" placeholder="Buscar Cliente">
+    </div> -->
+    <div class="col">
+        <input #termino type="text" (keyup.enter)="buscarTermino(termino.value)" class="form-control" placeholder="Buscar Libro o Cliente">
+    </div> 
+    <div class="col">
+        <input #fechadesde type="date" (keyup.enter)="buscarTermino(termino.value)" class="form-control" [(ngModel)]="fromDate"  placeholder="Fecha">
     </div>
+    <div class="col">
+        <input #fechahasta type="date" (keyup.enter)="buscarTermino(termino.value)" class="form-control" [(ngModel)]="toDate"  placeholder="Fecha">
+    </div>
+    <button class="btn btn-primary btn-sm my-1" (click)="buscarTermino(termino.value)">Buscar</button>
 </div>
 
 <table class="table">
