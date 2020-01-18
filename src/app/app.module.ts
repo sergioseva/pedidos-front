@@ -26,6 +26,8 @@ import { RegistroComponent } from './components/registro/registro.component';
 import { LoginComponent } from './components/login/login.component';
 import { from } from 'rxjs';
 import { ClienteComponent } from './components/cliente/cliente/cliente.component';
+import { LibrosComponent } from './components/libros/libros.component';
+import { LibroImagenPipe } from './pipes/libro-imagen.pipe';
 
 
 @NgModule({
@@ -38,7 +40,9 @@ import { ClienteComponent } from './components/cliente/cliente/cliente.component
     PedidoLibrosPipe,
     RegistroComponent,
     LoginComponent,
-    ClienteComponent
+    ClienteComponent,
+    LibrosComponent,
+    LibroImagenPipe
   ],
   imports: [
     BrowserModule,

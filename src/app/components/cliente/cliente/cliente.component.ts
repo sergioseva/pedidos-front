@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ClientesServiceService } from '../../../providers/clientes-service.service';
 import Swal from 'sweetalert2';
 import { provideForRootGuard } from '@angular/router/src/router_module';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-cliente',

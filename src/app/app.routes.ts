@@ -7,11 +7,13 @@ import { RegistroComponent } from './components/registro/registro.component';
 import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from './guards/auth.guard';
 import { ClienteComponent } from './components/cliente/cliente/cliente.component';
+import { LibrosComponent } from './components/libros/libros.component';
 
 
 
 export const ROUTES: Routes = [
     { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+    { path: 'libros', component: LibrosComponent, canActivate: [AuthGuard] },
     { path: 'clientes', component: ClientesComponent, canActivate: [AuthGuard] },
     { path: 'cliente/:id', component: ClienteComponent, canActivate: [AuthGuard] },
     { path: 'clientes/:page', component: ClientesComponent, canActivate: [AuthGuard] },
