@@ -4,44 +4,5 @@
   </div> 
   <button class="btn btn-primary btn-sm my-1" (click)="buscarLibros(termino.value)">Buscar</button>
 </div>
-<table mdbTable class="table">
-  <thead class="thead-light">
-      <tr>
-          <th scope="col">Nombre</th>
-          <th scope="col">Autor</th>
-          <th scope="col">Editorial</th>
-          <th scope="col">Precio</th>
-          <th scope="col">Tema</th>
-          <th scope="col">ISBN</th>
-          <th scope="col">Observaciones</th>
-          <th scope="col"></th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr *ngFor="let libro of libros">
-          <td> <img [src]="libro | libroImagen"  onError="this.src='assets/img/no-image.gif'">
-            {{libro.descripcion}}</td>
-          <td>{{libro.autor}}</td>
-          <td>{{libro.editorial}}</td>          
-          <td align="right">${{libro.precio | number:'1.0':'es-AR'}}</td>
-          <td>{{libro.tema}}</td>
-          <td>{{libro.isbn}}</td>
-          <td>{{libro.observaciones}}</td>
 
-          <td>
-              <div class="col">
-                  <div class="row">
-                      <button title="Modificar" [routerLink]="[ '/libro', libro.id] " type="button " class="btn btn-outline-info ">
-                                  <i class="fa fa-pencil "></i>
-                              </button>
-                      <button title="Eliminar" (click)="validaryBorrarCliente(libro,i) " type="button " class="btn btn-outline-danger ">
-                                      <i class="fa fa-trash "></i>
-                              </button>
-
-
-                  </div>
-              </div>
-          </td>
-      </tr>
-  </tbody>
-</table>
+<ng2-smart-table [settings]="settings" [source]="libros"></ng2-smart-table>
