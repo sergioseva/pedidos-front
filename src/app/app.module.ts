@@ -29,7 +29,6 @@ import { ClienteComponent } from './components/cliente/cliente/cliente.component
 import { LibrosComponent } from './components/libros/libros.component';
 import { LibroImagenPipe } from './pipes/libro-imagen.pipe';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
-import { LibroBotonesRenderComponent } from './components/libro-botones-render/libro-botones-render.component';
 
 @NgModule({
   declarations: [
@@ -44,11 +43,8 @@ import { LibroBotonesRenderComponent } from './components/libro-botones-render/l
     ClienteComponent,
     LibrosComponent,
     LibroImagenPipe,
-    LibroBotonesRenderComponent,
   ],
-  entryComponents: [
-    LibroBotonesRenderComponent
-    ],
+
   imports: [
     BrowserModule,
     HttpClientModule,

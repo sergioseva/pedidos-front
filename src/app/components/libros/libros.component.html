@@ -5,4 +5,9 @@
   <button class="btn btn-primary btn-sm my-1" (click)="buscarLibros(termino.value)">Buscar</button>
 </div>
 
-<ng2-smart-table [settings]="settings" [source]="libros"></ng2-smart-table>
+<ng2-smart-table [settings]="settings" [source]="libros" 
+                (createConfirm)="onCreateConfirm($event)"
+                (deleteConfirm)="onDeleteConfirm($event)"  
+                (editConfirm)="onEditConfirm($event)"
+                (custom)="onCustom($event)"
+                ></ng2-smart-table>
