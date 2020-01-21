@@ -6,8 +6,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class PedidoLibrosPipe implements PipeTransform {
 
   transform(pedido: any, args?: any): any {
-
-    let libros:String=" <ul>";
+ 
+    let libros = ' <ul>';
     for (const pi of pedido.pedidoItems){
       libros+="<li> " + pi.cantidad + "-" +pi.libro + "(" + pi.autor +")" + " </li>";
     }

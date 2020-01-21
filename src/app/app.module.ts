@@ -28,7 +28,7 @@ import { from } from 'rxjs';
 import { ClienteComponent } from './components/cliente/cliente/cliente.component';
 import { LibrosComponent } from './components/libros/libros.component';
 import { LibroImagenPipe } from './pipes/libro-imagen.pipe';
-
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 @NgModule({
   declarations: [
@@ -42,8 +42,9 @@ import { LibroImagenPipe } from './pipes/libro-imagen.pipe';
     LoginComponent,
     ClienteComponent,
     LibrosComponent,
-    LibroImagenPipe
+    LibroImagenPipe,
   ],
+
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -51,8 +52,10 @@ import { LibroImagenPipe } from './pipes/libro-imagen.pipe';
     RouterModule.forRoot(ROUTES),
     PaginationModule.forRoot(),
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    Ng2SmartTableModule
   ],
+
   providers: [DatePipe],
   bootstrap: [AppComponent]
 })
