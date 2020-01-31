@@ -18,8 +18,8 @@ export class ClienteComponent implements OnInit {
   id: any;
   href: string;
   headerText = 'Nuevo Cliente';
-  constructor(private router:Router,
-              private route:ActivatedRoute,
+  constructor(private router: Router,
+              private route: ActivatedRoute,
               private cs: ClientesServiceService,
     ) {
       this.cliente = new ClienteModel();
@@ -64,7 +64,7 @@ export class ClienteComponent implements OnInit {
       'telefonoFijo': new FormControl(this.cliente.telefonoFijo , 
                               [ Validators.pattern('^[0-9]*$'),
                                 Validators.maxLength(10),
-                                Validators.minLength(10)])                            
+                                Validators.minLength(10)])
     });
 
     console.log(this.forma);

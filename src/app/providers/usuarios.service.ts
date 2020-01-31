@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 import { CustomHttpClientService } from '../services/custom-http-client.service';
 import { UsuarioModel } from 'src/app/models/usuario.model';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,12 @@ export class UsuariosService {
 
   constructor(private http: HttpClient,
               private auth: AuthService,
-              private chttp: CustomHttpClientService) { }
+              private chttp: CustomHttpClientService,
+              private config: ConfigService) {
+console.log('en usuarios service');
+                this.URLUsuariosService = `${config.baseUrl}/api`;
+                console.log(this.URLUsuariosService);
+  }
 
   validarEmail(email: string) {
     const url = `${ this.URLUsuariosService }/user/checkEmailAvailability?email=${email}`;

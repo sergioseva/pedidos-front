@@ -1,0 +1,86 @@
+
+<div *ngIf="pedido.finalizado" class="row">
+    <div class="w-100 text-center alert alert-info ">Pedido Finalizado, no se pueden agregar mas items, pulse reiniciar</div>
+</div>
+<br  *ngIf="!pedido.finalizado">
+
+<div class>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="row">
+                <app-pedido-item></app-pedido-item>
+        </div>
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Titulo</th>
+                        <th scope="col">Autor</th>
+                        <th scope="col">Editorial</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pedidoItem of pedido.pedidoItems">
+                        <td>{{pedidoItem.libro}}</td>
+                        <td>{{pedidoItem.autor}}</td>
+                        <td>{{pedidoItem.editorial}}</td>
+                        <td>{{pedidoItem.precio}}</td>
+                        <td>{{pedidoItem.cantidad}}</td>
+                        <td>
+                            <div class="col">
+                                <div class="row">
+                                    <button title="Eliminar" (click)="borrarItem(pedidoItem,i) " type="button " class="btn btn-outline-danger ">
+                                                    <i class="fa fa-trash "></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            
+    </div>
+    <div class="col-sm-6">
+        <form [formGroup]="forma" >
+            <label for="clienteSelect">Seleccione el cliente</label>
+            <div id="clienteSelect" class="form-group" >
+                <ng-select [items]="clientes" 
+                [disableControl]="pedido.finalizado"
+                formControlName="cliente"    
+                [(ngModel)]="clienteSeleccionado">
+                </ng-select>
+            </div>
+            <div class="form-group" >
+                <textarea  class="form-control"
+                        [disableControl]="pedido.finalizado"
+                        placeholder="Observaciones"  
+                        rows="3"     
+                        formControlName="observaciones"></textarea>
+            </div>
+            <div class="form-group" >
+                <input type="number" 
+                    [disableControl]="pedido.finalizado"
+                    class="form-control"
+                    placeholder="Seña"           
+                    formControlName="senia"
+                [ngClass]="{ 'is-invalid': !forma.controls['senia'].valid && forma.controls['senia'].touched }">
+            </div>
+            <div class="row">
+                <div class="col-4">
+                        <div class="text-justify alert alert-info ">Total     $ {{pedido.total}}</div>
+                </div>
+                <div class="col-4">
+                    <button [disabled]="!forma.valid || pedido.pedidoItems.length<=0" class="btn btn-sm btn-primary btn-block" (click)="onSubmit()">Guardar</button>
+                </div>
+                <div class="col-4">
+                    <button class="btn btn-sm btn-danger btn-block" (click)="onReiniciar()">Reiniciar</button>
+                </div>
+            </div>
+            
+        </form>
+    </div>
+</div>
+
+

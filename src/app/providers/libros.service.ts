@@ -5,6 +5,7 @@ import { CustomHttpClientService } from '../services/custom-http-client.service'
 import { LibroModel } from '../models/libro.model';
 import { map, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,11 @@ export class LibrosService {
   
   constructor(private http: HttpClient,
               private auth: AuthService,
-              private chttp: CustomHttpClientService) { }
+              private chttp: CustomHttpClientService,
+              private config: ConfigService) {
+
+                this.URLLibrosService = `${config.baseUrl}/catalogos`;
+  }
 
   buscarLibros(termino: string ) {
     const url = `${ this.URLLibrosService }/search/findByAny?parametro=${termino}`;

@@ -4,6 +4,8 @@ import { map, catchError } from 'rxjs/operators';
 import { CustomHttpClientService } from '../services/custom-http-client.service';
 import { ClienteModel } from '../models/cliente.model';
 import { throwError } from 'rxjs/internal/observable/throwError';
+import { ConfigService } from './config.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +14,12 @@ export class ClientesServiceService {
 
   private URLClientesService:string="//localhost:8080/clientes";
 
-  constructor(private http:CustomHttpClientService) { }
+  constructor(private http: CustomHttpClientService,
+              private config: ConfigService) {
+
+      this.URLClientesService = `${config.baseUrl}/clientes`;
+}
+
 
   getClientes() {
     let url:string=`${ this.URLClientesService }`
@@ -46,13 +53,13 @@ export class ClientesServiceService {
           );
   }
 
-  getClientesPorCualquier(termino: string) {
+  getClientesPorCualquier(termino: string): Observable<ClienteModel[]> {
     const url = `${ this.URLClientesService }/search/findByAny?parametro=${termino}`;
     return this.http.get(url)
-          .pipe(
-            map((clientes: any) => clientes)
-          );
-  }
+              .pipe(
+                map((clientes: ClienteModel[]) => clientes)
+              );
+    }
 
   insertCliente(cliente: ClienteModel) {
     return this.http.post( this.URLClientesService  , cliente);

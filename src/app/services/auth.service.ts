@@ -5,6 +5,7 @@ import { UsuarioModel } from '../models/usuario.model';
 import { map } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 import * as jwt_decode from 'jwt-decode';
+import { ConfigService } from '../providers/config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,8 +29,9 @@ export class AuthService {
   // https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=[API_KEY]
 
 
-  constructor( private http: HttpClient ) {
+  constructor( private http: HttpClient,private config: ConfigService ) {
     this.leerToken();
+    this.url = config.baseUrl;
   }
 
 

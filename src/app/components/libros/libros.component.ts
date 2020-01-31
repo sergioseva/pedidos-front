@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { LibroModel } from '../../models/libro.model';
 import { LibrosService } from '../../providers/libros.service';
 import {  LocalDataSource } from 'ng2-smart-table';
+import { PedidosService } from '../../providers/pedidos.service';
+import { PedidoItemModel } from '../../models/pedido.item';
 
 
 
@@ -12,7 +14,7 @@ import {  LocalDataSource } from 'ng2-smart-table';
 })
 export class LibrosComponent implements OnInit {
   libros: LibroModel[];
-  source: LocalDataSource;
+  cantItemsPedido = 0;
 
   settings = {
     noDataMessage: 'no hay registros',
@@ -43,14 +45,6 @@ export class LibrosComponent implements OnInit {
     columns: {
       descripcion: {
         title: 'Nombre',
-        // type: 'html',
-        // valuePrepareFunction: (valor, registro) => {
-        //         let imagen;
-        //         if (registro.isbn) {
-        //           return `<img src="https://contentv2.tap-commerce.com/cover/small/${registro.isbn}_1.jpg" title=${valor}>`
-        //         }; 
-        //         return valor;
-        //   }
         },
       autor: {
         title: 'Autor'
@@ -78,12 +72,15 @@ export class LibrosComponent implements OnInit {
       // }
     }
   };
-  constructor(private librosService: LibrosService) {
+  constructor(private librosService: LibrosService,
+              private pedidosService: PedidosService) {
 
-    this.source = new LocalDataSource(this.libros);
+   // this.source = new LocalDataSource(this.libros);
    }
 
   ngOnInit() {
+    this.pedidosService.currentPedido.subscribe(pedido => {this.cantItemsPedido = pedido.pedidoItems.length;});
+     
   }
 
   onCreateConfirm(event: any){
@@ -112,6 +109,15 @@ export class LibrosComponent implements OnInit {
 
   onCustom(event: any){
     console.log(event);
+    const pi = new PedidoItemModel;
+    pi.codigoLuongo = event.data.codigoLuongo;
+    pi.libro = event.data.descripcion;
+    pi.autor = event.data.autor;
+    pi.editorial = event.data.editorial;
+    pi.precio = event.data.precio;
+    pi.isbn = event.data.isbn;
+    pi.cantidad = 1;
+    this.pedidosService.addPedidoItem(pi);
   }
   buscarLibros(termino: string) {
     this.librosService.buscarLibros(termino).subscribe(
