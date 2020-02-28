@@ -71,11 +71,14 @@
                 <div class="col-4">
                         <div class="text-justify alert alert-info ">Total     $ {{pedido.total}}</div>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <button [disabled]="!forma.valid || pedido.pedidoItems.length<=0" class="btn btn-sm btn-primary btn-block" (click)="onSubmit()">Guardar</button>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <button class="btn btn-sm btn-danger btn-block" (click)="onReiniciar()">Reiniciar</button>
+                </div>
+                <div class="col-2">
+                    <button [disabled]="!pedido.finalizado" class="btn btn-sm btn-success btn-block" (click)="onImprimir()"><i class="fa fa-print"></i></button>
                 </div>
             </div>
             

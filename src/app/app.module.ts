@@ -35,6 +35,8 @@ import { catchError, map } from 'rxjs/operators';
 import { PedidoItemComponent } from './components/pedido-item/pedido-item.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DisableControlDirective } from './directives/disable-control.directive';
+import { PrintLayoutComponent } from './components/impresiones/print-layout/print-layout.component';
+import { PedidoImpresoComponent } from './components/impresiones/pedido-impreso/pedido-impreso.component';
 
 function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>) {
   return (): Promise<boolean> => {
@@ -74,6 +76,8 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
     PedidoComponent,
     PedidoItemComponent,
     DisableControlDirective,
+    PrintLayoutComponent,
+    PedidoImpresoComponent,
   ],
 
   imports: [

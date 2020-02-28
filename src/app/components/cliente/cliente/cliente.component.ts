@@ -52,7 +52,7 @@ export class ClienteComponent implements OnInit {
       'nombre': new FormControl(this.cliente.nombre, Validators.required),
       'direccion': new FormControl(this.cliente.direccion),
       'email': new FormControl(this.cliente.email ,  [
-        Validators.required,
+        //Validators.required,
         Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')
       ] // this.existeEmail.bind(this)
       ),

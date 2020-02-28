@@ -1,49 +1,61 @@
-<div class="row content-even center" >
-    <button class="btn btn-primary btn-sm my-1" (click)="dateFilter(1)">Ayer</button>
-    <button class="btn btn-primary btn-sm my-1" (click)="dateFilter(7)">Ultima Semana</button>
-    <button class="btn btn-primary btn-sm my-1" (click)="dateFilter(30)">Ultimo Mes</button>
-    <button class="btn btn-primary btn-sm my-1" (click)="dateFilter(365)">Ultimo Año</button>
-</div>
-<div class="row">
-    <!-- <div class="col">
-        <input #libro type="text" (keyup)="buscarLibro(libro.value)" class="form-control" placeholder="Buscar Libro">
+<div [class.isPrinting]="printService.isPrinting">
+    <div  class="row content-even center" >
+        <button  class="btn btn-primary btn-sm my-1" (click)="dateFilter(1)">Ayer</button>
+        <button  class="btn btn-primary btn-sm my-1" (click)="dateFilter(7)">Ultima Semana</button>
+        <button  class="btn btn-primary btn-sm my-1" (click)="dateFilter(30)">Ultimo Mes</button>
+        <button  class="btn btn-primary btn-sm my-1" (click)="dateFilter(365)">Ultimo Año</button>
     </div>
-    <div class="col">
-        <input #cliente type="text" (keyup)="buscarCliente(cliente.value,libro.value)" class="form-control" placeholder="Buscar Cliente">
-    </div> -->
-    <div class="col">
-        <input #termino type="text" (keyup.enter)="buscarTermino(termino.value)" class="form-control" placeholder="Buscar Libro o Cliente">
-    </div> 
-    <div class="col">
-        <input #fechadesde type="date" (keyup.enter)="buscarTermino(termino.value)" class="form-control" [(ngModel)]="fromDate"  placeholder="Fecha">
+    <div  class="row">
+        <!-- <div class="col">
+            <input #libro type="text" (keyup)="buscarLibro(libro.value)" class="form-control" placeholder="Buscar Libro">
+        </div>
+        <div class="col">
+            <input #cliente type="text" (keyup)="buscarCliente(cliente.value,libro.value)" class="form-control" placeholder="Buscar Cliente">
+        </div> -->
+        <div class="col">
+            <input #termino type="text" (keyup.enter)="buscarTermino(termino.value)" class="form-control" placeholder="Buscar Libro o Cliente">
+        </div> 
+        <div class="col">
+            <input #fechadesde type="date" (keyup.enter)="buscarTermino(termino.value)" class="form-control" [(ngModel)]="fromDate"  placeholder="Fecha">
+        </div>
+        <div class="col">
+            <input #fechahasta type="date" (keyup.enter)="buscarTermino(termino.value)" class="form-control" [(ngModel)]="toDate"  placeholder="Fecha">
+        </div>
+        <button class="btn btn-primary btn-sm my-1" (click)="buscarTermino(termino.value)">Buscar</button>
     </div>
-    <div class="col">
-        <input #fechahasta type="date" (keyup.enter)="buscarTermino(termino.value)" class="form-control" [(ngModel)]="toDate"  placeholder="Fecha">
-    </div>
-    <button class="btn btn-primary btn-sm my-1" (click)="buscarTermino(termino.value)">Buscar</button>
-</div>
+    
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th width="25%" scope="col">Cliente</th>
+                <th width="15%" scope="col">Fecha</th>
+                <th width="10%" scope="col">Total</th>
+                <th width="10%" scope="col">Seña</th>
+                <th width="20%" scope="col">Observaciones</th>
+                <th width="20%" scope="col">Libros</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let pedido of pedidos">
+                <td>
+                    <div class="col">
+                        <div class="row">
+                            <button title="Imprimir" (click)="imprimir(pedido) " type="button " class="btn btn-sm btn-success btn-block">
+                                            <i class="fa fa-print "></i>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+                <td>{{pedido.cliente.nombre}}</td>
+                <td>{{pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
+                <td align="right">${{pedido.total | number:'1.0':'es-AR'}}</td>
+                <td align="right">${{pedido.senia | number:'1.0':'es-AR'}}</td>
+                <td>{{pedido.observaciones}}</td>
+                <td>
+                    <span [innerHTML]="pedido | pedidoLibros"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
 
-<table class="table">
-    <thead class="thead-dark">
-        <tr>
-            <th width="25%" scope="col">Cliente</th>
-            <th width="15%" scope="col">Fecha</th>
-            <th width="10%" scope="col">Total</th>
-            <th width="10%" scope="col">Seña</th>
-            <th width="20%" scope="col">Observaciones</th>
-            <th width="20%" scope="col">Libros</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let pedido of pedidos">
-            <td>{{pedido.cliente.nombre}}</td>
-            <td>{{pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
-            <td align="right">${{pedido.total | number:'1.0':'es-AR'}}</td>
-            <td align="right">${{pedido.senia | number:'1.0':'es-AR'}}</td>
-            <td>{{pedido.observaciones}}</td>
-            <td>
-                <span [innerHTML]="pedido | pedidoLibros"></span>
-            </td>
-        </tr>
-    </tbody>
-</table>

@@ -45,6 +45,12 @@ export class PedidosService {
           // );
   }
 
+  getPedidoProjection(pedidoId: number){
+    const url = `${ this.URLPedidosService }/${pedidoId}?projection=pedidoCliente`;
+
+    return this.chttp.get(url);
+  }
+
   changePedido(pedido: PedidoModel) {
     console.log('calcular pedido');
     console.log(pedido);

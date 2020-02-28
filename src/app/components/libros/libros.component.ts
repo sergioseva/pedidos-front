@@ -4,6 +4,7 @@ import { LibrosService } from '../../providers/libros.service';
 import {  LocalDataSource } from 'ng2-smart-table';
 import { PedidosService } from '../../providers/pedidos.service';
 import { PedidoItemModel } from '../../models/pedido.item';
+import { PrintPedidoService } from '../../providers/print-pedido.service';
 
 
 
@@ -73,7 +74,8 @@ export class LibrosComponent implements OnInit {
     }
   };
   constructor(private librosService: LibrosService,
-              private pedidosService: PedidosService) {
+              private pedidosService: PedidosService,
+              private printService: PrintPedidoService) {
 
    // this.source = new LocalDataSource(this.libros);
    }

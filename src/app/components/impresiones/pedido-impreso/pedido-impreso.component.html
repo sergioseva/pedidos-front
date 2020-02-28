@@ -1,0 +1,50 @@
+<br>
+<hr>
+<div class="row">
+  <div class="col-4">Fecha:{{ pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</div>
+  <div class="col-4">Pedido:{{ pedidoId }}</div>
+  </div>
+  <hr>
+<div class="row">
+<div class="col-4" style= " font-weight: bold;" >Cliente: {{ pedido.cliente.nombre }}</div>
+<div class="col-4">Telefono: {{ pedido.cliente.telefonoMovil }} </div>
+</div>
+
+<br>
+
+
+<table class="table">
+  <thead class="thead-dark">
+      <tr>
+          <th scope="col">Titulo</th>
+          <th scope="col">Autor</th>
+          <th scope="col">Editorial</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Cantidad</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr *ngFor="let pedidoItem of pedido.pedidoItems">
+          <td>{{pedidoItem.libro}}</td>
+          <td>{{pedidoItem.autor}}</td>
+          <td>{{pedidoItem.editorial}}</td>
+          <td align="right">{{pedidoItem.precio | number:'1.0':'es-AR'}}</td>
+          <td>{{pedidoItem.cantidad}}</td>
+          
+      </tr>
+  </tbody>
+</table>
+<hr>
+<div class="row">
+  <div class="col-2">Total:</div>
+  <div class="col-2" style= "text-align: right; " >${{ pedido.total | number:'1.0':'es-AR' }}</div>
+</div>
+<div class="row">
+  <div class="col-2">Seña:</div>
+  <div class="col-2"style= "text-align: right;"> ${{ pedido.senia | number:'1.0':'es-AR' }} </div>
+</div>
+
+<div class="row">
+  <div class="col-2">Saldo:</div>
+  <div class="col-2" style= "text-align: right; font-weight: bold;" >${{ pedido.total-pedido.senia | number:'1.0':'es-AR' }}</div>
+</div>

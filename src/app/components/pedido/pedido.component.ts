@@ -6,6 +6,7 @@ import { ClienteModel } from '../../models/cliente.model';
 import { ClientesServiceService } from '../../providers/clientes-service.service';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { PrintPedidoService } from '../../providers/print-pedido.service';
 
 @Component({
   selector: 'app-pedido',
@@ -21,7 +22,8 @@ export class PedidoComponent implements OnInit {
   private clientes: any [];
 
   constructor( private pedidosService: PedidosService,
-               private clientesService: ClientesServiceService) {
+               private clientesService: ClientesServiceService,
+               private printService: PrintPedidoService) {
                 this.buildForm();
 
   }
@@ -65,6 +67,8 @@ export class PedidoComponent implements OnInit {
                   text: `Pedido ingresado!`,
                   type: 'success'
         });
+        this.pedido.id = resp['id'];
+        console.log(this.pedido.id);
         this.pedidosService.finalizarPedido();
       },
         err => {      Swal.fire({
@@ -89,6 +93,10 @@ export class PedidoComponent implements OnInit {
 
    borrarItem( pi: PedidoItemModel, i: number){
       this.pedidosService.removePedidoItem(pi);
+  }
+
+  onImprimir(){
+      this.printService.imprimirPedido(this.pedido.id);
   }
 
 }
