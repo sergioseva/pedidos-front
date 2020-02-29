@@ -46,12 +46,14 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
            map((x: ConfigService) => {
              config.baseUrl = x.baseUrl;
              resolve(true);
+             console.log(`apuntando a ${config.baseUrl}`);
            }),
            catchError((x: { status: number }, caught: Observable<void>): ObservableInput<{}> => {
              if (x.status !== 404) {
                resolve(false);
              }
              config.baseUrl = 'http://138.197.64.182:8080';
+             console.log(`apuntando a ${config.baseUrl}`);
              resolve(true);
              return of({});
            })
