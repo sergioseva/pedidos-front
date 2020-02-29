@@ -10,17 +10,23 @@
                 <a class="nav-link" [routerLink]="['home']">Home </a>
             </li>
             <li class="nav-item" routerLinkActive="active">
-                <a class="nav-link" [routerLink]="['libros']">Libros</a>
+                <a class="nav-link" [routerLink]="['libros']">Generar Pedido</a>
             </li>
-            <li class="nav-item" routerLinkActive="active">
+            <!-- <li class="nav-item" routerLinkActive="active">
                 <a class="nav-link" [routerLink]="['pedido']">Pedido</a>
-            </li>
+            </li> -->
             <li class="nav-item" routerLinkActive="active">
                 <a class="nav-link" [routerLink]="['clientes']">Clientes</a>
             </li>
-            <li class="nav-item" routerLinkActive="active">
-                <a class="nav-link" [routerLink]="['pedidos']">Pedidos</a>
-            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Pedidos
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" [routerLink]="['pedidos']">Consulta de pedidos de clientes</a>
+                  <a class="dropdown-item disabled" [routerLink]="['pedidos']">Generar pedido a distribuidora</a>
+                </div>
+              </li>
         </ul>
         <button *ngIf="isLoggedIn$ | async" (click)="logout()" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Salir</button>
         <form class="form-inline my-2 my-lg-0">
