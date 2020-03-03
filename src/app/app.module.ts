@@ -37,6 +37,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { DisableControlDirective } from './directives/disable-control.directive';
 import { PrintLayoutComponent } from './components/impresiones/print-layout/print-layout.component';
 import { PedidoImpresoComponent } from './components/impresiones/pedido-impreso/pedido-impreso.component';
+import { PedidoDistribuidoraComponent } from './components/pedido-distribuidora/pedido-distribuidora.component';
 
 function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>) {
   return (): Promise<boolean> => {
@@ -53,6 +54,8 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
                resolve(false);
              }
              config.baseUrl = 'http://138.197.64.182:8080';
+             //config.baseUrl = 'http://localhost:8080';
+             //config.baseUrl = 'http://157.245.208.76:8080';
              console.log(`apuntando a ${config.baseUrl}`);
              resolve(true);
              return of({});
@@ -80,6 +83,7 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
     DisableControlDirective,
     PrintLayoutComponent,
     PedidoImpresoComponent,
+    PedidoDistribuidoraComponent,
   ],
 
   imports: [

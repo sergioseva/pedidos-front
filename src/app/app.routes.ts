@@ -11,6 +11,7 @@ import { LibrosComponent } from './components/libros/libros.component';
 import { PedidoComponent } from './components/pedido/pedido.component';
 import { PrintLayoutComponent } from './components/impresiones/print-layout/print-layout.component';
 import { PedidoImpresoComponent } from './components/impresiones/pedido-impreso/pedido-impreso.component';
+import { PedidoDistribuidoraComponent } from './components/pedido-distribuidora/pedido-distribuidora.component';
 
 
 
@@ -21,6 +22,7 @@ export const ROUTES: Routes = [
     { path: 'cliente/:id', component: ClienteComponent, canActivate: [AuthGuard] },
     { path: 'clientes/:page', component: ClientesComponent, canActivate: [AuthGuard] },
     { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
+    { path: 'pedidosdistribuidora', component: PedidoDistribuidoraComponent, canActivate: [AuthGuard] },
     { path: 'pedido', component: PedidoComponent, canActivate: [AuthGuard] },
     { path: 'registro', component: RegistroComponent },
     { path: 'login', component: LoginComponent },
