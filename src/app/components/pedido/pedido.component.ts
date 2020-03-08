@@ -54,7 +54,7 @@ export class PedidoComponent implements OnInit {
     this.pedidosService.asignarDatos(this.clienteSeleccionado, this.forma.controls.senia.value, this.forma.controls.observaciones.value);
     Swal.fire({
       title: 'Espere',
-      text: 'Generando el pedido información',
+      text: 'Generando el pedido',
       type: 'info',
       allowOutsideClick: false
     });

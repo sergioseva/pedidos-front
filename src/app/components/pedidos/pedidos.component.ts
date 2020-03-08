@@ -13,9 +13,11 @@ import { PrintPedidoService } from 'src/app/providers/print-pedido.service';
 export class PedidosComponent implements OnInit {
 
   pedidos: any[];
-  loading: boolean;
   fromDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   toDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+  loading: boolean = false;
+  error: boolean=false;
+  errMessage:string;
 
   constructor(private printService: PrintPedidoService, private ps: PedidosService, private datePipe: DatePipe) { }
 
@@ -30,6 +32,8 @@ export class PedidosComponent implements OnInit {
 
   buscarTermino(termino:string){
     this.loading = true;
+    this.pedidos = new Array();
+    console.log(this.loading);
     this.ps.buscarPedidos(termino,
                           this.datePipe.transform( this.fromDate, 'yyyy-MM-dd'),
                           this.datePipe.transform( this.toDate, 'yyyy-MM-dd') )

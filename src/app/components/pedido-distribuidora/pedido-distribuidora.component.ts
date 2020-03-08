@@ -32,7 +32,7 @@ export class PedidoDistribuidoraComponent implements OnInit {
         console.log(items);
         this.distribuidoras = items;
         this.distribuidoras.forEach(c => c.label = c.descripcion);
-        this.loading=false; } );
+        this.loading = false; } );
   }
 
   ngOnInit() {
@@ -42,6 +42,7 @@ export class PedidoDistribuidoraComponent implements OnInit {
   getPedidosPendientes(){
     this.pedidoItemsService.getPedidosPendientes().subscribe(
       (items: any[]) => {
+        console.log(items);
         this.pedidoItems = items;
         this.distribuidoraSeleccionada = new Array(items.length);
       }
