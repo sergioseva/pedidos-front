@@ -46,6 +46,9 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
          .pipe(
            map((x: ConfigService) => {
              config.baseUrl = x.baseUrl;
+             config.nombre = x.nombre;
+             config.direccion = x.direccion;
+             config.telefono = x.telefono;
              resolve(true);
              console.log(`apuntando a ${config.baseUrl}`);
            }),
@@ -53,7 +56,10 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
              if (x.status !== 404) {
                resolve(false);
              }
-             config.baseUrl = 'http://138.197.64.182:8080';
+             config.baseUrl = 'https://pedidos.librosmario.store:8443';
+             config.nombre = 'Test Libros Mario Gualeguaychú';
+             config.direccion = 'Test 3 de Caballeria 761 - Gualeguaychu';
+             config.telefono = 'Test Telefono: 425900';
              //config.baseUrl = 'http://localhost:8080';
              //config.baseUrl = 'http://157.245.208.76:8080';
              console.log(`apuntando a ${config.baseUrl}`);

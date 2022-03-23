@@ -1,3 +1,6 @@
 {
-    "baseUrl": "http://138.197.64.182:8080"
+    "baseUrl": "http://138.197.64.182:8080",
+    "nombre":"Libros Mario Gualeguaychú",
+    "direccion":"3 de Caballeria 761 - Gualeguaychu",
+    "telefono":"Telefono: 425900"
 }
