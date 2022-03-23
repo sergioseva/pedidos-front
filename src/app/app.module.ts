@@ -50,7 +50,9 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
              config.direccion = x.direccion;
              config.telefono = x.telefono;
              resolve(true);
+             console.log(`config.json leido`);
              console.log(`apuntando a ${config.baseUrl}`);
+             console.log(`leido nombre ${config.nombre}`);
            }),
            catchError((x: { status: number }, caught: Observable<void>): ObservableInput<{}> => {
              if (x.status !== 404) {
