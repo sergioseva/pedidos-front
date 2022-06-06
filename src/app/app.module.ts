@@ -48,16 +48,13 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
              config.baseUrl = x.baseUrl;
              config.nombre = x.nombre;
              config.direccion = x.direccion;
-             config.telefono = x.telefono;
-             resolve(true);
+             config.telefono = x.telefono;             
              console.log(`config.json leido`);
              console.log(`apuntando a ${config.baseUrl}`);
              console.log(`leido nombre ${config.nombre}`);
+             resolve(true);
            }),
            catchError((x: { status: number }, caught: Observable<void>): ObservableInput<{}> => {
-             if (x.status !== 404) {
-               resolve(false);
-             }
              config.baseUrl = 'https://pedidos.librosmario.store:8443';
              config.nombre = 'Test Libros Mario Gualeguaychú';
              config.direccion = 'Test 3 de Caballeria 761 - Gualeguaychu';
@@ -65,6 +62,9 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
              //config.baseUrl = 'http://localhost:8080';
              //config.baseUrl = 'http://157.245.208.76:8080';
              console.log(`apuntando a ${config.baseUrl}`);
+             if (x.status !== 404) {
+               resolve(false);
+             }
              resolve(true);
              return of({});
            })
