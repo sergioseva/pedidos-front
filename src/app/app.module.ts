@@ -56,12 +56,15 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
              resolve(true);
            }),
            catchError((x: { status: number }, caught: Observable<void>): ObservableInput<{}> => {
-             config.baseUrl = 'http://localhost:8080';
-             config.nombre = 'Test Libros Mario Gualeguaychú';
-             config.direccion = 'Test 3 de Caballeria 761 - Gualeguaychu';
-             config.telefono = 'Test Telefono: 425900';
-             //config.baseUrl = 'http://localhost:8080';
-             //config.baseUrl = 'http://157.245.208.76:8080';
+             const origin = window.location.origin;
+             const host = window.location.hostname;
+             config.baseUrl = host === 'localhost'
+               ? 'http://localhost:8080'
+               : 'https://pedidos.librosmario.store:8443';
+             config.nombre = 'Libros Mario Gualeguaychú';
+             config.direccion = '3 de Caballeria 761 - Gualeguaychu';
+             config.telefono = 'Telefono: 425900';
+             console.warn(`config.json no encontrado, usando fallback`);
              console.log(`apuntando a ${config.baseUrl}`);
              if (x.status !== 404) {
                resolve(false);
