@@ -1,80 +1,76 @@
-    <form [formGroup]="forma" >
-      <div class="form-row">
-        <div class="col-3 form-group">
-          <input type="text" 
-          class="form-control form-control-sm"
-          placeholder="Titulo"  
-          formControlName="libro"
-          [ngClass]="{ 'is-invalid': !forma.controls['libro'].valid && forma.controls['libro'].touched }"
-          >
-          <div *ngIf="forma.get('libro').errors?.required && forma.controls['libro'].touched"
-                   class="small" style="color:red;" >
-                    El titulo es necesario.
+<form [formGroup]="forma">
+    <div class="row">
+        <div class="col-md-6 form-group">
+            <label>Título</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Título del libro"
+                formControlName="libro"
+                [ngClass]="{ 'is-invalid': forma.controls['libro'].invalid && forma.controls['libro'].touched }">
+            <div *ngIf="forma.get('libro').errors?.required && forma.controls['libro'].touched"
+                 class="small text-error">
+                El título es necesario.
             </div>
         </div>
-        <div class="col-3 form-group">
-          <input type="text" 
-          class="form-control form-control-sm"
-          placeholder="Autor"  
-          formControlName="autor"
-          [ngClass]="{ 'is-invalid': !forma.controls['autor'].valid && forma.controls['autor'].touched }"
-          >
-          <div *ngIf="forma.get('autor').errors?.required && forma.controls['autor'].touched"
-                   class="small" style="color:red;" >
-                    El autor es necesario.
+        <div class="col-md-6 form-group">
+            <label>Autor</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Autor"
+                formControlName="autor"
+                [ngClass]="{ 'is-invalid': forma.controls['autor'].invalid && forma.controls['autor'].touched }">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 form-group">
+            <label>Editorial</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Editorial"
+                formControlName="editorial"
+                [ngClass]="{ 'is-invalid': forma.controls['editorial'].invalid && forma.controls['editorial'].touched }">
+        </div>
+        <div class="col-md-4 form-group">
+            <label>Precio</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Precio"
+                style="text-align: right;"
+                formControlName="precio"
+                [ngClass]="{ 'is-invalid': forma.controls['precio'].invalid && forma.controls['precio'].touched }">
+            <div *ngIf="forma.get('precio').errors?.required && forma.controls['precio'].touched"
+                 class="small text-error">
+                El precio es necesario.
+            </div>
+            <div *ngIf="forma.get('precio').errors?.pattern && forma.controls['precio'].touched"
+                 class="small text-error">
+                El precio debe ser un número.
             </div>
         </div>
-        <div class="col-2 form-group">
-          <input type="text" 
-          class="form-control form-control-sm"
-          placeholder="Editorial"  
-          formControlName="editorial"
-          [ngClass]="{ 'is-invalid': !forma.controls['editorial'].valid && forma.controls['editorial'].touched }"
-          >
-          <div *ngIf="forma.get('editorial').errors?.required && forma.controls['editorial'].touched"
-                   class="small" style="color:red;" >
-                    La editorial es necesaria.
+        <div class="col-md-4 form-group">
+            <label>Cantidad</label>
+            <input type="number"
+                class="form-control"
+                placeholder="Cantidad"
+                style="text-align: right;"
+                formControlName="cantidad"
+                [ngClass]="{ 'is-invalid': forma.controls['cantidad'].invalid && forma.controls['cantidad'].touched }">
+            <div *ngIf="forma.get('cantidad').errors?.required && forma.controls['cantidad'].touched"
+                 class="small text-error">
+                La cantidad es necesaria.
+            </div>
+            <div *ngIf="forma.get('cantidad').errors?.pattern && forma.controls['cantidad'].touched"
+                 class="small text-error">
+                La cantidad debe ser un número.
             </div>
         </div>
-        <div class="col-2 form-group">
-          <input type="text" 
-          class="form-control form-control-sm"
-          placeholder="Precio"  
-          style="text-align:right;"
-          formControlName="precio"
-          [ngClass]="{ 'is-invalid': !forma.controls['precio'].valid && forma.controls['precio'].touched }"
-          >
-          <div *ngIf="forma.get('precio').errors?.required && forma.controls['precio'].touched"
-                   class="small" style="color:red;" >
-                    El precio es necesario
-            </div>
-            <div *ngIf="forma.get('precio').pattern && forma.controls['precio'].touched"
-                  class="small" style="color:red;" >
-                  El precio debe ser un numero.
-            </div>
-        </div>
-        <div class="col-2 form-group">
-          <input type="number" 
-          class="form-control form-control-sm"
-          placeholder="Cantidad"  
-          style="text-align:right;"
-          formControlName="cantidad"
-          [ngClass]="{ 'is-invalid': !forma.controls['cantidad'].valid && forma.controls['cantidad'].touched }"
-          >
-          <div *ngIf="forma.get('cantidad').errors?.required && forma.controls['cantidad'].touched"
-                   class="small" style="color:red;" >
-                   La cantidad es necesaria
-            </div>
-            <div *ngIf="forma.get('cantidad').pattern && forma.controls['cantidad'].touched"
-                  class="small" style="color:red;" >
-                  La cantidad debe ser un numero.
-            </div>
-        </div>
-        <div >
-          <button [disabled]="!forma.valid" class="btn btn-sm btn-outline-success " (click)="onAdd()" ><i class="fa fa-plus"></i></button>
-        </div>
-        <div >
-            <button class="btn btn-sm btn-outline-danger " (click)="onClear()"><i class="fa fa-times"></i></button>
-        </div>
-      </div> 
-    </form>                  
+    </div>
+    <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem;">
+        <button class="btn btn-action-secondary" type="button" (click)="onClear()">
+            <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Limpiar
+        </button>
+        <button [disabled]="!forma.valid" class="btn btn-action" type="button" (click)="onAdd()">
+            <i class="fa fa-plus" style="margin-right: 0.25rem;"></i> Agregar
+        </button>
+    </div>
+</form>

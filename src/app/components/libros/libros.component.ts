@@ -5,6 +5,7 @@ import {  LocalDataSource } from 'ng2-smart-table';
 import { PedidosService } from '../../providers/pedidos.service';
 import { PedidoItemModel } from '../../models/pedido.item';
 import { PrintPedidoService } from '../../providers/print-pedido.service';
+import Swal from 'sweetalert2';
 
 
 
@@ -16,6 +17,7 @@ import { PrintPedidoService } from '../../providers/print-pedido.service';
 export class LibrosComponent implements OnInit {
   libros: LibroModel[];
   cantItemsPedido = 0;
+  pedidoFinalizado = false;
 
   settings = {
     noDataMessage: 'no hay registros',
@@ -81,7 +83,10 @@ export class LibrosComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.pedidosService.currentPedido.subscribe(pedido => {this.cantItemsPedido = pedido.pedidoItems.length;});
+    this.pedidosService.currentPedido.subscribe(pedido => {
+      this.cantItemsPedido = pedido.pedidoItems.length;
+      this.pedidoFinalizado = pedido.finalizado;
+    });
      
   }
 
@@ -110,6 +115,14 @@ export class LibrosComponent implements OnInit {
   }
 
   onCustom(event: any){
+    if (this.pedidoFinalizado) {
+      Swal.fire({
+        title: 'Pedido Finalizado',
+        text: 'El pedido ya fue finalizado. Pulse Reiniciar para generar uno nuevo.',
+        type: 'warning'
+      });
+      return;
+    }
     console.log(event);
     const pi = new PedidoItemModel;
     pi.codigoLuongo = event.data.codigoLuongo;

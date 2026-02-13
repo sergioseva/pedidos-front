@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { PedidoItemModel } from '../../models/pedido.item';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { PedidosService } from '../../providers/pedidos.service';
@@ -12,6 +12,7 @@ import { PedidosService } from '../../providers/pedidos.service';
 })
 export class PedidoItemComponent implements OnInit {
 
+  @Output() itemAdded = new EventEmitter<void>();
   forma: FormGroup;
   pedidoItem: PedidoItemModel;
   constructor(private pedidosService: PedidosService) {
@@ -44,6 +45,7 @@ export class PedidoItemComponent implements OnInit {
     this.pedidoItem = this.forma.value;
     this.pedidosService.addPedidoItem(this.pedidoItem);
     this.forma.reset();
+    this.itemAdded.emit();
   }
   onClear() {
     this.forma.reset();

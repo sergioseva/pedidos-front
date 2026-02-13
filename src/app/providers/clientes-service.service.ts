@@ -22,7 +22,7 @@ export class ClientesServiceService {
 
 
   getClientes() {
-    let url:string=`${ this.URLClientesService }`
+    let url:string=`${ this.URLClientesService }?sort=id,desc`
 
     return this.http.get(url)
           .pipe(
@@ -36,7 +36,7 @@ export class ClientesServiceService {
   }
 
   getClientesPage(page: number) {
-    const url = `${ this.URLClientesService }?page=${page}`
+    const url = `${ this.URLClientesService }?page=${page}&sort=id,desc`
 
     return this.http.get(url)
           .pipe(

@@ -1,19 +1,28 @@
-<div class="row">
-    <div class="col-8">
-        <input #termino type="text" (keyup.enter)="buscarCliente(termino.value)" class="form-control" placeholder="Buscar Cliente">
-    </div>
-    <div class="col">
-        <button class="btn btn-primary btn-sm my-1" [routerLink]="['/cliente','nuevo']" >Nuevo</button>
+<div class="search-row" style="margin-top: 1rem;">
+    <div class="row align-items-center">
+        <div class="col">
+            <div style="position: relative;">
+                <input #termino type="text" (keyup.enter)="buscarCliente(termino.value)" class="form-control"
+                    placeholder="Buscar Cliente" style="padding-left: 2.25rem;">
+                <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #8C7A6A;"></i>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-action btn-sm" [routerLink]="['/cliente','nuevo']">
+                <i class="fa fa-plus" style="margin-right: 0.25rem;"></i> Nuevo Cliente
+            </button>
+        </div>
     </div>
 </div>
 
-<table class="table">
-    <thead class="thead-dark">
+<table class="table" style="margin-top: 1rem;">
+    <thead>
         <tr>
             <th scope="col">Nombre</th>
             <th scope="col">Celular</th>
             <th scope="col">Fijo</th>
             <th scope="col">Email</th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
@@ -23,71 +32,23 @@
             <td>{{cliente.telefonoFijo}}</td>
             <td>{{cliente.email}}</td>
             <td>
-                <div class="col">
-                    <div class="row">
-                        <button title="Modificar" [routerLink]="[ '/cliente', cliente.id] " type="button " class="btn btn-outline-info ">
-                                    <i class="fa fa-pencil "></i>
-                                </button>
-                        <button title="Eliminar" (click)="validaryBorrarCliente(cliente,i) " type="button " class="btn btn-outline-danger ">
-                                        <i class="fa fa-trash "></i>
-                                </button>
-                    </div>
+                <div class="table-actions">
+                    <button title="Modificar" [routerLink]="['/cliente', cliente.id]" type="button" class="btn btn-icon">
+                        <i class="fa fa-pencil"></i>
+                    </button>
+                    <button title="Eliminar" (click)="validaryBorrarCliente(cliente,i)" type="button" class="btn btn-icon btn-icon-danger">
+                        <i class="fa fa-trash"></i>
+                    </button>
                 </div>
-
-
             </td>
         </tr>
     </tbody>
 </table>
-<nav aria-label="Page navigation example">
 
-
-    <!--    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-        <div class="btn-group" role="group" aria-label="first group">
-            <button type="button" (click)="setPageF(-1,$event)" class="btn btn-secondary">Previous</button>
-        </div>
-        <div class="btn-group mr-2" role="group" aria-label="second group">
-            <button *ngFor="let item of pages; let i=index" (click)="setPage(i,$event)" type="button" class="btn btn-secondary">{{i+1}}</button>
-        </div>
-        <div class="btn-group" role="group" aria-label="Third group">
-            <button type="button" (click)="setPageF(+1,$event)" class="btn btn-secondary">Next</button>
-        </div>
-    </div> -->
-    <!-- 
-    <div class="pagination" role="toolbar" aria-label="Toolbar with button groups">
-
-        <button type="button" (click)="setPageF(-1)" class="page-item btn btn-secondary">Previous</button>
-
-
-        <button *ngFor="let item of pages; let i=index" (click)="setPage(i)" type="button" class="page-item btn btn-secondary">{{i+1}}</button>
-
-        <div class="btn-group" role="group" aria-label="Third group">
-            <button type="button" (click)="setPageF(+1)" class="btn btn-secondary">Next</button>
-        </div>
-    </div>
-
-
-    <nav aria-label="...">
-        <ul class="pagination">
-            <li class="page-item ">
-                <a class="page-link" href="/1" tabindex="-1">Previous</a>
-            </li>
-
-            <li class="page-item active" *ngFor="let item of pages; let i=index">
-                <a class="page-link" href="clientes/{{i}}">{{i+1}}<span class="sr-only">(current)</span></a>
-            </li>
-
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
-    </nav> -->
+<nav aria-label="Page navigation">
     <div class="row">
         <div class="col-xs-12 col-12">
             <pagination [boundaryLinks]="true" [(ngModel)]="currentPage" [itemsPerPage]="20" [totalItems]="total" (pageChanged)="pageChanged($event)" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
         </div>
     </div>
-
-
-
 </nav>

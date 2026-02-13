@@ -1,125 +1,121 @@
-<body>
-	<div class="container">
-	  <div class="row">
-		<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-		  <div class="card card-signin my-5">
-			<div class="card-body">
-			  <h5 class="card-title text-center">{{headerText}} </h5>
-           <form [formGroup]="forma" (ngSubmit)="onSubmit()"
-                    #registroForm="ngForm"
-                  class="form-signin">
-            
-             <div class="form-group" >
-                    <input type="text" 
+<div class="auth-wrapper">
+    <div class="col-sm-9 col-md-7 col-lg-6 mx-auto">
+        <div class="card" style="margin-top: 2rem; margin-bottom: 2rem;">
+            <div class="card-header">
+                <div class="card-icon-header">
+                    <i class="fa fa-user"></i>
+                    <span>{{headerText}}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="forma" (ngSubmit)="onSubmit()" #registroForm="ngForm">
+
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text"
                             class="form-control"
-                            placeholder="Nombre"  
+                            placeholder="Nombre"
                             formControlName="nombre"
-                            [ngClass]="{ 'is-invalid': !forma.controls['nombre'].valid && forma.controls['nombre'].touched }"
-                            >
-
-                    <div *ngIf="forma.get('nombre').errors?.required && forma.controls['nombre'].touched"
-                            class="small" style="color:red;" >
-                          El nombre es necesario.
-                      </div>
-                      <div *ngIf="forma.get('nombre').errors?.minlength && forma.controls['nombre'].touched"
-                            class="small" style="color:red;">
-                          Por lo menos 3 caracteres.
-                      </div>
-             </div>
-
-             <div class="form-group" >
-              <input type="text" 
-                      class="form-control"
-                      placeholder="Direccion"  
-                      formControlName="direccion"
-                      [ngClass]="{ 'is-invalid': !forma.controls['direccion'].valid && forma.controls['direccion'].touched }"
-                      >
-                </div>
-
-            <div class="form-group">
-				        <input type="text" 
-						            class="form-control "
-						            placeholder="Email"  
-                        formControlName="email"
-                        [ngClass]="{ 'is-invalid': !forma.controls['email'].valid && forma.controls['email'].touched }">
-                    <div *ngIf="forma.get('email').errors?.required && forma.controls['email'].touched"
-                          class="small" style="color:red;" >
-                        El email es necesario.
+                            [ngClass]="{ 'is-invalid': !forma.controls['nombre'].valid && forma.controls['nombre'].touched }">
+                        <div *ngIf="forma.get('nombre').errors?.required && forma.controls['nombre'].touched"
+                            class="small text-error">
+                            El nombre es necesario.
+                        </div>
+                        <div *ngIf="forma.get('nombre').errors?.minlength && forma.controls['nombre'].touched"
+                            class="small text-error">
+                            Por lo menos 3 caracteres.
+                        </div>
                     </div>
-                    <div *ngIf="forma.get('email').errors?.pattern && forma.controls['email'].touched"
-                          class="small" style="color:red;">
-                        Ingrese un email valido.
-                    </div>  
-                    
-                    <div *ngIf="forma.controls['email'].errors?.existe && forma.controls['email'].touched " class="small" style="color:red;">
-                        EL email ya está registrado
-                      </div>
-                      <div *ngIf="forma.controls['email'].pending && forma.controls['email'].touched" class="small" style="color:red;">
-                        Verificando el email...
-                      </div>
-                </div>
 
-                <div class="form-group" >
-                  <div *ngIf="forma.get('telefonoMovil').errors?.required && forma.controls['telefonoMovil'].touched"
-                        class="small" style="color:red;" >
-                    El celular es necesario.
-                  </div>
-                  <div *ngIf="(forma.get('telefonoMovil').errors?.maxlength || forma.get('telefonoMovil').errors?.minlength) && forma.controls['telefonoMovil'].touched"
-                        class="small" style="color:red;" >
-                        El celular debe tener 10 numeros.
-                  </div>
-                  <div *ngIf="forma.get('telefonoMovil').pattern && forma.controls['telefonoMovil'].touched"
-                      class="small" style="color:red;" >
-                      El celular debe tener solo numeros.
-                   </div>
-                  <input type="text" 
-                          class="form-control"
-                          placeholder="Celular"  
-                          formControlName="telefonoMovil"
-                          [ngClass]="{ 'is-invalid': !forma.controls['telefonoMovil'].valid && forma.controls['telefonoMovil'].touched }"
-                          >
-                          <div class="small" style="color:blue;">
-                            Ingrese el numero sin 0 ni 15 ni guiones ejemplo 3446123456
-                          </div>                          
-                  </div>    
-
-                  <div class="form-group" >
-                    <input type="text" 
+                    <div class="form-group">
+                        <label>Direccion</label>
+                        <input type="text"
                             class="form-control"
-                            placeholder="Telefono fijo"  
+                            placeholder="Direccion"
+                            formControlName="direccion"
+                            [ngClass]="{ 'is-invalid': !forma.controls['direccion'].valid && forma.controls['direccion'].touched }">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text"
+                            class="form-control"
+                            placeholder="Email"
+                            formControlName="email"
+                            [ngClass]="{ 'is-invalid': !forma.controls['email'].valid && forma.controls['email'].touched }">
+                        <div *ngIf="forma.get('email').errors?.required && forma.controls['email'].touched"
+                            class="small text-error">
+                            El email es necesario.
+                        </div>
+                        <div *ngIf="forma.get('email').errors?.pattern && forma.controls['email'].touched"
+                            class="small text-error">
+                            Ingrese un email valido.
+                        </div>
+                        <div *ngIf="forma.controls['email'].errors?.existe && forma.controls['email'].touched"
+                            class="small text-error">
+                            EL email ya esta registrado
+                        </div>
+                        <div *ngIf="forma.controls['email'].pending && forma.controls['email'].touched"
+                            class="small text-hint">
+                            Verificando el email...
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Celular</label>
+                        <div *ngIf="forma.get('telefonoMovil').errors?.required && forma.controls['telefonoMovil'].touched"
+                            class="small text-error">
+                            El celular es necesario.
+                        </div>
+                        <div *ngIf="(forma.get('telefonoMovil').errors?.maxlength || forma.get('telefonoMovil').errors?.minlength) && forma.controls['telefonoMovil'].touched"
+                            class="small text-error">
+                            El celular debe tener 10 numeros.
+                        </div>
+                        <div *ngIf="forma.get('telefonoMovil').pattern && forma.controls['telefonoMovil'].touched"
+                            class="small text-error">
+                            El celular debe tener solo numeros.
+                        </div>
+                        <input type="text"
+                            class="form-control"
+                            placeholder="Celular"
+                            formControlName="telefonoMovil"
+                            [ngClass]="{ 'is-invalid': !forma.controls['telefonoMovil'].valid && forma.controls['telefonoMovil'].touched }">
+                        <div class="small text-hint">
+                            Ingrese el numero sin 0 ni 15 ni guiones ejemplo 3446123456
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Telefono fijo</label>
+                        <input type="text"
+                            class="form-control"
+                            placeholder="Telefono fijo"
                             formControlName="telefonoFijo"
-                            [ngClass]="{ 'is-invalid': !forma.controls['telefonoFijo'].valid && forma.controls['telefonoFijo'].touched }"
-                            >  
-                        
-                      <div *ngIf="(forma.get('telefonoFijo').errors?.maxlength || forma.get('telefonoFijo').errors?.minlength) && forma.controls['telefonoMovil'].touched"
-                            class="small" style="color:red;" >
+                            [ngClass]="{ 'is-invalid': !forma.controls['telefonoFijo'].valid && forma.controls['telefonoFijo'].touched }">
+                        <div *ngIf="(forma.get('telefonoFijo').errors?.maxlength || forma.get('telefonoFijo').errors?.minlength) && forma.controls['telefonoMovil'].touched"
+                            class="small text-error">
                             El telefono debe tener 10 numeros.
-                      </div> 
-                      <div *ngIf="forma.get('telefonoFijo').errors?.pattern && forma.controls['telefonoFijo'].touched"
-                          class="small" style="color:red;" >
-                          El telefono debe tener solo numeros.
-                      </div>     
-                    </div>      
-				
-        <div class="row">
-          <div class="col-6">
-            <button [disabled]="!forma.valid" class="btn btn-lg btn-primary btn-block"  type="submit">Guardar</button>
-          </div>
-          <div class="col-6">
-              <button class="btn btn-lg btn-danger btn-block">Cancelar</button>
-          </div>
+                        </div>
+                        <div *ngIf="forma.get('telefonoFijo').errors?.pattern && forma.controls['telefonoFijo'].touched"
+                            class="small text-error">
+                            El telefono debe tener solo numeros.
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 1.5rem;">
+                        <div class="col-6">
+                            <button [disabled]="!forma.valid" class="btn btn-action btn-block" type="submit">
+                                <i class="fa fa-save" style="margin-right: 0.25rem;"></i> Guardar
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-action-secondary btn-block" type="button" [routerLink]="['/clientes']">
+                                <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-
-      </form>
-
-      
     </div>
-    
-    </div>
-      
-    </div>
-    
-    </div>
-    
-	</div>
-  </body>
+</div>

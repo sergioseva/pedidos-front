@@ -1,37 +1,42 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Libreria</a>
+<nav class="navbar navbar-expand-lg navbar-bookstore">
+    <a class="navbar-brand" [routerLink]="['home']">
+        <i class="fa fa-book" style="margin-right: 0.375rem;"></i>Libros Mario
+    </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-  <span class="navbar-toggler-icon"></span>
-</button>
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active" routerLinkActive="active">
-                <a class="nav-link" [routerLink]="['home']">Home </a>
+            <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" [routerLink]="['home']"><i class="fa fa-home" style="margin-right: 0.25rem;"></i> Inicio</a>
             </li>
             <li class="nav-item" routerLinkActive="active">
-                <a class="nav-link" [routerLink]="['libros']">Generar Pedido</a>
+                <a class="nav-link" [routerLink]="['libros']"><i class="fa fa-plus-circle" style="margin-right: 0.25rem;"></i> Generar Pedido</a>
             </li>
-            <!-- <li class="nav-item" routerLinkActive="active">
-                <a class="nav-link" [routerLink]="['pedido']">Pedido</a>
-            </li> -->
             <li class="nav-item" routerLinkActive="active">
-                <a class="nav-link" [routerLink]="['clientes']">Clientes</a>
+                <a class="nav-link" [routerLink]="['clientes']"><i class="fa fa-users" style="margin-right: 0.25rem;"></i> Clientes</a>
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Pedidos
+                    <i class="fa fa-clipboard" style="margin-right: 0.25rem;"></i> Pedidos
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" [routerLink]="['pedidos']">Consulta de pedidos de clientes</a>
-                  <a class="dropdown-item" [routerLink]="['pedidosdistribuidora']">Generar pedido a distribuidora</a>
+                    <a class="dropdown-item" [routerLink]="['pedidos']"><i class="fa fa-list-alt" style="margin-right: 0.375rem;"></i>Consulta de pedidos</a>
+                    <a class="dropdown-item" [routerLink]="['pedidosdistribuidora']"><i class="fa fa-truck" style="margin-right: 0.375rem;"></i>Pedido a distribuidora</a>
                 </div>
-              </li>
+            </li>
         </ul>
-        <button *ngIf="isLoggedIn$ | async" (click)="logout()" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Salir</button>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" (keyup.enter)="buscarLibro(textoABuscar.value)" #textoABuscar>
-            <button (click)="buscarLibro(textoABuscar.value)" class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+        <form class="form-inline my-2 my-lg-0" style="margin-right: 0.5rem;">
+            <div style="position: relative;">
+                <input class="form-control" type="search" placeholder="Buscar libro por ISBN..." aria-label="Search"
+                    (keyup.enter)="buscarLibro(textoABuscar.value)" #textoABuscar
+                    style="border-radius: 50rem; padding-left: 2.25rem; min-width: 220px;">
+                <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);"></i>
+            </div>
         </form>
+        <button *ngIf="isLoggedIn$ | async" (click)="logout()" class="btn btn-outline-danger btn-sm" type="button">
+            <i class="fa fa-sign-out" style="margin-right: 0.25rem;"></i> Salir
+        </button>
     </div>
 </nav>

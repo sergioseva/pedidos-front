@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { PedidoModel } from 'src/app/models/pedido.model';
 import { PedidosService } from 'src/app/providers/pedidos.service';
 import { PedidoItemModel } from '../../models/pedido.item';
@@ -7,6 +7,7 @@ import { ClientesServiceService } from '../../providers/clientes-service.service
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { PrintPedidoService } from '../../providers/print-pedido.service';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-pedido',
@@ -16,14 +17,19 @@ import { PrintPedidoService } from '../../providers/print-pedido.service';
 export class PedidoComponent implements OnInit {
 
   forma: FormGroup;
-  private pedido: PedidoModel;
+  pedido: PedidoModel;
   pitems: PedidoItemModel[];
-  private clienteSeleccionado: ClienteModel;
-  private clientes: any [];
+  clienteSeleccionado: ClienteModel;
+  clientes: any [];
+  modalRef: BsModalRef;
+  itemModalRef: BsModalRef;
+  showNuevoCliente = false;
+  nuevoCliente: ClienteModel = new ClienteModel();
 
   constructor( private pedidosService: PedidosService,
                private clientesService: ClientesServiceService,
-               private printService: PrintPedidoService) {
+               private printService: PrintPedidoService,
+               private modalService: BsModalService) {
                 this.buildForm();
 
   }
@@ -38,6 +44,11 @@ export class PedidoComponent implements OnInit {
                             ]),
     });
 
+  }
+
+  get seniaExceedsTotal(): boolean {
+    const senia = Number(this.forma.controls.senia.value);
+    return senia > 0 && this.pedido && senia > this.pedido.total;
   }
 
   generarNuevoPedido(){
@@ -96,7 +107,78 @@ export class PedidoComponent implements OnInit {
   }
 
   onImprimir(){
-      this.printService.imprimirPedido(this.pedido.id);
+      this.closeModal();
+      setTimeout(() => {
+        this.printService.imprimirPedido(this.pedido.id);
+      }, 300);
+  }
+
+  toggleNuevoCliente() {
+    this.showNuevoCliente = !this.showNuevoCliente;
+    if (this.showNuevoCliente) {
+      this.nuevoCliente = new ClienteModel();
+    }
+  }
+
+  guardarNuevoCliente() {
+    Swal.fire({
+      title: 'Espere',
+      text: 'Guardando cliente...',
+      type: 'info',
+      allowOutsideClick: false
+    });
+    Swal.showLoading();
+
+    this.clientesService.insertCliente(this.nuevoCliente).subscribe(
+      (resp: any) => {
+        Swal.close();
+        const saved: any = resp;
+        saved.label = `${saved.nombre} - ${saved.telefonoMovil}`;
+        this.clientes.push(saved);
+        this.clienteSeleccionado = saved;
+        this.forma.controls.cliente.setValue(saved);
+        this.showNuevoCliente = false;
+      },
+      err => {
+        Swal.fire({
+          title: 'Cliente',
+          text: 'Error al guardar el cliente',
+          type: 'error'
+        });
+      }
+    );
+  }
+
+  openItemModal(template: TemplateRef<any>) {
+    this.itemModalRef = this.modalService.show(template, {
+      class: 'modal-lg',
+      backdrop: 'static',
+      keyboard: false
+    });
+  }
+
+  closeItemModal() {
+    if (this.itemModalRef) {
+      this.itemModalRef.hide();
+    }
+  }
+
+  onItemAdded() {
+    // Keep modal open for adding more items — user closes when done
+  }
+
+  openDetalleModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template, {
+      class: 'modal-lg',
+      backdrop: 'static',
+      keyboard: false
+    });
+  }
+
+  closeModal() {
+    if (this.modalRef) {
+      this.modalRef.hide();
+    }
   }
 
 }

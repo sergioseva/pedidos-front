@@ -1,111 +1,102 @@
-<body>
-	<div class="container">
-	  <div class="row">
-		<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-		  <div class="card card-signin my-5">
-			<div class="card-body">
-			  <h5 class="card-title text-center">Registrar nuevo usuario</h5>
-              <form [formGroup]="formRegistrar" (ngSubmit)="onSubmit()"
-                    #registroForm="ngForm"
-                  class="form-signin">
-                
-                  <div class="form-group is-invalid">
-				  <input type="text" 
-						  class="form-control "
-						  placeholder="Email"  
-                          formControlName="email"
-                          [ngClass]="{ 'is-invalid': !formRegistrar.controls['email'].valid }">
-                    <div *ngIf="formRegistrar.get('email').errors?.required"
-                          class="small" style="color:red;" >
-                        El email es necesario.
-                    </div>
-                    <div *ngIf="formRegistrar.get('email').errors?.pattern"
-                          class="small" style="color:red;">
-                        Ingrese un email valido.
-                    </div>  
-                    
-                    <div *ngIf="formRegistrar.controls['email'].errors?.existe" class="small" style="color:red;">
-                        EL email ya está registrado
-                      </div>
-                      <div *ngIf="formRegistrar.controls['email'].pending" class="small" style="color:red;">
-                        Verificando el email...
-                      </div>
-                </div>
-                
-                <div class="form-group" >
-                    <input type="text" 
+<div class="auth-wrapper">
+    <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="auth-brand">
+            <i class="fa fa-book"></i>
+            <h3>Libros Mario</h3>
+        </div>
+        <div class="card card-signin">
+            <div class="card-body">
+                <h5 class="card-title text-center">Registrar nuevo usuario</h5>
+                <form [formGroup]="formRegistrar" (ngSubmit)="onSubmit()"
+                    #registroForm="ngForm" class="form-signin">
+
+                    <div class="form-group is-invalid">
+                        <input type="text"
                             class="form-control"
-                            placeholder="Nombre"  
+                            placeholder="Email"
+                            formControlName="email"
+                            [ngClass]="{ 'is-invalid': !formRegistrar.controls['email'].valid }">
+                        <div *ngIf="formRegistrar.get('email').errors?.required"
+                            class="small text-error">
+                            El email es necesario.
+                        </div>
+                        <div *ngIf="formRegistrar.get('email').errors?.pattern"
+                            class="small text-error">
+                            Ingrese un email valido.
+                        </div>
+                        <div *ngIf="formRegistrar.controls['email'].errors?.existe"
+                            class="small text-error">
+                            EL email ya esta registrado
+                        </div>
+                        <div *ngIf="formRegistrar.controls['email'].pending"
+                            class="small text-hint">
+                            Verificando el email...
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text"
+                            class="form-control"
+                            placeholder="Nombre"
                             formControlName="name"
-                            [ngClass]="{ 'is-invalid': !formRegistrar.controls['name'].valid }"
-                            >
+                            [ngClass]="{ 'is-invalid': !formRegistrar.controls['name'].valid }">
+                        <div *ngIf="formRegistrar.get('name').errors?.required"
+                            class="small text-error">
+                            El nombre es necesario.
+                        </div>
+                        <div *ngIf="formRegistrar.get('name').errors?.minlength"
+                            class="small text-error">
+                            Por lo menos 3 caracteres.
+                        </div>
+                    </div>
 
-                    <div *ngIf="formRegistrar.get('name').errors?.required"
-                            class="small" style="color:red;" >
-                          El nombre es necesario.
-                      </div>
-                      <div *ngIf="formRegistrar.get('name').errors?.minlength"
-                            class="small" style="color:red;">
-                          Por lo menos 3 caracteres.
-                      </div>
-                </div>
-
-                  <div class="form-group">
-                    <input type="text" 
+                    <div class="form-group">
+                        <input type="text"
                             class="form-control"
                             formControlName="username"
                             placeholder="Usuario"
-                            [ngClass]="{ 'is-invalid': !formRegistrar.controls['username'].valid }"
-                             >     
-                             
-                             <div *ngIf="formRegistrar.controls['username'].errors?.existe" class="small" style="color:red;">
-                                EL usuario ya está registrado
-                              </div>
-                              <div *ngIf="formRegistrar.controls['username'].pending" class="small" style="color:red;">
-                                Verificando el usuario...
-                              </div>
-                  </div>
-  
-				<div class="form-group">
-				  <input type="password" 
-					  class="form-control" 
-					  formControlName="password" 
-                      placeholder="Password"
-                      [ngClass]="{ 'is-invalid': !formRegistrar.controls['password'].valid }"
-                     >
-                </div>
+                            [ngClass]="{ 'is-invalid': !formRegistrar.controls['username'].valid }">
+                        <div *ngIf="formRegistrar.controls['username'].errors?.existe"
+                            class="small text-error">
+                            EL usuario ya esta registrado
+                        </div>
+                        <div *ngIf="formRegistrar.controls['username'].pending"
+                            class="small text-hint">
+                            Verificando el usuario...
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <input type="password" 
-                        class="form-control" 
-                        formControlName="password2" 
-                        placeholder="Repita la password"
-                        [ngClass]="{ 'is-invalid': !formRegistrar.controls['password2'].valid }"
-                        >
+                    <div class="form-group">
+                        <input type="password"
+                            class="form-control"
+                            formControlName="password"
+                            placeholder="Password"
+                            [ngClass]="{ 'is-invalid': !formRegistrar.controls['password'].valid }">
+                    </div>
 
-                  <div *ngIf="formRegistrar.get('password2').errors?.noiguales"
-                        class="small" style="color:red;">
-                      Las passwords no coinciden
-                  </div>
-                  </div>
-                
-                <div class="form-group">
-                    <label for="role">Rol</label>
-                    <select   formControlName="role" class="form-control" id="role"
-                    [ngClass]="{ 'is-invalid': !formRegistrar.controls['role'].valid }"
-                    >
-                      <option *ngFor="let role of roles" [value]="role.codigo" >{{role.role}}</option>
-                    </select>
-                </div>
-  
-				<div class="custom-control custom-checkbox mb-3">
-				  <input type="checkbox" class="custom-control-input" id="customCheck1">
-				 </div>
-				<button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Registrar</button>
-			</form>
-			</div>
-		  </div>
-		</div>
-	  </div>
-	</div>
-  </body>
+                    <div class="form-group">
+                        <input type="password"
+                            class="form-control"
+                            formControlName="password2"
+                            placeholder="Repita la password"
+                            [ngClass]="{ 'is-invalid': !formRegistrar.controls['password2'].valid }">
+                        <div *ngIf="formRegistrar.get('password2').errors?.noiguales"
+                            class="small text-error">
+                            Las passwords no coinciden
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">Rol</label>
+                        <select formControlName="role" class="form-control" id="role"
+                            [ngClass]="{ 'is-invalid': !formRegistrar.controls['role'].valid }">
+                            <option *ngFor="let role of roles" [value]="role.codigo">{{role.role}}</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Registrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

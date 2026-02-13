@@ -23,6 +23,7 @@ export class PedidosComponent implements OnInit {
 
   ngOnInit() {
       this.dateFilter(0);
+      this.buscarTermino('');
   }
 
   imprimir(pedido: PedidoModel) {
@@ -49,9 +50,8 @@ export class PedidosComponent implements OnInit {
     let today = new Date();
     past.setDate(past.getDate()-days);
     today.setDate(today.getDate() + 1);
-    console.log(past);
     this.fromDate = this.datePipe.transform(past, 'yyyy-MM-dd');
-    this.toDate=this.datePipe.transform(today, 'yyyy-MM-dd');
-    console.log(this.fromDate); 
+    this.toDate = this.datePipe.transform(today, 'yyyy-MM-dd');
+    this.buscarTermino('');
   }
 }

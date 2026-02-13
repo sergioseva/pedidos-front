@@ -1,11 +1,7 @@
-#tabla-pedidos {
-    font-size: 12px;
-}
-
 thead {
-    font-size: 12px;
+    font-size: 0.8rem;
 }
 
 tbody {
-    font-size: 12px;
+    font-size: 0.8rem;
 }

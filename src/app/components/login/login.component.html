@@ -1,51 +1,48 @@
-<body>
-	<div class="container">
-	  <div class="row">
-		<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-		  <div class="card card-signin my-5">
-			<div class="card-body">
-			  <h5 class="card-title text-center">Ingresar</h5>
-			  <form (ngSubmit)="login( f )"
-			 	 #f="ngForm" class="form-signin">
-				<div class="form-group">
-				  <label for="inputUsername">Usuario</label>
-				  <input type="text" 
-						  id="inputUsername" 
-						  class="form-control"
-						  name="username"  
-						  placeholder="Usuario"  
-						  [(ngModel)]="usuario.username"
-						  required autofocus>
-						  
-				</div>
-  
-				<div class="form-group">
-				  <label for="inputPassword">Password</label>
-				  <input type="password" 
-					  id="inputPassword" 
-					  class="form-control" 
-					  name="password" 
-					  [(ngModel)]="usuario.password"
-					  required
-					  minlength="6"
-					  placeholder="Password" >
-				</div>
-  
-				<div class="custom-control custom-checkbox mb-3">
-				  <input type="checkbox" class="custom-control-input" id="customCheck1">
-				  <label class="custom-control-label" for="customCheck1">Remember password</label>
-				</div>
-				<div>
-					<a routerLink="/registro" class="txt1">
-						Registrar nuevo usuario
-					</a>
-				</div>
-				<button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign in</button>
+<div class="auth-wrapper">
+    <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="auth-brand">
+            <i class="fa fa-book"></i>
+            <h3>Libros Mario</h3>
+        </div>
+        <div class="card card-signin">
+            <div class="card-body">
+                <h5 class="card-title text-center">Ingresar</h5>
+                <form (ngSubmit)="login( f )" #f="ngForm" class="form-signin">
+                    <div class="form-group">
+                        <label for="inputUsername">Usuario</label>
+                        <input type="text"
+                            id="inputUsername"
+                            class="form-control"
+                            name="username"
+                            placeholder="Ingrese su usuario"
+                            [(ngModel)]="usuario.username"
+                            required autofocus>
+                    </div>
 
-			</form>
-			</div>
-		  </div>
-		</div>
-	  </div>
-	</div>
-  </body>
+                    <div class="form-group">
+                        <label for="inputPassword">Password</label>
+                        <input type="password"
+                            id="inputPassword"
+                            class="form-control"
+                            name="password"
+                            [(ngModel)]="usuario.password"
+                            required
+                            minlength="6"
+                            placeholder="Ingrese su password">
+                    </div>
+
+                    <div class="custom-control custom-checkbox mb-3">
+                        <input type="checkbox" class="custom-control-input" id="customCheck1">
+                        <label class="custom-control-label" for="customCheck1">Recordar password</label>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <a routerLink="/registro" class="txt1">
+                            Registrar nuevo usuario
+                        </a>
+                    </div>
+                    <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Ingresar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

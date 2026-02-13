@@ -21,6 +21,7 @@ import localeAr from '@angular/common/locales/es-AR';
 registerLocaleData(localeAr);
 //pagination
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { ModalModule } from 'ngx-bootstrap/modal';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegistroComponent } from './components/registro/registro.component';
 import { LoginComponent } from './components/login/login.component';
@@ -55,7 +56,7 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
              resolve(true);
            }),
            catchError((x: { status: number }, caught: Observable<void>): ObservableInput<{}> => {
-             config.baseUrl = 'https://pedidos.librosmario.store:8443';
+             config.baseUrl = 'http://localhost:8080';
              config.nombre = 'Test Libros Mario Gualeguaychú';
              config.direccion = 'Test 3 de Caballeria 761 - Gualeguaychu';
              config.telefono = 'Test Telefono: 425900';
@@ -100,6 +101,7 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
     HttpClientJsonpModule,
     RouterModule.forRoot(ROUTES),
     PaginationModule.forRoot(),
+    ModalModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,
     Ng2SmartTableModule,
