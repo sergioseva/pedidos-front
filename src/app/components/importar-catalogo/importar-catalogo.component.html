@@ -1,0 +1,68 @@
+<div class="container" style="padding-top: 1rem;">
+    <div class="section-title">
+        <i class="fa fa-upload"></i>
+        Importar Catalogo
+    </div>
+
+    <div class="search-row" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+        <input type="file" class="form-control" accept=".xlsx,.xls,.csv"
+               (change)="onFileSelected($event)"
+               style="flex: 1; max-width: 400px;">
+        <button class="btn btn-action" [disabled]="!selectedFile || uploading" (click)="importar()">
+            <i class="fa fa-upload" style="margin-right: 0.375rem;"></i>Importar
+        </button>
+    </div>
+
+    <table class="table" *ngIf="!loading && !error && statistics?.length > 0">
+        <thead>
+            <tr>
+                <th scope="col">Proceso</th>
+                <th scope="col">Inicio</th>
+                <th scope="col">Fin</th>
+                <th scope="col">Duracion</th>
+                <th scope="col">Registros</th>
+                <th scope="col">Errores</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let stat of statistics">
+                <td>{{stat.proceso}}</td>
+                <td>{{stat.starttime | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                <td>{{stat.endtime | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                <td>{{calcularDuracion(stat.starttime, stat.endtime)}}</td>
+                <td style="text-align: right;">{{stat.registros | number:'1.0':'es-AR'}}</td>
+                <td style="text-align: right;">
+                    <span [style.color]="stat.errores > 0 ? 'var(--danger)' : 'var(--success)'"
+                          [style.font-weight]="stat.errores > 0 ? '600' : '400'">
+                        {{stat.errores | number:'1.0':'es-AR'}}
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div *ngIf="!loading && !error && totalItems > pageSize" style="display: flex; justify-content: center; margin-top: 1rem;">
+        <pagination [totalItems]="totalItems"
+                    [itemsPerPage]="pageSize"
+                    [(ngModel)]="currentPage"
+                    (pageChanged)="loadPage($event.page)"
+                    previousText="Anterior"
+                    nextText="Siguiente"
+                    maxSize="5">
+        </pagination>
+    </div>
+
+    <div *ngIf="!loading && !error && statistics?.length === 0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>No hay estadisticas de importacion</h4>
+    </div>
+
+    <div *ngIf="loading" class="alert alert-info text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading"><i class="fa fa-spinner fa-spin" style="margin-right: 0.375rem;"></i>Cargando</h4>
+        <p class="mb-0">Espere por favor</p>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading"><i class="fa fa-times-circle" style="margin-right: 0.375rem;"></i>Error</h4>
+        <p class="mb-0">{{errMessage}}</p>
+    </div>
+</div>

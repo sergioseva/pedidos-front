@@ -11,12 +11,14 @@ import { Observable } from 'rxjs';
 export class NavbarComponent implements OnInit {
 
   isLoggedIn$: Observable<boolean>;
-  
+  isAdmin$: Observable<boolean>;
+
   constructor(private router: Router,
               private auth: AuthService) { }
 
   ngOnInit() {
     this.isLoggedIn$ = this.auth.isLoggedIn;
+    this.isAdmin$ = this.auth.isAdmin$;
   }
 
   buscarLibro(termino:string) {

@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UsuarioModel } from '../models/usuario.model';
 
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
+import { HttpHeaders } from '@angular/common/http';
 import * as jwt_decode from 'jwt-decode';
 import { ConfigService } from '../providers/config.service';
 
@@ -14,9 +15,14 @@ export class AuthService {
 
   private url = '//localhost:8080';
   private loggedIn = new BehaviorSubject<boolean>(false); // {1}
+  private adminSubject = new BehaviorSubject<boolean>(false);
 
   get isLoggedIn() {
     return this.loggedIn.asObservable(); // {2}
+  }
+
+  get isAdmin$() {
+    return this.adminSubject.asObservable();
   }
 
   userToken: string;
@@ -32,12 +38,17 @@ export class AuthService {
   constructor( private http: HttpClient,private config: ConfigService ) {
     this.leerToken();
     this.url = config.baseUrl;
+    if (this.estaAutenticado()) {
+      this.fetchUserProfile();
+    }
   }
 
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
     this.loggedIn.next(false);
+    this.adminSubject.next(false);
   }
 
   login( usuario: UsuarioModel ) {
@@ -54,6 +65,7 @@ export class AuthService {
       map( resp => {
         this.guardarToken( resp['accessToken'] );
         this.loggedIn.next(true);
+        this.fetchUserProfile();
         return resp;
       })
     );
@@ -130,9 +142,31 @@ export class AuthService {
 
     if (decoded.exp === undefined) return null;
 
-    const date = new Date(0); 
+    const date = new Date(0);
     date.setUTCSeconds(decoded.exp);
     return date;
+  }
+
+  fetchUserProfile() {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.userToken}`);
+    this.http.get(`${this.url}/api/user/me`, { headers }).subscribe(
+      (user: any) => {
+        const roles: any[] = user.roles || user.authorities || [];
+        const isAdmin = roles.some(r => {
+          const roleName = typeof r === 'string' ? r : (r.roleName || r.name || r.authority || '');
+          return roleName === 'ROLE_ADMIN';
+        });
+        localStorage.setItem('userRole', isAdmin ? 'ROLE_ADMIN' : 'ROLE_USER');
+        this.adminSubject.next(isAdmin);
+      },
+      err => {
+        this.adminSubject.next(false);
+      }
+    );
+  }
+
+  isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'ROLE_ADMIN';
   }
 
 }

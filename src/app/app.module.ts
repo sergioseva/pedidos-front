@@ -39,6 +39,7 @@ import { DisableControlDirective } from './directives/disable-control.directive'
 import { PrintLayoutComponent } from './components/impresiones/print-layout/print-layout.component';
 import { PedidoImpresoComponent } from './components/impresiones/pedido-impreso/pedido-impreso.component';
 import { PedidoDistribuidoraComponent } from './components/pedido-distribuidora/pedido-distribuidora.component';
+import { ImportarCatalogoComponent } from './components/importar-catalogo/importar-catalogo.component';
 
 function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>) {
   return (): Promise<boolean> => {
@@ -96,6 +97,7 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
     PrintLayoutComponent,
     PedidoImpresoComponent,
     PedidoDistribuidoraComponent,
+    ImportarCatalogoComponent,
   ],
 
   imports: [

@@ -12,7 +12,8 @@ import { PedidoComponent } from './components/pedido/pedido.component';
 import { PrintLayoutComponent } from './components/impresiones/print-layout/print-layout.component';
 import { PedidoImpresoComponent } from './components/impresiones/pedido-impreso/pedido-impreso.component';
 import { PedidoDistribuidoraComponent } from './components/pedido-distribuidora/pedido-distribuidora.component';
-
+import { ImportarCatalogoComponent } from './components/importar-catalogo/importar-catalogo.component';
+import { AdminGuard } from './guards/admin.guard';
 
 
 export const ROUTES: Routes = [
@@ -23,6 +24,7 @@ export const ROUTES: Routes = [
     { path: 'clientes/:page', component: ClientesComponent, canActivate: [AuthGuard] },
     { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
     { path: 'pedidosdistribuidora', component: PedidoDistribuidoraComponent, canActivate: [AuthGuard] },
+    { path: 'importarcatalogo', component: ImportarCatalogoComponent, canActivate: [AuthGuard] },
     { path: 'pedido', component: PedidoComponent, canActivate: [AuthGuard] },
     { path: 'registro', component: RegistroComponent },
     { path: 'login', component: LoginComponent },
