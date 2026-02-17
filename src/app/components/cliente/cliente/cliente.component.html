@@ -71,7 +71,7 @@
                             class="small text-error">
                             El celular debe tener 10 numeros.
                         </div>
-                        <div *ngIf="forma.get('telefonoMovil').pattern && forma.controls['telefonoMovil'].touched"
+                        <div *ngIf="forma.get('telefonoMovil').errors?.pattern && forma.controls['telefonoMovil'].touched"
                             class="small text-error">
                             El celular debe tener solo numeros.
                         </div>

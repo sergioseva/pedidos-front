@@ -77,7 +77,7 @@ export class LibrosComponent implements OnInit {
   };
   constructor(private librosService: LibrosService,
               private pedidosService: PedidosService,
-              private printService: PrintPedidoService) {
+              public printService: PrintPedidoService) {
 
    // this.source = new LocalDataSource(this.libros);
    }

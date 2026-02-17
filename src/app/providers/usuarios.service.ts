@@ -10,14 +10,14 @@ import { ConfigService } from './config.service';
 })
 export class UsuariosService {
 
-  private URLUsuariosService:string="//localhost:8080/api";
+  private URLUsuariosService:string="/api";
 
   constructor(private http: HttpClient,
               private auth: AuthService,
               private chttp: CustomHttpClientService,
               private config: ConfigService) {
 console.log('en usuarios service');
-                this.URLUsuariosService = `${config.baseUrl}/api`;
+                this.URLUsuariosService = config.baseUrl;
                 console.log(this.URLUsuariosService);
   }
 

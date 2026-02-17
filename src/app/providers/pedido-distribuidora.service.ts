@@ -9,7 +9,7 @@ import { ConfigService } from './config.service';
 })
 
 export class PedidoDistribuidoraService {
-  private URLPedidoItemsService = '//localhost:8080/pedidodistribuidora';
+  private URLPedidoItemsService = '/api/pedidodistribuidora';
   constructor(private http: HttpClient,
     private auth: AuthService,
     private chttp: CustomHttpClientService,

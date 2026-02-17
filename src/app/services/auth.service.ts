@@ -13,7 +13,7 @@ import { ConfigService } from '../providers/config.service';
 })
 export class AuthService {
 
-  private url = '//localhost:8080';
+  private url = '/api';
   private loggedIn = new BehaviorSubject<boolean>(false); // {1}
   private adminSubject = new BehaviorSubject<boolean>(false);
 
@@ -59,7 +59,7 @@ export class AuthService {
     };
 
     return this.http.post(
-      `${ this.url }/api/auth/login`,
+      `${ this.url }/auth/login`,
       authData
     ).pipe(
       map( resp => {
@@ -80,7 +80,7 @@ export class AuthService {
     };
 
     return this.http.post(
-      `${ this.url }/api/auth/signup`,
+      `${ this.url }/auth/signup`,
       authData
     ).pipe(
       map( resp => {
@@ -149,7 +149,7 @@ export class AuthService {
 
   fetchUserProfile() {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.userToken}`);
-    this.http.get(`${this.url}/api/user/me`, { headers }).subscribe(
+    this.http.get(`${this.url}/user/me`, { headers }).subscribe(
       (user: any) => {
         const roles: any[] = user.roles || user.authorities || [];
         const isAdmin = roles.some(r => {

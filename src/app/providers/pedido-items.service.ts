@@ -10,7 +10,7 @@ import { ConfigService } from './config.service';
 })
 export class PedidoItemsService {
 
-  private URLPedidoItemsService = '//localhost:8080/librospedidos';
+  private URLPedidoItemsService = '/api/librospedidos';
 
   constructor(private http: HttpClient,
               private auth: AuthService,

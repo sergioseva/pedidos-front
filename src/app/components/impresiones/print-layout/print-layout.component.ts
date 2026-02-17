@@ -8,9 +8,9 @@ import { ConfigService } from '../../../providers/config.service';
 })
 export class PrintLayoutComponent implements OnInit {
 
-  private nombre:string;
-  private direccion: string;
-  private telefono:string;
+  nombre: string;
+  direccion: string;
+  telefono: string;
 
   constructor(private config: ConfigService) {
     this.nombre = `${config.nombre}`;

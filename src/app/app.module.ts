@@ -41,7 +41,7 @@ import { PedidoImpresoComponent } from './components/impresiones/pedido-impreso/
 import { PedidoDistribuidoraComponent } from './components/pedido-distribuidora/pedido-distribuidora.component';
 import { ImportarCatalogoComponent } from './components/importar-catalogo/importar-catalogo.component';
 
-function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>) {
+export function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>) {
   return (): Promise<boolean> => {
     return new Promise<boolean>((resolve: (a: boolean) => void): void => {
        http.get('./config.json')
@@ -57,11 +57,7 @@ function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>)
              resolve(true);
            }),
            catchError((x: { status: number }, caught: Observable<void>): ObservableInput<{}> => {
-             const origin = window.location.origin;
-             const host = window.location.hostname;
-             config.baseUrl = host === 'localhost'
-               ? 'http://localhost:8080'
-               : 'https://pedidos.librosmario.store:8443';
+             config.baseUrl = '/api';
              config.nombre = 'Libros Mario Gualeguaychú';
              config.direccion = '3 de Caballeria 761 - Gualeguaychu';
              config.telefono = 'Telefono: 425900';

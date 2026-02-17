@@ -15,7 +15,7 @@ import { ClienteModel } from '../models/cliente.model';
 export class PedidosService {
 
 
-  private URLPedidosService = '//localhost:8080/pedidos';
+  private URLPedidosService = '/api/pedidos';
   private pedidosSource = new BehaviorSubject(new PedidoModel());
   currentPedido = this.pedidosSource.asObservable();
 

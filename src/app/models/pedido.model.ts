@@ -2,6 +2,7 @@ import { PedidoItemModel } from './pedido.item';
 import { ClienteModel } from './cliente.model';
 export class PedidoModel {
     id: number;
+    fecha: Date;
     senia: number;
     total = 0 ;
     observaciones: string;

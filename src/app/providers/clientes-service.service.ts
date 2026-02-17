@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 })
 export class ClientesServiceService {
 
-  private URLClientesService:string="//localhost:8080/clientes";
+  private URLClientesService:string="/api/clientes";
 
   constructor(private http: CustomHttpClientService,
               private config: ConfigService) {

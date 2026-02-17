@@ -13,7 +13,7 @@ import { ConfigService } from './config.service';
 export class LibrosService {
 
 
-  private  URLLibrosService = '//localhost:8080/catalogos';
+  private  URLLibrosService = '/api/catalogos';
   private  URLOpenLibraryPre = 'https://openlibrary.org/api/books?bibkeys=ISBN:';
   private  URLOpenLibraryPost = '&jscmd=data';
   

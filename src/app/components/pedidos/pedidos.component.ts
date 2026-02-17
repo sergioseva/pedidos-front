@@ -19,7 +19,7 @@ export class PedidosComponent implements OnInit {
   error: boolean=false;
   errMessage:string;
 
-  constructor(private printService: PrintPedidoService, private ps: PedidosService, private datePipe: DatePipe) { }
+  constructor(public printService: PrintPedidoService, private ps: PedidosService, private datePipe: DatePipe) { }
 
   ngOnInit() {
       this.dateFilter(0);

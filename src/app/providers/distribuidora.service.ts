@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 })
 
 export class DistribuidoraService {
-  private URLDistribuidorasService = '//localhost:8080/distribuidoras';
+  private URLDistribuidorasService = '/api/distribuidoras';
   constructor(private http: HttpClient,
     private auth: AuthService,
     private chttp: CustomHttpClientService,
