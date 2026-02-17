@@ -57,9 +57,12 @@ export class ImportarCatalogoComponent implements OnInit {
       },
       err => {
         this.uploading = false;
+        const mensaje = err.status === 413
+          ? 'El archivo es demasiado grande. El tamaño máximo permitido es 20MB.'
+          : 'Error al importar el catalogo';
         Swal.fire({
           title: 'Error',
-          text: 'Error al importar el catalogo',
+          text: mensaje,
           type: 'error'
         });
       }
