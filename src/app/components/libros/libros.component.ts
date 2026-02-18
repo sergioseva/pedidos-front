@@ -91,10 +91,9 @@ export class LibrosComponent implements OnInit {
   }
 
   onCreateConfirm(event: any){
-    //const libro: LibroModel = event.newData;
     this.librosService.insertLibro(event.newData)
             .subscribe(
-              resp => {event.confirm.resolve(); },
+              resp => {event.confirm.resolve(resp); },
               err => {event.confirm.reject(); }
             );
   }

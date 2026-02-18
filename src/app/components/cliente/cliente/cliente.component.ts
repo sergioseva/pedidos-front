@@ -75,7 +75,7 @@ export class ClienteComponent implements OnInit {
     let peticion: Observable<any>;
 
     if( this.id !== 'nuevo' ){
-      peticion = this.cs.updateCliente( this.href , this.cliente);
+      peticion = this.cs.updateCliente( this.id , this.cliente);
     } else {
       peticion = this.cs.insertCliente(this.cliente);
     }

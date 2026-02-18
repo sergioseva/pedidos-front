@@ -66,7 +66,7 @@ export class ClientesServiceService {
   }
 
   updateCliente(id: any , cliente: ClienteModel) {
-    return this.http.put( id , cliente);
+    return this.http.put( `${ this.URLClientesService }/${id}` , cliente);
   }
 
   deleteCliente(id: any) {
