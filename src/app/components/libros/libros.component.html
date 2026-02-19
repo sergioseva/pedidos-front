@@ -45,6 +45,13 @@
           </div>
         </div>
 
+        <div *ngIf="loading" class="alert alert-info text-center mt-3 animated fadeIn faster">
+            <h4 class="alert-heading"><i class="fa fa-search" style="margin-right: 0.375rem;"></i>Buscando</h4>
+            <p>
+                <i class="fa fa-spinner fa-spin fa-2x"></i>
+            </p>
+        </div>
+
         <ng2-smart-table [settings]="settings" [source]="libros"
                         (createConfirm)="onCreateConfirm($event)"
                         (deleteConfirm)="onDeleteConfirm($event)"

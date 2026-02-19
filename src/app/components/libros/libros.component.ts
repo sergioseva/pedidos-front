@@ -18,6 +18,7 @@ export class LibrosComponent implements OnInit {
   libros: LibroModel[];
   cantItemsPedido = 0;
   pedidoFinalizado = false;
+  loading = false;
 
   settings = {
     noDataMessage: 'no hay registros',
@@ -134,10 +135,15 @@ export class LibrosComponent implements OnInit {
     this.pedidosService.addPedidoItem(pi);
   }
   buscarLibros(termino: string) {
+    this.loading = true;
     this.librosService.buscarLibros(termino).subscribe(
       (libros: any[]) => {
         console.log(libros);
         this.libros = libros;
+        this.loading = false;
+      },
+      () => {
+        this.loading = false;
       }
     );
 }

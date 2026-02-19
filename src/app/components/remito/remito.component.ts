@@ -7,7 +7,7 @@ import { DistribuidoraService } from '../../providers/distribuidora.service';
 import { LibrosService } from '../../providers/libros.service';
 import { LibroModel } from '../../models/libro.model';
 import { PedidoItemModel } from '../../models/pedido.item';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { PrintRemitoService } from '../../providers/print-remito.service';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
@@ -25,6 +25,7 @@ export class RemitoComponent implements OnInit {
   distribuidoraSeleccionada: DistribuidoraModel;
   libros: LibroModel[];
   cantItemsRemito = 0;
+  loading = false;
   modalRef: BsModalRef;
   itemModalRef: BsModalRef;
 
@@ -72,7 +73,7 @@ export class RemitoComponent implements OnInit {
 
   private buildForm() {
     this.forma = new FormGroup({
-      'distribuidora': new FormControl(''),
+      'distribuidora': new FormControl(null, Validators.required),
       'observaciones': new FormControl(''),
     });
   }
@@ -154,9 +155,14 @@ export class RemitoComponent implements OnInit {
   }
 
   buscarLibros(termino: string) {
+    this.loading = true;
     this.librosService.buscarLibros(termino).subscribe(
       (libros: any[]) => {
         this.libros = libros;
+        this.loading = false;
+      },
+      () => {
+        this.loading = false;
       }
     );
   }
