@@ -34,6 +34,7 @@
                     <div class="form-group" style="margin-bottom: 0;">
                         <ng-select [items]="distribuidoras"
                             (change)="onChange($event,i)"
+                            appendTo="body"
                         ></ng-select>
                     </div>
                 </td>
@@ -53,6 +54,7 @@
             <ng-select [items]="distribuidoras"
                 [(ngModel)]="bulkDistribuidora"
                 placeholder="Distribuidora..."
+                appendTo="body"
             ></ng-select>
         </div>
         <button class="btn btn-action" [disabled]="!bulkDistribuidora" (click)="confirmarSeleccionados()">

@@ -54,7 +54,7 @@ export class LibrosComponent implements OnInit {
       },
       precio: {
         title: 'Precio',
-         valuePrepareFunction: (value) => Intl.NumberFormat('es-AR',{style:'currency', currency: 'ARS'}).format(value)
+         valuePrepareFunction: (value) => '$ ' + Intl.NumberFormat('es-AR',{maximumFractionDigits: 0}).format(value)
       },
       editorial: {
         title: 'Editorial'

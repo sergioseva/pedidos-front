@@ -1,0 +1,81 @@
+<form [formGroup]="forma">
+    <div class="row">
+        <div class="col-md-6 form-group">
+            <label>Titulo</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Titulo del libro"
+                formControlName="ri_nombre_libro"
+                [ngClass]="{ 'is-invalid': forma.controls['ri_nombre_libro'].invalid && forma.controls['ri_nombre_libro'].touched }">
+            <div *ngIf="forma.get('ri_nombre_libro').errors?.required && forma.controls['ri_nombre_libro'].touched"
+                 class="small text-error">
+                El titulo es necesario.
+            </div>
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Autor</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Autor"
+                formControlName="ri_autor">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 form-group">
+            <label>Editorial</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Editorial"
+                formControlName="ri_editorial">
+        </div>
+        <div class="col-md-3 form-group">
+            <label>ISBN</label>
+            <input type="text"
+                class="form-control"
+                placeholder="ISBN"
+                formControlName="ri_isbn">
+        </div>
+        <div class="col-md-3 form-group">
+            <label>Precio</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Precio"
+                style="text-align: right;"
+                formControlName="ri_precio"
+                [ngClass]="{ 'is-invalid': forma.controls['ri_precio'].invalid && forma.controls['ri_precio'].touched }">
+        </div>
+        <div class="col-md-3 form-group">
+            <label>Cantidad</label>
+            <input type="number"
+                class="form-control"
+                placeholder="Cantidad"
+                style="text-align: right;"
+                formControlName="ri_cantidad"
+                [ngClass]="{ 'is-invalid': forma.controls['ri_cantidad'].invalid && forma.controls['ri_cantidad'].touched }">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 form-group">
+            <label>Factura</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Nro de factura"
+                formControlName="ri_factura">
+        </div>
+        <div class="col-md-6 form-group">
+            <label>Motivo</label>
+            <input type="text"
+                class="form-control"
+                placeholder="Motivo"
+                formControlName="ri_motivo">
+        </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem;">
+        <button class="btn btn-action-secondary" type="button" (click)="onClear()">
+            <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Limpiar
+        </button>
+        <button [disabled]="!forma.valid" class="btn btn-action" type="button" (click)="onAdd()">
+            <i class="fa fa-plus" style="margin-right: 0.25rem;"></i> Agregar
+        </button>
+    </div>
+</form>

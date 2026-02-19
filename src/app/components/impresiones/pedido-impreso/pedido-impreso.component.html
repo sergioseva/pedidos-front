@@ -1,17 +1,12 @@
-<br>
+<div class="row">
+  <div class="col-4">Fecha: {{ pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</div>
+  <div class="col-4">Pedido: {{ pedidoId }}</div>
+</div>
 <hr>
 <div class="row">
-  <div class="col-4">Fecha:{{ pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</div>
-  <div class="col-4">Pedido:{{ pedidoId }}</div>
-  </div>
-  <hr>
-<div class="row">
-<div class="col-4" style= " font-weight: bold;" >Cliente: {{ pedido.cliente.nombre }}</div>
-<div class="col-4">Telefono: {{ pedido.cliente.telefonoMovil }} </div>
+<div class="col-4" style="font-weight: bold;">Cliente: {{ pedido.cliente.nombre }}</div>
+<div class="col-4">Telefono: {{ pedido.cliente.telefonoMovil }}</div>
 </div>
-
-<br>
-
 
 <table class="table">
   <thead class="thead-dark">

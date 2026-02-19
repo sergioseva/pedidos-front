@@ -1,0 +1,50 @@
+<div class="search-row" style="margin-top: 1rem;">
+    <div class="row align-items-center">
+        <div class="col">
+            <div style="position: relative;">
+                <input #termino type="text" (keyup.enter)="buscarUsuario(termino.value)" class="form-control"
+                    placeholder="Buscar Usuario" style="padding-left: 2.25rem;">
+                <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #8C7A6A;"></i>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-action btn-sm" [routerLink]="['/usuario','nuevo']">
+                <i class="fa fa-plus" style="margin-right: 0.25rem;"></i> Nuevo Usuario
+            </button>
+        </div>
+    </div>
+</div>
+
+<table class="table" style="margin-top: 1rem;">
+    <thead>
+        <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Usuario</th>
+            <th scope="col">Email</th>
+            <th scope="col">Rol</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let usuario of usuarios; let i = index">
+            <td>{{usuario.name}}</td>
+            <td>{{usuario.username}}</td>
+            <td>{{usuario.email}}</td>
+            <td>
+                <span class="badge" [ngClass]="{'badge-admin': usuario.role === 'ROLE_ADMIN', 'badge-user': usuario.role !== 'ROLE_ADMIN'}">
+                    {{getRolLabel(usuario.role)}}
+                </span>
+            </td>
+            <td>
+                <div class="table-actions">
+                    <button title="Modificar" [routerLink]="['/usuario', usuario.id]" type="button" class="btn btn-icon">
+                        <i class="fa fa-pencil"></i>
+                    </button>
+                    <button title="Eliminar" (click)="borrarUsuario(usuario, i)" type="button" class="btn btn-icon btn-icon-danger">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

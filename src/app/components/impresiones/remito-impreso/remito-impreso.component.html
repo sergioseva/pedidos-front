@@ -1,0 +1,60 @@
+<!-- Copia 1 del remito -->
+<ng-container *ngTemplateOutlet="remitoTemplate"></ng-container>
+
+<!-- Copia 2 del remito -->
+<ng-container *ngTemplateOutlet="remitoTemplate"></ng-container>
+
+<!-- Hoja 3: etiqueta para la caja -->
+<div class="box-label">
+    <div class="box-label-title">
+        DEVOLUCION PARA {{ remito?.re_distribuidora_ed?.descripcion | uppercase }}
+    </div>
+    <div class="box-label-sender">
+        {{ remitente | uppercase }}
+    </div>
+    <div *ngIf="remito?.re_distribuidora_ed?.nroCuenta" class="box-label-cuenta">
+        N° DE CUENTA: {{ remito?.re_distribuidora_ed?.nroCuenta }}
+    </div>
+</div>
+
+<!-- Template reutilizable del remito -->
+<ng-template #remitoTemplate>
+    <div class="remito-page">
+        <div class="row">
+            <div class="col-4">Fecha: {{ remito?.re_fecha | date:'mediumDate':'+0300': 'es-AR' }}</div>
+            <div class="col-4">Remito: {{ remitoId }}</div>
+        </div>
+        <hr>
+        <div style="font-weight: bold;">
+            PARA {{ remito?.re_distribuidora_ed?.descripcion | uppercase }}. DE: {{ remitente | uppercase }}
+        </div>
+        <div *ngIf="remito?.re_distribuidora_ed?.nroCuenta" style="font-weight: bold;">
+            N° DE CUENTA: {{ remito?.re_distribuidora_ed?.nroCuenta }}
+        </div>
+
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Titulo</th>
+                    <th scope="col">Autor</th>
+                    <th scope="col">Editorial</th>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of remito?.items">
+                    <td>{{item.ri_nombre_libro}}</td>
+                    <td>{{item.ri_autor}}</td>
+                    <td>{{item.ri_editorial}}</td>
+                    <td>{{item.ri_isbn}}</td>
+                    <td>{{item.ri_cantidad}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="remito?.re_observaciones" class="row" style="margin-top: 0.5rem;">
+            <div class="col-2">Observaciones:</div>
+            <div class="col-10">{{ remito?.re_observaciones }}</div>
+        </div>
+    </div>
+</ng-template>

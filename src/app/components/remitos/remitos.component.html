@@ -1,0 +1,82 @@
+<div [class.isPrinting]="printService.isPrinting">
+    <div class="filter-pills">
+        <button class="btn btn-action-secondary btn-sm" (click)="dateFilter(1)">Ayer</button>
+        <button class="btn btn-action-secondary btn-sm" (click)="dateFilter(7)">Ultima Semana</button>
+        <button class="btn btn-action-secondary btn-sm" (click)="dateFilter(30)">Ultimo Mes</button>
+        <button class="btn btn-action-secondary btn-sm" (click)="dateFilter(365)">Ultimo Anio</button>
+    </div>
+    <div class="search-row">
+        <div class="row align-items-center">
+            <div class="col">
+                <div style="position: relative;">
+                    <input #termino type="text" (keyup.enter)="buscarTermino(termino.value)" class="form-control"
+                        placeholder="Buscar por Distribuidora, Observaciones o Libro" style="padding-left: 2.25rem;">
+                    <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #8C7A6A;"></i>
+                </div>
+            </div>
+            <div class="col-auto">
+                <input #fechadesde type="date" (keyup.enter)="buscarTermino(termino.value)" class="form-control" [(ngModel)]="fromDate" placeholder="Fecha">
+            </div>
+            <div class="col-auto">
+                <input #fechahasta type="date" (keyup.enter)="buscarTermino(termino.value)" class="form-control" [(ngModel)]="toDate" placeholder="Fecha">
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-action btn-sm" (click)="buscarTermino(termino.value)">
+                    <i class="fa fa-search" style="margin-right: 0.25rem;"></i> Buscar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="5%" scope="col"></th>
+                <th width="20%" scope="col">Distribuidora</th>
+                <th width="15%" scope="col">Fecha</th>
+                <th width="15%" scope="col">Observaciones</th>
+                <th width="45%" scope="col">Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let remito of remitos">
+                <td>
+                    <button title="Imprimir" (click)="imprimir(remito)" type="button" class="btn btn-icon">
+                        <i class="fa fa-print"></i>
+                    </button>
+                </td>
+                <td>{{remito.re_distribuidora_ed?.descripcion}}</td>
+                <td>{{remito.re_fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
+                <td>{{remito.re_observaciones}}</td>
+                <td>
+                    <ul style="margin: 0; padding-left: 1rem;">
+                        <li *ngFor="let item of remito.items">
+                            {{item.ri_cantidad}} - {{item.ri_nombre_libro}} ({{item.ri_autor}})
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div *ngIf="loading" class="alert alert-info text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading"><i class="fa fa-search" style="margin-right: 0.375rem;"></i>Buscando</h4>
+        <p>
+            <i class="fa fa-spinner fa-spin fa-2x"></i>
+        </p>
+        <p class="mb-0">
+            Espere por favor
+        </p>
+    </div>
+
+    <div *ngIf="!loading && !error && remitos?.length===0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>No hay resultados</h4>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading"><i class="fa fa-times-circle" style="margin-right: 0.375rem;"></i>Error general</h4>
+        <p class="mb-0">
+            {{errMessage}}
+        </p>
+    </div>
+</div>

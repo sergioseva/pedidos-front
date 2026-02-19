@@ -1,0 +1,15 @@
+.badge-admin {
+    background-color: #8C7A6A;
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+}
+
+.badge-user {
+    background-color: #C4B5A5;
+    color: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+}

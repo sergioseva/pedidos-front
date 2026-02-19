@@ -4,6 +4,7 @@ import { NgForm, FormGroup, Validators, FormControl } from '@angular/forms';
 
 import Swal from 'sweetalert2';
 import { UsuariosService } from '../../providers/usuarios.service';
+import { ConfiguracionService } from '../../providers/configuracion.service';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 @Component({
@@ -14,6 +15,9 @@ import { Observable } from 'rxjs';
 export class RegistroComponent implements OnInit {
   formRegistrar:FormGroup;
   usuario: UsuarioModel;
+  nombre: string = 'Libros Mario';
+  hasLogo: boolean = false;
+  logoUrl: string;
   roles =[ {
     codigo:"ROLE_USER",
     role: "Usuario"
@@ -25,7 +29,8 @@ export class RegistroComponent implements OnInit {
 
 
   constructor(private usuariosService: UsuariosService,
-              private router: Router) {
+              private router: Router,
+              private configuracionService: ConfiguracionService) {
 
       this.formRegistrar = new FormGroup({
         'email': new FormControl('',   [
@@ -62,6 +67,17 @@ export class RegistroComponent implements OnInit {
 
   ngOnInit() {
     this.usuario = new UsuarioModel();
+    this.configuracionService.getConfiguracion().subscribe(
+      config => {
+        if (config.nombre) {
+          this.nombre = config.nombre;
+        }
+        if (config.hasLogo) {
+          this.hasLogo = true;
+          this.logoUrl = this.configuracionService.getLogoUrl();
+        }
+      }
+    );
   }
 
   existeUsuario( control: FormControl ): Promise<any>|Observable<any> {

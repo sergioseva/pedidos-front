@@ -1,8 +1,9 @@
 <div class="auth-wrapper">
     <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
         <div class="auth-brand">
-            <i class="fa fa-book"></i>
-            <h3>Libros Mario</h3>
+            <img *ngIf="hasLogo" [src]="logoUrl" alt="Logo" style="max-height: 64px; margin-bottom: 0.5rem;">
+            <i *ngIf="!hasLogo" class="fa fa-book"></i>
+            <h3>{{ nombre }}</h3>
         </div>
         <div class="card card-signin">
             <div class="card-body">

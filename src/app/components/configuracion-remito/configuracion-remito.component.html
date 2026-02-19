@@ -1,0 +1,42 @@
+<div class="auth-wrapper">
+    <div class="col-sm-9 col-md-7 col-lg-6 mx-auto">
+        <div class="card" style="margin-top: 2rem; margin-bottom: 2rem;">
+            <div class="card-header">
+                <div class="card-icon-header">
+                    <i class="fa fa-cog"></i>
+                    <span>Configuracion Remito</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="forma" (ngSubmit)="onSubmit()" #registroForm="ngForm">
+
+                    <div class="form-group">
+                        <label>Remitente</label>
+                        <input type="text"
+                            class="form-control"
+                            placeholder="Remitente"
+                            formControlName="remitente"
+                            [ngClass]="{ 'is-invalid': !forma.controls['remitente'].valid && forma.controls['remitente'].touched }">
+                        <div *ngIf="forma.get('remitente').errors?.required && forma.controls['remitente'].touched"
+                            class="small text-error">
+                            El remitente es necesario.
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 1.5rem;">
+                        <div class="col-6">
+                            <button [disabled]="!forma.valid" class="btn btn-action btn-block" type="submit">
+                                <i class="fa fa-save" style="margin-right: 0.25rem;"></i> Guardar
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-action-secondary btn-block" type="button" [routerLink]="['/remitos']">
+                                <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

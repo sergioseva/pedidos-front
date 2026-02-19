@@ -1,0 +1,25 @@
+.remito-page {
+    page-break-after: always;
+}
+
+.box-label {
+    page-break-before: always;
+    padding: 2rem;
+}
+
+.box-label-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.box-label-sender {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.box-label-cuenta {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 1rem;
+}

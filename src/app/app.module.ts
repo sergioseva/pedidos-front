@@ -40,6 +40,16 @@ import { PrintLayoutComponent } from './components/impresiones/print-layout/prin
 import { PedidoImpresoComponent } from './components/impresiones/pedido-impreso/pedido-impreso.component';
 import { PedidoDistribuidoraComponent } from './components/pedido-distribuidora/pedido-distribuidora.component';
 import { ImportarCatalogoComponent } from './components/importar-catalogo/importar-catalogo.component';
+import { RemitoComponent } from './components/remito/remito.component';
+import { RemitosComponent } from './components/remitos/remitos.component';
+import { RemitoItemComponent } from './components/remito-item/remito-item.component';
+import { RemitoImpresoComponent } from './components/impresiones/remito-impreso/remito-impreso.component';
+import { DistribuidorasComponent } from './components/distribuidoras/distribuidoras.component';
+import { DistribuidoraComponent } from './components/distribuidora/distribuidora.component';
+import { ConfiguracionRemitoComponent } from './components/configuracion-remito/configuracion-remito.component';
+import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
+import { UsuariosComponent } from './components/usuarios/usuarios.component';
+import { UsuarioComponent } from './components/usuario/usuario.component';
 
 export function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>) {
   return (): Promise<boolean> => {
@@ -50,7 +60,7 @@ export function load(http: HttpClient, config: ConfigService): (() => Promise<bo
              config.baseUrl = x.baseUrl;
              config.nombre = x.nombre;
              config.direccion = x.direccion;
-             config.telefono = x.telefono;             
+             config.telefono = x.telefono;
              console.log(`config.json leido`);
              console.log(`apuntando a ${config.baseUrl}`);
              console.log(`leido nombre ${config.nombre}`);
@@ -58,7 +68,7 @@ export function load(http: HttpClient, config: ConfigService): (() => Promise<bo
            }),
            catchError((x: { status: number }, caught: Observable<void>): ObservableInput<{}> => {
              config.baseUrl = '/api';
-             config.nombre = 'Libros Mario Gualeguaychú';
+             config.nombre = 'Libros Mario';
              config.direccion = '3 de Caballeria 761 - Gualeguaychu';
              config.telefono = 'Telefono: 425900';
              console.warn(`config.json no encontrado, usando fallback`);
@@ -94,6 +104,16 @@ export function load(http: HttpClient, config: ConfigService): (() => Promise<bo
     PedidoImpresoComponent,
     PedidoDistribuidoraComponent,
     ImportarCatalogoComponent,
+    RemitoComponent,
+    RemitosComponent,
+    RemitoItemComponent,
+    RemitoImpresoComponent,
+    DistribuidorasComponent,
+    DistribuidoraComponent,
+    ConfiguracionRemitoComponent,
+    ConfiguracionComponent,
+    UsuariosComponent,
+    UsuarioComponent,
   ],
 
   imports: [

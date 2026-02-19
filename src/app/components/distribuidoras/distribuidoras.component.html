@@ -1,0 +1,42 @@
+<div class="search-row" style="margin-top: 1rem;">
+    <div class="row align-items-center">
+        <div class="col">
+            <div style="position: relative;">
+                <input #termino type="text" (keyup.enter)="buscarDistribuidora(termino.value)" class="form-control"
+                    placeholder="Buscar Distribuidora" style="padding-left: 2.25rem;">
+                <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #8C7A6A;"></i>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-action btn-sm" [routerLink]="['/distribuidora','nuevo']">
+                <i class="fa fa-plus" style="margin-right: 0.25rem;"></i> Nueva Distribuidora
+            </button>
+        </div>
+    </div>
+</div>
+
+<table class="table" style="margin-top: 1rem;">
+    <thead>
+        <tr>
+            <th scope="col">Descripcion</th>
+            <th scope="col">Nro de Cuenta</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let distribuidora of distribuidoras; let i = index">
+            <td>{{distribuidora.descripcion}}</td>
+            <td>{{distribuidora.nroCuenta}}</td>
+            <td>
+                <div class="table-actions">
+                    <button title="Modificar" [routerLink]="['/distribuidora', distribuidora.id]" type="button" class="btn btn-icon">
+                        <i class="fa fa-pencil"></i>
+                    </button>
+                    <button title="Eliminar" (click)="borrarDistribuidora(distribuidora, i)" type="button" class="btn btn-icon btn-icon-danger">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

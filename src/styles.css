@@ -16,7 +16,7 @@
   --warning: #D97706;
   --info: #2563EB;
 
-  --bg: #FAF6F0;
+  --bg: #EFE4D4;
   --surface: #FFFFFF;
   --border: #D6CFC4;
   --table-header: #F0EBE3;
@@ -1101,7 +1101,15 @@ a.dashboard-card:active {
 }
 
 /* --- Print Styles ------------------------------------------ */
+@page {
+  margin: 0;
+}
+
 @media print {
+  body {
+    padding: 10mm;
+  }
+
   .isPrinting > * { display: none; }
   .isPrinting app-print-layout { display: block; }
 

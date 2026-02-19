@@ -13,6 +13,15 @@ import { PrintLayoutComponent } from './components/impresiones/print-layout/prin
 import { PedidoImpresoComponent } from './components/impresiones/pedido-impreso/pedido-impreso.component';
 import { PedidoDistribuidoraComponent } from './components/pedido-distribuidora/pedido-distribuidora.component';
 import { ImportarCatalogoComponent } from './components/importar-catalogo/importar-catalogo.component';
+import { RemitoComponent } from './components/remito/remito.component';
+import { RemitosComponent } from './components/remitos/remitos.component';
+import { RemitoImpresoComponent } from './components/impresiones/remito-impreso/remito-impreso.component';
+import { DistribuidorasComponent } from './components/distribuidoras/distribuidoras.component';
+import { DistribuidoraComponent } from './components/distribuidora/distribuidora.component';
+import { ConfiguracionRemitoComponent } from './components/configuracion-remito/configuracion-remito.component';
+import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
+import { UsuariosComponent } from './components/usuarios/usuarios.component';
+import { UsuarioComponent } from './components/usuario/usuario.component';
 import { AdminGuard } from './guards/admin.guard';
 
 
@@ -26,11 +35,20 @@ export const ROUTES: Routes = [
     { path: 'pedidosdistribuidora', component: PedidoDistribuidoraComponent, canActivate: [AuthGuard] },
     { path: 'importarcatalogo', component: ImportarCatalogoComponent, canActivate: [AuthGuard] },
     { path: 'pedido', component: PedidoComponent, canActivate: [AuthGuard] },
+    { path: 'remito', component: RemitoComponent, canActivate: [AuthGuard] },
+    { path: 'remitos', component: RemitosComponent, canActivate: [AuthGuard] },
+    { path: 'distribuidoras', component: DistribuidorasComponent, canActivate: [AdminGuard] },
+    { path: 'distribuidora/:id', component: DistribuidoraComponent, canActivate: [AdminGuard] },
+    { path: 'configuracion-remito', component: ConfiguracionRemitoComponent, canActivate: [AuthGuard] },
+    { path: 'configuracion', component: ConfiguracionComponent, canActivate: [AdminGuard] },
+    { path: 'usuarios', component: UsuariosComponent, canActivate: [AdminGuard] },
+    { path: 'usuario/:id', component: UsuarioComponent, canActivate: [AdminGuard] },
     { path: 'registro', component: RegistroComponent },
     { path: 'login', component: LoginComponent },
     { path: 'print', outlet: 'print', component: PrintLayoutComponent,
             children: [
-                        { path: 'printpedido/:pedidoId', component: PedidoImpresoComponent }
+                        { path: 'printpedido/:pedidoId', component: PedidoImpresoComponent },
+                        { path: 'printremito/:remitoId', component: RemitoImpresoComponent }
             ]
     },
     { path: '**', component: HomeComponent },

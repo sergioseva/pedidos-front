@@ -38,7 +38,7 @@ export class PedidoComponent implements OnInit {
     this.forma = new FormGroup({
       'cliente': new FormControl('', Validators.required),
       'observaciones': new FormControl(''),
-      'senia': new FormControl('' ,
+      'senia': new FormControl(0 ,
                           [ Validators.required,
                             Validators.pattern('^[0-9]*$')
                             ]),

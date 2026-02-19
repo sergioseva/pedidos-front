@@ -1,0 +1,12 @@
+thead {
+    font-size: 0.8rem;
+}
+
+tbody {
+    font-size: 0.8rem;
+}
+
+@media print {
+    .isPrinting > * { display: none; }
+    .isPrinting app-print-layout { display: block; }
+}

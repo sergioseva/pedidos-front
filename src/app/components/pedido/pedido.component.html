@@ -57,7 +57,7 @@
                         <td>{{pedidoItem.libro}}</td>
                         <td>{{pedidoItem.autor}}</td>
                         <td>{{pedidoItem.editorial}}</td>
-                        <td>{{pedidoItem.precio}}</td>
+                        <td>$ {{pedidoItem.precio | number:'1.0-0':'es-AR'}}</td>
                         <td>{{pedidoItem.cantidad}}</td>
                         <td>
                             <div class="table-actions">
@@ -73,7 +73,7 @@
         <div *ngIf="pedido.pedidoItems.length > 0"
              style="display: flex; justify-content: flex-end; padding: 0.75rem 0.5rem 0; border-top: 2px solid #C8BFB2;">
             <div class="summary-box" style="min-width: 160px; text-align: center;">
-                Subtotal $ {{pedido.total}}
+                Subtotal $ {{pedido.total | number:'1.0-0':'es-AR'}}
             </div>
         </div>
         <div *ngIf="pedido.pedidoItems.length === 0" style="text-align: center; padding: 2rem 1rem; color: #8C7A6A;">

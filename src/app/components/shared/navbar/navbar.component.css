@@ -1,0 +1,7 @@
+:host ::ng-deep .navbar-brand {
+    max-width: 200px;
+    white-space: normal;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+}

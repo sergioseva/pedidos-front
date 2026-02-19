@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { UsuarioModel } from '../models/usuario.model';
 
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
-import { HttpHeaders } from '@angular/common/http';
 import * as jwt_decode from 'jwt-decode';
 import { ConfigService } from '../providers/config.service';
 
@@ -16,6 +15,7 @@ export class AuthService {
   private url = '/api';
   private loggedIn = new BehaviorSubject<boolean>(false); // {1}
   private adminSubject = new BehaviorSubject<boolean>(false);
+  private userNameSubject = new BehaviorSubject<string>('');
 
   get isLoggedIn() {
     return this.loggedIn.asObservable(); // {2}
@@ -23,6 +23,10 @@ export class AuthService {
 
   get isAdmin$() {
     return this.adminSubject.asObservable();
+  }
+
+  get userName$() {
+    return this.userNameSubject.asObservable();
   }
 
   userToken: string;
@@ -38,8 +42,16 @@ export class AuthService {
   constructor( private http: HttpClient,private config: ConfigService ) {
     this.leerToken();
     this.url = config.baseUrl;
+    const savedName = localStorage.getItem('userName');
+    if (savedName) {
+      this.userNameSubject.next(savedName);
+    }
+    const savedRole = localStorage.getItem('userRole');
+    if (savedRole === 'ROLE_ADMIN') {
+      this.adminSubject.next(true);
+    }
     if (this.estaAutenticado()) {
-      this.fetchUserProfile();
+      this.extractUserFromToken();
     }
   }
 
@@ -47,8 +59,10 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
     this.loggedIn.next(false);
     this.adminSubject.next(false);
+    this.userNameSubject.next('');
   }
 
   login( usuario: UsuarioModel ) {
@@ -65,7 +79,7 @@ export class AuthService {
       map( resp => {
         this.guardarToken( resp['accessToken'] );
         this.loggedIn.next(true);
-        this.fetchUserProfile();
+        this.extractUserFromToken();
         return resp;
       })
     );
@@ -147,22 +161,21 @@ export class AuthService {
     return date;
   }
 
-  fetchUserProfile() {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.userToken}`);
-    this.http.get(`${this.url}/user/me`, { headers }).subscribe(
-      (user: any) => {
-        const roles: any[] = user.roles || user.authorities || [];
-        const isAdmin = roles.some(r => {
-          const roleName = typeof r === 'string' ? r : (r.roleName || r.name || r.authority || '');
-          return roleName === 'ROLE_ADMIN';
-        });
-        localStorage.setItem('userRole', isAdmin ? 'ROLE_ADMIN' : 'ROLE_USER');
-        this.adminSubject.next(isAdmin);
-      },
-      err => {
-        this.adminSubject.next(false);
-      }
-    );
+  extractUserFromToken() {
+    try {
+      const decoded: any = jwt_decode(this.userToken);
+
+      const name = decoded.name || decoded.sub || '';
+      localStorage.setItem('userName', name);
+      this.userNameSubject.next(name);
+
+      const roles: string[] = decoded.roles || [];
+      const isAdmin = roles.includes('ROLE_ADMIN');
+      localStorage.setItem('userRole', isAdmin ? 'ROLE_ADMIN' : 'ROLE_USER');
+      this.adminSubject.next(isAdmin);
+    } catch (e) {
+      console.error('Error decoding token', e);
+    }
   }
 
   isAdmin(): boolean {

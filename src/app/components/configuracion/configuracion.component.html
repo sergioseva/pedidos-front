@@ -1,0 +1,80 @@
+<div class="auth-wrapper">
+    <div class="col-sm-9 col-md-7 col-lg-6 mx-auto">
+        <div class="card" style="margin-top: 2rem; margin-bottom: 2rem;">
+            <div class="card-header">
+                <div class="card-icon-header">
+                    <i class="fa fa-cog"></i>
+                    <span>Configuracion</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="forma" (ngSubmit)="onSubmit()" #registroForm="ngForm">
+
+                    <div class="form-group">
+                        <label>Nombre de la tienda</label>
+                        <input type="text"
+                            class="form-control"
+                            placeholder="Nombre de la tienda"
+                            formControlName="nombre"
+                            [ngClass]="{ 'is-invalid': !forma.controls['nombre'].valid && forma.controls['nombre'].touched }">
+                        <div *ngIf="forma.get('nombre').errors?.required && forma.controls['nombre'].touched"
+                            class="small text-error">
+                            El nombre es necesario.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Direccion</label>
+                        <input type="text"
+                            class="form-control"
+                            placeholder="Direccion"
+                            formControlName="direccion">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Telefono</label>
+                        <input type="text"
+                            class="form-control"
+                            placeholder="Telefono"
+                            formControlName="telefono">
+                    </div>
+
+                    <div class="row" style="margin-top: 1.5rem;">
+                        <div class="col-6">
+                            <button [disabled]="!forma.valid" class="btn btn-action btn-block" type="submit">
+                                <i class="fa fa-save" style="margin-right: 0.25rem;"></i> Guardar
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-action-secondary btn-block" type="button" [routerLink]="['/home']">
+                                <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <hr>
+
+                <div class="form-group">
+                    <label>Logo</label>
+                    <div *ngIf="logoPreview" style="margin-bottom: 1rem; text-align: center;">
+                        <img [src]="logoPreview" alt="Logo" style="max-height: 120px; max-width: 100%;">
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="btn btn-action btn-block" style="margin-bottom: 0;">
+                                <i class="fa fa-upload" style="margin-right: 0.25rem;"></i> Subir Logo
+                                <input type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <button *ngIf="configuracion.hasLogo" class="btn btn-outline-danger btn-block" type="button" (click)="deleteLogo()">
+                                <i class="fa fa-trash" style="margin-right: 0.25rem;"></i> Eliminar Logo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

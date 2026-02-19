@@ -1,0 +1,218 @@
+<div [class.isPrinting]="printService?.isPrinting">
+
+<div *ngIf="remito.finalizado" class="row" style="margin-bottom: 1rem;">
+    <div class="w-100 text-center alert alert-info">
+        <i class="fa fa-info-circle" style="margin-right: 0.375rem;"></i>
+        Remito Finalizado, no se pueden agregar mas items, pulse reiniciar
+    </div>
+</div>
+
+<div class="accordion" id="accordionRemito">
+    <!-- Remito Section -->
+    <div class="card card-section-pedido">
+        <div class="card-header" id="headingRemito">
+            <h2 class="mb-0">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseRemito" aria-expanded="true" aria-controls="collapseRemito">
+                    <i class="fa fa-file-text" style="margin-right: 0.375rem;"></i>Remito
+                    <span class="badge badge-primary" style="margin-left: 0.5rem; font-size: 0.75rem;">{{cantItemsRemito}}</span>
+                </button>
+            </h2>
+        </div>
+
+        <div id="collapseRemito" class="collapse show" aria-labelledby="headingRemito">
+            <div class="container" style="padding: 1rem;">
+                <!-- Items del Remito -->
+                <div class="card card-section-items" style="margin-bottom: 1rem;">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="card-icon-header">
+                            <i class="fa fa-list"></i>
+                            <span>Items del Remito</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <span *ngIf="remito.items.length > 0" class="badge" style="background: #2563EB; color: #fff; font-size: 0.8rem; padding: 0.35rem 0.65rem;">
+                                {{remito.items.length}} items
+                            </span>
+                            <button class="btn btn-action-secondary btn-sm"
+                                    [disabled]="remito.finalizado"
+                                    (click)="openItemModal(itemModal)">
+                                <i class="fa fa-pencil" style="margin-right: 0.25rem;"></i> Agregar Manual
+                            </button>
+                            <button *ngIf="!remito.finalizado"
+                                    class="btn btn-action btn-sm"
+                                    [disabled]="remito.items.length <= 0"
+                                    (click)="openDetalleModal(detalleModal)">
+                                <i class="fa fa-check-circle" style="margin-right: 0.25rem;"></i> Finalizar Remito
+                            </button>
+                            <button *ngIf="remito.finalizado"
+                                    class="btn btn-action btn-sm"
+                                    (click)="openDetalleModal(detalleModal)">
+                                <i class="fa fa-search" style="margin-right: 0.25rem;"></i> Revisar / Imprimir
+                            </button>
+                            <button class="btn btn-action-secondary btn-sm" (click)="onReiniciar()">
+                                <i class="fa fa-refresh" style="margin-right: 0.25rem;"></i> Reiniciar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 1rem;">
+                        <div style="overflow-x: auto;">
+                            <table class="table" style="margin-bottom: 0;">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="min-width: 180px;">Titulo</th>
+                                        <th scope="col" style="min-width: 100px;">Autor</th>
+                                        <th scope="col" style="min-width: 100px;">Editorial</th>
+                                        <th scope="col" style="min-width: 80px;">ISBN</th>
+                                        <th scope="col" style="min-width: 70px;">Precio</th>
+                                        <th scope="col" style="min-width: 70px;">Cantidad</th>
+                                        <th scope="col" style="width: 50px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of remito.items">
+                                        <td>{{item.ri_nombre_libro}}</td>
+                                        <td>{{item.ri_autor}}</td>
+                                        <td>{{item.ri_editorial}}</td>
+                                        <td>{{item.ri_isbn}}</td>
+                                        <td>{{item.ri_precio}}</td>
+                                        <td>{{item.ri_cantidad}}</td>
+                                        <td>
+                                            <div class="table-actions">
+                                                <button title="Eliminar" (click)="borrarItem(item)" type="button" class="btn btn-icon btn-icon-danger">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div *ngIf="remito.items.length > 0"
+                             style="display: flex; justify-content: flex-end; padding: 0.75rem 0.5rem 0; border-top: 2px solid #C8BFB2;">
+                            <div class="summary-box" style="min-width: 160px; text-align: center;">
+                                Total $ {{remito.calcularTotal()}}
+                            </div>
+                        </div>
+                        <div *ngIf="remito.items.length === 0" style="text-align: center; padding: 2rem 1rem; color: #8C7A6A;">
+                            <i class="fa fa-file-text" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; opacity: 0.4;"></i>
+                            Agregue items desde la seccion Libros
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Libros Section -->
+    <div class="card card-section-libros">
+        <div class="card-header" id="headingLibrosRemito">
+            <h2 class="mb-0">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseLibroRemito" aria-expanded="true" aria-controls="collapseLibroRemito">
+                    <i class="fa fa-book" style="margin-right: 0.375rem;"></i>Libros
+                </button>
+            </h2>
+        </div>
+        <div id="collapseLibroRemito" class="collapse show" aria-labelledby="headingLibrosRemito">
+            <div style="padding: 1rem;">
+                <div class="search-row">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <div style="position: relative;">
+                                <input #termino type="text" (keyup.enter)="buscarLibros(termino.value)" class="form-control"
+                                    placeholder="Buscar Libro por cualquier dato: Titulo, Autor, ISBN, Tema"
+                                    style="padding-left: 2.25rem;">
+                                <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #8C7A6A;"></i>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary btn-sm" (click)="buscarLibros(termino.value)">
+                                <i class="fa fa-search" style="margin-right: 0.25rem;"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <ng2-smart-table [settings]="settings" [source]="libros"
+                                (custom)="onCustom($event)"
+                                ></ng2-smart-table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detalle del Remito Modal -->
+<ng-template #detalleModal>
+    <div class="modal-header" style="background: #EDE9FE; border-bottom: 2px solid #8B5CF6;">
+        <h5 class="modal-title" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+            <i class="fa fa-file-text-o" style="color: #7C3AED;"></i> Detalle del Remito
+        </h5>
+        <button type="button" class="close" (click)="closeModal()">
+            <span>&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="forma">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="distribuidoraSelect">Seleccione la distribuidora</label>
+                        <div id="distribuidoraSelect">
+                            <ng-select [items]="distribuidoras"
+                                bindLabel="descripcion"
+                                [disableControl]="remito.finalizado"
+                                formControlName="distribuidora"
+                                [(ngModel)]="distribuidoraSeleccionada">
+                            </ng-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div class="summary-box">
+                            Total $ {{remito.calcularTotal()}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Observaciones</label>
+                <textarea class="form-control"
+                    [disableControl]="remito.finalizado"
+                    placeholder="Observaciones"
+                    rows="2"
+                    formControlName="observaciones"></textarea>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+        <button class="btn btn-action-secondary" (click)="closeModal()">
+            <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cerrar
+        </button>
+        <button *ngIf="!remito.finalizado"
+                [disabled]="remito.items.length <= 0"
+                class="btn btn-action" (click)="onSubmit()">
+            <i class="fa fa-save" style="margin-right: 0.25rem;"></i> Guardar Remito
+        </button>
+        <button *ngIf="remito.finalizado"
+                class="btn btn-action" (click)="onImprimir()">
+            <i class="fa fa-print" style="margin-right: 0.25rem;"></i> Imprimir
+        </button>
+    </div>
+</ng-template>
+
+<!-- Agregar Item Manual Modal -->
+<ng-template #itemModal>
+    <div class="modal-header" style="background: #DBEAFE; border-bottom: 2px solid #2563EB;">
+        <h5 class="modal-title" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+            <i class="fa fa-pencil" style="color: #1D4ED8;"></i> Agregar Item Manual
+        </h5>
+        <button type="button" class="close" (click)="closeItemModal()">
+            <span>&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <app-remito-item (itemAdded)="onItemAdded()"></app-remito-item>
+    </div>
+</ng-template>
+
+</div>

@@ -37,4 +37,24 @@ console.log('en usuarios service');
     return this.chttp.post(url, usuario);
   }
 
+  getUsuarios() {
+    const url = `${ this.URLUsuariosService }/admin/users`;
+    return this.chttp.get(url);
+  }
+
+  getUsuario(id: number) {
+    const url = `${ this.URLUsuariosService }/admin/users/${id}`;
+    return this.chttp.get(url);
+  }
+
+  updateUsuario(id: number, usuario: any) {
+    const url = `${ this.URLUsuariosService }/admin/users/${id}`;
+    return this.chttp.put(url, usuario);
+  }
+
+  deleteUsuario(id: number) {
+    const url = `${ this.URLUsuariosService }/admin/users/${id}`;
+    return this.chttp.delete(url);
+  }
+
 }
