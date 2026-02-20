@@ -1,0 +1,45 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Image tag to deploy (e.g. v1.0.0)'
+        required: true
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Set server variables
+        id: server
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            echo "host=${{ secrets.PROD_SERVER_HOST }}" >> "$GITHUB_OUTPUT"
+            echo "user=${{ secrets.PROD_SERVER_USER }}" >> "$GITHUB_OUTPUT"
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          else
+            echo "host=${{ secrets.STAGING_SERVER_HOST }}" >> "$GITHUB_OUTPUT"
+            echo "user=${{ secrets.STAGING_SERVER_USER }}" >> "$GITHUB_OUTPUT"
+            echo "tag=master" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy pedidos-front:${{ inputs.version }} to ${{ inputs.environment }}
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ steps.server.outputs.host }}
+          username: ${{ steps.server.outputs.user }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            docker pull ghcr.io/sergioseva/pedidos-front:${{ inputs.version }}
+            docker tag ghcr.io/sergioseva/pedidos-front:${{ inputs.version }} ghcr.io/sergioseva/pedidos-front:${{ steps.server.outputs.tag }}
+            cd /aplicaciones/pedidos/docker
+            docker compose up -d --no-deps pedidos-fo
