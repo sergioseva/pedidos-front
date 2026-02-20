@@ -19,9 +19,10 @@ export class LibrosComponent implements OnInit {
   cantItemsPedido = 0;
   pedidoFinalizado = false;
   loading = false;
+  searchPerformed = false;
 
   settings = {
-    noDataMessage: 'no hay registros',
+    noDataMessage: 'Busque un libro para agregarlo al pedido',
     actions: {columnTitle: 'Acciones',
     custom: [
       {
@@ -133,6 +134,14 @@ export class LibrosComponent implements OnInit {
     pi.isbn = event.data.isbn;
     pi.cantidad = 1;
     this.pedidosService.addPedidoItem(pi);
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      type: 'success',
+      title: 'Libro agregado al pedido',
+      showConfirmButton: false,
+      timer: 1500
+    });
   }
   buscarLibros(termino: string) {
     this.loading = true;
@@ -141,6 +150,7 @@ export class LibrosComponent implements OnInit {
         console.log(libros);
         this.libros = libros;
         this.loading = false;
+        this.searchPerformed = true;
       },
       () => {
         this.loading = false;

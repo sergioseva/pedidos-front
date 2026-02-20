@@ -49,8 +49,8 @@
                 </td>
                 <td>{{pedido.cliente.nombre}}</td>
                 <td>{{pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
-                <td align="right">${{pedido.total | number:'1.0':'es-AR'}}</td>
-                <td align="right">${{pedido.senia | number:'1.0':'es-AR'}}</td>
+                <td align="right">$ {{pedido.total | number:'1.0-0':'es-AR'}}</td>
+                <td align="right">$ {{pedido.senia | number:'1.0-0':'es-AR'}}</td>
                 <td>{{pedido.observaciones}}</td>
                 <td>
                     <span [innerHTML]="pedido | pedidoLibros"></span>
@@ -69,8 +69,9 @@
         </p>
     </div>
 
-    <div *ngIf="!loading && !error && pedidos?.length===0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
-        <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>No hay resultados</h4>
+    <div *ngIf="!loading && !error && searchPerformed && pedidos?.length===0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>No se encontraron pedidos</h4>
+        <p style="margin-bottom: 0;">Intente con otro criterio de busqueda o ajuste el rango de fechas.</p>
     </div>
 
     <div *ngIf="error" class="alert alert-danger text-center mt-3 animated fadeIn faster">

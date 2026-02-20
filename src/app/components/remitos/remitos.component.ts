@@ -17,6 +17,7 @@ export class RemitosComponent implements OnInit {
   loading = false;
   error = false;
   errMessage: string;
+  searchPerformed = false;
 
   constructor(public printService: PrintRemitoService,
               private rs: RemitosService,
@@ -40,6 +41,13 @@ export class RemitosComponent implements OnInit {
       .subscribe((data: any) => {
         this.remitos = data;
         this.loading = false;
+        this.error = false;
+        this.searchPerformed = true;
+      },
+      (err) => {
+        this.loading = false;
+        this.error = true;
+        this.errMessage = (err.error && err.error.message) || 'Error al buscar remitos';
       });
   }
 

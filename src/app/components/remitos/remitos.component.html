@@ -69,8 +69,9 @@
         </p>
     </div>
 
-    <div *ngIf="!loading && !error && remitos?.length===0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
-        <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>No hay resultados</h4>
+    <div *ngIf="!loading && !error && searchPerformed && remitos?.length===0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>No se encontraron remitos</h4>
+        <p style="margin-bottom: 0;">Intente con otro criterio de busqueda o ajuste el rango de fechas.</p>
     </div>
 
     <div *ngIf="error" class="alert alert-danger text-center mt-3 animated fadeIn faster">

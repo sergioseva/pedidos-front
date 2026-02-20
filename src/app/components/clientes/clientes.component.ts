@@ -88,10 +88,18 @@ export class ClientesComponent implements OnInit {
   }
 
   buscarCliente(termino: string) {
+      if (!termino || termino.trim() === '') {
+        this.ngOnInit();
+        return;
+      }
       this.clientesService.getClientesPorCualquier(termino).subscribe(
         (cs: any) => {
           console.log(cs);
           this.clientes = cs;
+          this.total = cs.length;
+          this.totalPages = 1;
+          this.currentPage = 1;
+          this.pages = new Array(1);
         }
       );
   }

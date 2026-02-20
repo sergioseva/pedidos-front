@@ -138,6 +138,10 @@
                     </p>
                 </div>
 
+                <div *ngIf="searchPerformed && !loading && libros" class="small" style="color: #5C4A3A; margin: 0.5rem 0;">
+                    <i class="fa fa-info-circle" style="margin-right: 0.25rem;"></i>{{libros.length}} resultado{{libros.length !== 1 ? 's' : ''}}
+                </div>
+
                 <ng2-smart-table [settings]="settings" [source]="libros"
                                 (custom)="onCustom($event)"
                                 ></ng2-smart-table>

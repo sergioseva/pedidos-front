@@ -16,8 +16,9 @@ export class PedidosComponent implements OnInit {
   fromDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   toDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   loading: boolean = false;
-  error: boolean=false;
-  errMessage:string;
+  error: boolean = false;
+  errMessage: string;
+  searchPerformed: boolean = false;
 
   constructor(public printService: PrintPedidoService, private ps: PedidosService, private datePipe: DatePipe) { }
 
@@ -42,6 +43,13 @@ export class PedidosComponent implements OnInit {
       console.log(data);
       this.pedidos = data;
       this.loading = false;
+      this.error = false;
+      this.searchPerformed = true;
+    },
+    (err) => {
+      this.loading = false;
+      this.error = true;
+      this.errMessage = (err.error && err.error.message) || 'Error al buscar pedidos';
     });
   }
 

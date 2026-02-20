@@ -61,7 +61,21 @@ export class PedidoComponent implements OnInit {
   }
 
   onSubmit(){
+    Swal.fire({
+      title: 'Confirmar',
+      text: 'Esta seguro que desea finalizar el pedido? No podra modificarlo despues.',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Si, finalizar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        this.guardarPedido();
+      }
+    });
+  }
 
+  private guardarPedido() {
     this.pedidosService.asignarDatos(this.clienteSeleccionado, this.forma.controls.senia.value, this.forma.controls.observaciones.value);
     Swal.fire({
       title: 'Espere',

@@ -26,11 +26,12 @@ export class RemitoComponent implements OnInit {
   libros: LibroModel[];
   cantItemsRemito = 0;
   loading = false;
+  searchPerformed = false;
   modalRef: BsModalRef;
   itemModalRef: BsModalRef;
 
   settings = {
-    noDataMessage: 'no hay registros',
+    noDataMessage: 'Busque un libro para agregarlo al remito',
     actions: {
       columnTitle: 'Acciones',
       custom: [
@@ -52,7 +53,7 @@ export class RemitoComponent implements OnInit {
       },
       precio: {
         title: 'Precio',
-        valuePrepareFunction: (value) => Intl.NumberFormat('es-AR', {style: 'currency', currency: 'ARS'}).format(value)
+        valuePrepareFunction: (value) => '$ ' + Intl.NumberFormat('es-AR', {maximumFractionDigits: 0}).format(value)
       },
       editorial: {
         title: 'Editorial'
@@ -95,6 +96,21 @@ export class RemitoComponent implements OnInit {
   }
 
   onSubmit() {
+    Swal.fire({
+      title: 'Confirmar',
+      text: 'Esta seguro que desea finalizar el remito? No podra modificarlo despues.',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Si, finalizar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        this.guardarRemito();
+      }
+    });
+  }
+
+  private guardarRemito() {
     this.remitosService.asignarDatos(this.distribuidoraSeleccionada, this.forma.controls.observaciones.value);
     Swal.fire({
       title: 'Espere',
@@ -152,6 +168,14 @@ export class RemitoComponent implements OnInit {
     item.ri_isbn = event.data.isbn;
     item.ri_cantidad = 1;
     this.remitosService.addRemitoItem(item);
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      type: 'success',
+      title: 'Libro agregado al remito',
+      showConfirmButton: false,
+      timer: 1500
+    });
   }
 
   buscarLibros(termino: string) {
@@ -160,6 +184,7 @@ export class RemitoComponent implements OnInit {
       (libros: any[]) => {
         this.libros = libros;
         this.loading = false;
+        this.searchPerformed = true;
       },
       () => {
         this.loading = false;

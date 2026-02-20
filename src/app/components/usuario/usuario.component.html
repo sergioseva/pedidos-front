@@ -73,7 +73,7 @@
                         <label>Password</label>
                         <input type="password"
                             class="form-control"
-                            placeholder="Password"
+                            [placeholder]="isNew ? 'Password' : 'Dejar en blanco para no cambiar'"
                             formControlName="password"
                             [ngClass]="{ 'is-invalid': !forma.controls['password'].valid && forma.controls['password'].touched }">
                         <div *ngIf="!isNew" class="small text-hint">
