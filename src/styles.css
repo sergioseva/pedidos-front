@@ -1018,11 +1018,13 @@ a.dashboard-card:active {
   padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.75rem;
   box-shadow: 0 -4px 12px rgba(44, 24, 16, 0.2);
   border-radius: var(--radius) var(--radius) 0 0;
   animation: slideUp 0.2s ease-out;
   z-index: 100;
+  overflow: visible;
 }
 
 @keyframes slideUp {
@@ -1038,6 +1040,7 @@ a.dashboard-card:active {
 
 .fab-distribuidora {
   min-width: 200px;
+  flex-shrink: 0;
 }
 
 .fab-distribuidora .ng-select .ng-select-container {

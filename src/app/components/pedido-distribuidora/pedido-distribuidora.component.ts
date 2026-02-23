@@ -82,8 +82,12 @@ export class PedidoDistribuidoraComponent implements OnInit {
   }
 
   onChange(event, i){
-
     this.distribuidoraSeleccionada[i] = event;
+  }
+
+  onSelectChange(event, i) {
+    const id = +event.target.value;
+    this.distribuidoraSeleccionada[i] = id ? this.distribuidoras.find(d => d.id === id) : null;
   }
 
   toggleSelectAll() {
