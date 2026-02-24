@@ -1,8 +1,8 @@
 # Stage 1: Build
-FROM node:11.8.0 as build
+FROM node:16-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build -- --prod
 
