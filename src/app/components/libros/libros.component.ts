@@ -210,7 +210,7 @@ export class LibrosComponent implements OnInit {
       return;
     }
     const pi = new PedidoItemModel;
-    pi.codigoLuongo = String(libro.codigoLuongo);
+    pi.codigoLuongo = libro.codigoLuongo ? String(libro.codigoLuongo) : null;
     pi.libro = libro.descripcion;
     pi.autor = libro.autor;
     pi.editorial = libro.editorial;
