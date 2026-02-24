@@ -31,6 +31,20 @@
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
   },
+  "overrides": {
+    "webpack-dev-server": "~3.11.3",
+    "lodash": "~4.17.21",
+    "mixin-deep": "~1.3.2",
+    "set-value": "~2.0.1",
+    "serialize-javascript": "~2.1.2",
+    "minimist": "~1.2.8",
+    "https-proxy-agent": "~2.2.4",
+    "npm-registry-fetch": "~4.0.7",
+    "elliptic": "~6.6.1",
+    "lodash.mergewith": "~4.6.2",
+    "tree-kill": "~1.2.2",
+    "handlebars": "~4.7.8"
+  },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.11.0",
     "@angular/cli": "~7.1.1",
