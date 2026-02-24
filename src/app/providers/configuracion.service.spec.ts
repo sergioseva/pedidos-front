@@ -24,8 +24,8 @@ describe('ConfiguracionService', () => {
       ]
     });
 
-    service = TestBed.get(ConfiguracionService);
-    httpMock = TestBed.get(HttpTestingController);
+    service = TestBed.inject(ConfiguracionService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {

@@ -25,8 +25,8 @@ describe('LibrosService', () => {
       ]
     });
 
-    service = TestBed.get(LibrosService);
-    httpMock = TestBed.get(HttpTestingController);
+    service = TestBed.inject(LibrosService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {

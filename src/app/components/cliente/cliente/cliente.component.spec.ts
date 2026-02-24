@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ClienteComponent } from './cliente.component';
@@ -52,7 +52,7 @@ describe('ClienteComponent', () => {
   });
 
   describe('new mode', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       createComponent({ id: 'nuevo' });
     }));
 
@@ -99,7 +99,7 @@ describe('ClienteComponent', () => {
   });
 
   describe('edit mode', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       createComponent({ id: '1' });
     }));
 

@@ -24,7 +24,7 @@ describe('PedidoDistribuidoraService', () => {
       ]
     });
 
-    service = TestBed.get(PedidoDistribuidoraService);
+    service = TestBed.inject(PedidoDistribuidoraService);
   });
 
   it('should be created', () => {

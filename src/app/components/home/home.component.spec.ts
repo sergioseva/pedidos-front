@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { HomeComponent } from './home.component';
 import { ConfiguracionService } from '../../providers/configuracion.service';
@@ -11,7 +11,7 @@ describe('HomeComponent', () => {
   let fixture: ComponentFixture<HomeComponent>;
   let configuracionService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     configuracionService = mockConfiguracionService();
 
     TestBed.configureTestingModule({

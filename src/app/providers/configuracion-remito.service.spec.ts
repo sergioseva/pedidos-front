@@ -21,7 +21,7 @@ describe('ConfiguracionRemitoService', () => {
       ]
     });
 
-    service = TestBed.get(ConfiguracionRemitoService);
+    service = TestBed.inject(ConfiguracionRemitoService);
   });
 
   it('should be created', () => {

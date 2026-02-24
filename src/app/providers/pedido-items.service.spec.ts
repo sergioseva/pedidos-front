@@ -24,7 +24,7 @@ describe('PedidoItemsService', () => {
       ]
     });
 
-    service = TestBed.get(PedidoItemsService);
+    service = TestBed.inject(PedidoItemsService);
   });
 
   it('should be created', () => {

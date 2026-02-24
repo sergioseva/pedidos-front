@@ -25,8 +25,8 @@ describe('BatchStatisticsService', () => {
       ]
     });
 
-    service = TestBed.get(BatchStatisticsService);
-    httpMock = TestBed.get(HttpTestingController);
+    service = TestBed.inject(BatchStatisticsService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {

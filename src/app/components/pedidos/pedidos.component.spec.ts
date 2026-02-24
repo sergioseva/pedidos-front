@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
@@ -14,7 +14,7 @@ describe('PedidosComponent', () => {
   let pedidosService: any;
   let printService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     pedidosService = {
       buscarPedidos: jasmine.createSpy('buscarPedidos').and.returnValue(of([]))
     };

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { NavbarComponent } from './navbar.component';
 import { AuthService } from '../../../services/auth.service';
@@ -12,7 +12,7 @@ describe('NavbarComponent', () => {
   let authService: any;
   let router: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     authService = mockAuthService();
     router = mockRouter();
 

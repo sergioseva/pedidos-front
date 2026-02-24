@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ConfiguracionComponent } from './configuracion.component';
@@ -12,7 +12,7 @@ describe('ConfiguracionComponent', () => {
   let fixture: ComponentFixture<ConfiguracionComponent>;
   let configuracionService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     configuracionService = mockConfiguracionService();
     const config = new ConfiguracionModel();
     config.nombre = 'Test Store';

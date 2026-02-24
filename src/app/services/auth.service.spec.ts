@@ -29,8 +29,8 @@ describe('AuthService', () => {
       ]
     });
 
-    service = TestBed.get(AuthService);
-    httpMock = TestBed.get(HttpTestingController);
+    service = TestBed.inject(AuthService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {

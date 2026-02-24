@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LibrosComponent } from './libros.component';
@@ -14,7 +14,7 @@ describe('LibrosComponent', () => {
   let librosService: any;
   let pedidosService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     librosService = {
       buscarLibros: jasmine.createSpy('buscarLibros').and.returnValue(of([])),
       insertLibro: jasmine.createSpy('insertLibro').and.returnValue(of({})),

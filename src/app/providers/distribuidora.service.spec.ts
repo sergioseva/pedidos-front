@@ -24,7 +24,7 @@ describe('DistribuidoraService', () => {
       ]
     });
 
-    service = TestBed.get(DistribuidoraService);
+    service = TestBed.inject(DistribuidoraService);
   });
 
   it('should be created', () => {

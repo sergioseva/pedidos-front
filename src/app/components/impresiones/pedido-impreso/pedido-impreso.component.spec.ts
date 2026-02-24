@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeAr from '@angular/common/locales/es-AR';
@@ -19,7 +19,7 @@ describe('PedidoImpresoComponent', () => {
   let fixture: ComponentFixture<PedidoImpresoComponent>;
   let printService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     const mockCliente = new ClienteModel();
     mockCliente.nombre = 'Test Client';
     const mockPedido = new PedidoModel();

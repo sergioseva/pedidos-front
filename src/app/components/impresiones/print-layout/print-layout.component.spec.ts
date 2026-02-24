@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { PrintLayoutComponent } from './print-layout.component';
 import { ConfigService } from '../../../providers/config.service';
@@ -13,7 +13,7 @@ describe('PrintLayoutComponent', () => {
   let fixture: ComponentFixture<PrintLayoutComponent>;
   let configuracionService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     configuracionService = mockConfiguracionService();
     const config = new ConfiguracionModel();
     config.nombre = 'Test Store';

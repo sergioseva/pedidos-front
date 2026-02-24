@@ -6,7 +6,7 @@ import { map, catchError } from 'rxjs/operators';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { DistribuidoraModel } from '../models/distribuidora.model';
 import { Observable } from 'rxjs';
-import { throwError } from 'rxjs/internal/observable/throwError';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

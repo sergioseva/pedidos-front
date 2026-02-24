@@ -23,8 +23,8 @@ describe('CustomHttpClientService', () => {
       ]
     });
 
-    service = TestBed.get(CustomHttpClientService);
-    httpMock = TestBed.get(HttpTestingController);
+    service = TestBed.inject(CustomHttpClientService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {

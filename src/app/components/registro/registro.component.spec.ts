@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RegistroComponent } from './registro.component';
@@ -14,7 +14,7 @@ describe('RegistroComponent', () => {
   let usuariosService: any;
   let router: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     usuariosService = {
       validarEmail: jasmine.createSpy('validarEmail').and.returnValue(of({ available: true })),
       validarUser: jasmine.createSpy('validarUser').and.returnValue(of({ available: true })),

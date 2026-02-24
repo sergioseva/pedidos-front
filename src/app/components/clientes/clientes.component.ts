@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ClienteModel } from 'src/app/models/cliente.model';
 import Swal from 'sweetalert2';
-import { promise } from 'protractor';
 
 
 @Component({

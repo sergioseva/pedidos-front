@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PedidoComponent } from './pedido.component';
@@ -17,7 +17,7 @@ describe('PedidoComponent', () => {
   let clientesService: any;
   let printService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     const mockPedido = new PedidoModel();
     pedidosService = {
       currentPedido: of(mockPedido),

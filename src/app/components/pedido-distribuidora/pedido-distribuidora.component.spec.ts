@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { PedidoDistribuidoraComponent } from './pedido-distribuidora.component';
 import { PedidoItemsService } from '../../providers/pedido-items.service';
@@ -24,7 +24,7 @@ describe('PedidoDistribuidoraComponent', () => {
     { id: 2, descripcion: 'Dist B' }
   ];
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     pedidoItemsService = {
       getPedidosPendientes: jasmine.createSpy('getPedidosPendientes').and.returnValue(of(mockItems))
     };

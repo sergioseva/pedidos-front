@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { UsuariosComponent } from './usuarios.component';
 import { UsuariosService } from '../../providers/usuarios.service';
@@ -14,7 +14,7 @@ describe('UsuariosComponent', () => {
     { id: 2, name: 'Normal User', username: 'user', email: 'user@test.com', role: 'ROLE_USER' }
   ];
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     usuariosService = {
       getUsuarios: jasmine.createSpy('getUsuarios').and.returnValue(of(mockUsuarios)),
       deleteUsuario: jasmine.createSpy('deleteUsuario').and.returnValue(of({}))

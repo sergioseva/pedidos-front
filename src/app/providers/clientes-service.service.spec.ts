@@ -20,7 +20,7 @@ describe('ClientesServiceService', () => {
       ]
     });
 
-    service = TestBed.get(ClientesServiceService);
+    service = TestBed.inject(ClientesServiceService);
   });
 
   it('should be created', () => {

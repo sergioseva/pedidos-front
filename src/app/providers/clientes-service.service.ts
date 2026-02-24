@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import { CustomHttpClientService } from '../services/custom-http-client.service';
 import { ClienteModel } from '../models/cliente.model';
-import { throwError } from 'rxjs/internal/observable/throwError';
+import { throwError } from 'rxjs';
 import { ConfigService } from './config.service';
 import { Observable } from 'rxjs';
 

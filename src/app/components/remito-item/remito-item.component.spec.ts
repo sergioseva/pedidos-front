@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RemitoItemComponent } from './remito-item.component';
@@ -9,7 +9,7 @@ describe('RemitoItemComponent', () => {
   let fixture: ComponentFixture<RemitoItemComponent>;
   let remitosService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     remitosService = {
       addRemitoItem: jasmine.createSpy('addRemitoItem')
     };

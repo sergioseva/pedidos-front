@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RemitoImpresoComponent } from './remito-impreso.component';
 import { RemitosService } from '../../../providers/remitos.service';
@@ -13,7 +13,7 @@ describe('RemitoImpresoComponent', () => {
   let fixture: ComponentFixture<RemitoImpresoComponent>;
   let printService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     const mockRemito = new RemitoModel();
     mockRemito.re_remito_k = 1;
 

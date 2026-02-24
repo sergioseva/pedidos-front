@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UsuarioComponent } from './usuario.component';
@@ -47,7 +47,7 @@ describe('UsuarioComponent', () => {
   });
 
   describe('new mode', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       createComponent({ id: 'nuevo' });
     }));
 
@@ -71,7 +71,7 @@ describe('UsuarioComponent', () => {
   });
 
   describe('edit mode', () => {
-    beforeEach(async(() => {
+    beforeEach(waitForAsync(() => {
       createComponent({ id: '1' });
     }));
 

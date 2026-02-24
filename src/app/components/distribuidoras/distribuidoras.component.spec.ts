@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { DistribuidorasComponent } from './distribuidoras.component';
 import { DistribuidoraService } from '../../providers/distribuidora.service';
@@ -9,7 +9,7 @@ describe('DistribuidorasComponent', () => {
   let fixture: ComponentFixture<DistribuidorasComponent>;
   let distribuidoraService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     distribuidoraService = {
       getDistribuidoras: jasmine.createSpy('getDistribuidoras').and.returnValue(of([
         { id: 1, descripcion: 'Dist A' },

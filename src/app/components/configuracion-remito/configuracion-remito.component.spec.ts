@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ConfiguracionRemitoComponent } from './configuracion-remito.component';
@@ -11,7 +11,7 @@ describe('ConfiguracionRemitoComponent', () => {
   let fixture: ComponentFixture<ConfiguracionRemitoComponent>;
   let configuracionRemitoService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     const config = new ConfiguracionRemitoModel();
     config.remitente = 'Test Sender';
 

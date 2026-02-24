@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ImportarCatalogoComponent } from './importar-catalogo.component';
 import { BatchStatisticsService } from '../../providers/batch-statistics.service';
@@ -10,7 +10,7 @@ describe('ImportarCatalogoComponent', () => {
   let fixture: ComponentFixture<ImportarCatalogoComponent>;
   let batchService: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     batchService = {
       getBatchStatistics: jasmine.createSpy('getBatchStatistics').and.returnValue(of({
         content: [{ id: 1, proceso: 'import' }],

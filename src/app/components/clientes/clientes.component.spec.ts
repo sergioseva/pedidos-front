@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ClientesComponent } from './clientes.component';
 import { ClientesServiceService } from '../../providers/clientes-service.service';
@@ -28,7 +28,7 @@ describe('ClientesComponent', () => {
     }
   };
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     clientesService = {
       getClientes: jasmine.createSpy('getClientes').and.returnValue(of(halResponse)),
       getClientesPage: jasmine.createSpy('getClientesPage').and.returnValue(of(halResponse)),
