@@ -6,7 +6,6 @@ import { DistribuidoraModel } from '../../models/distribuidora.model';
 import { DistribuidoraService } from '../../providers/distribuidora.service';
 import { LibrosService } from '../../providers/libros.service';
 import { LibroModel } from '../../models/libro.model';
-import { PedidoItemModel } from '../../models/pedido.item';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { PrintRemitoService } from '../../providers/print-remito.service';
@@ -24,44 +23,24 @@ export class RemitoComponent implements OnInit {
   distribuidoras: DistribuidoraModel[];
   distribuidoraSeleccionada: DistribuidoraModel;
   libros: LibroModel[];
+  filteredLibros: LibroModel[];
   cantItemsRemito = 0;
   loading = false;
   searchPerformed = false;
   modalRef: BsModalRef;
   itemModalRef: BsModalRef;
 
-  settings = {
-    noDataMessage: 'Busque un libro para agregarlo al remito',
-    actions: {
-      columnTitle: 'Acciones',
-      custom: [
-        {
-          name: 'agregarRemito',
-          title: '<i title="Agregar al remito" class="fa fa-plus-circle"></i> &nbsp;'
-        }
-      ],
-      add: false,
-      edit: false,
-      delete: false
-    },
-    columns: {
-      descripcion: {
-        title: 'Nombre',
-      },
-      autor: {
-        title: 'Autor'
-      },
-      precio: {
-        title: 'Precio',
-        valuePrepareFunction: (value) => '$ ' + Intl.NumberFormat('es-AR', {maximumFractionDigits: 0}).format(value)
-      },
-      editorial: {
-        title: 'Editorial'
-      },
-      isbn: {
-        title: 'ISBN'
-      }
-    }
+  // Sorting state
+  sortColumn = '';
+  sortDirection: 'asc' | 'desc' | '' = '';
+
+  // Column filters
+  filters: any = {
+    descripcion: '',
+    autor: '',
+    precio: '',
+    editorial: '',
+    isbn: ''
   };
 
   constructor(private remitosService: RemitosService,
@@ -151,7 +130,7 @@ export class RemitoComponent implements OnInit {
     }, 300);
   }
 
-  onCustom(event: any) {
+  agregarAlRemito(libro: LibroModel) {
     if (this.remito.finalizado) {
       Swal.fire({
         title: 'Remito Finalizado',
@@ -161,11 +140,11 @@ export class RemitoComponent implements OnInit {
       return;
     }
     const item = new RemitoItemModel();
-    item.ri_nombre_libro = event.data.descripcion;
-    item.ri_autor = event.data.autor;
-    item.ri_editorial = event.data.editorial;
-    item.ri_precio = event.data.precio;
-    item.ri_isbn = event.data.isbn;
+    item.ri_nombre_libro = libro.descripcion;
+    item.ri_autor = libro.autor;
+    item.ri_editorial = libro.editorial;
+    item.ri_precio = libro.precio;
+    item.ri_isbn = libro.isbn;
     item.ri_cantidad = 1;
     this.remitosService.addRemitoItem(item);
     Swal.fire({
@@ -183,6 +162,7 @@ export class RemitoComponent implements OnInit {
     this.librosService.buscarLibros(termino).subscribe(
       (libros: any[]) => {
         this.libros = libros;
+        this.applyFiltersAndSort();
         this.loading = false;
         this.searchPerformed = true;
       },
@@ -190,6 +170,65 @@ export class RemitoComponent implements OnInit {
         this.loading = false;
       }
     );
+  }
+
+  // --- Filtering ---
+  onFilterChange() {
+    this.applyFiltersAndSort();
+  }
+
+  // --- Sorting ---
+  toggleSort(column: string) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : this.sortDirection === 'desc' ? '' : 'asc';
+      if (this.sortDirection === '') {
+        this.sortColumn = '';
+      }
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+    this.applyFiltersAndSort();
+  }
+
+  applyFiltersAndSort() {
+    if (!this.libros) {
+      this.filteredLibros = [];
+      return;
+    }
+    let result = this.libros.slice();
+
+    // Apply filters
+    Object.keys(this.filters).forEach(key => {
+      const filterValue = (this.filters[key] || '').toLowerCase();
+      if (filterValue) {
+        result = result.filter(libro => {
+          const val = libro[key];
+          return val != null && String(val).toLowerCase().includes(filterValue);
+        });
+      }
+    });
+
+    // Apply sort
+    if (this.sortColumn && this.sortDirection) {
+      result.sort((a, b) => {
+        const valA = a[this.sortColumn] || '';
+        const valB = b[this.sortColumn] || '';
+        let comparison = 0;
+        if (typeof valA === 'number' && typeof valB === 'number') {
+          comparison = valA - valB;
+        } else {
+          comparison = String(valA).localeCompare(String(valB));
+        }
+        return this.sortDirection === 'desc' ? -comparison : comparison;
+      });
+    }
+
+    this.filteredLibros = result;
+  }
+
+  formatPrecio(value: number): string {
+    return '$ ' + Intl.NumberFormat('es-AR', {maximumFractionDigits: 0}).format(value);
   }
 
   openItemModal(template: TemplateRef<any>) {

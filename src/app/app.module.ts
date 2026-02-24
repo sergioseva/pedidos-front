@@ -29,7 +29,6 @@ import { from, of, Observable, ObservableInput } from 'rxjs';
 import { ClienteComponent } from './components/cliente/cliente/cliente.component';
 import { LibrosComponent } from './components/libros/libros.component';
 import { LibroImagenPipe } from './pipes/libro-imagen.pipe';
-import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { PedidoComponent } from './components/pedido/pedido.component';
 import { ConfigService } from './providers/config.service';
 import { catchError, map } from 'rxjs/operators';
@@ -125,7 +124,6 @@ export function load(http: HttpClient, config: ConfigService): (() => Promise<bo
     ModalModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,
-    Ng2SmartTableModule,
     NgSelectModule
   ],
 

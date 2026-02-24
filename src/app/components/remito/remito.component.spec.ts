@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RemitoComponent } from './remito.component';
 import { RemitosService } from '../../providers/remitos.service';
 import { DistribuidoraService } from '../../providers/distribuidora.service';
@@ -34,7 +34,7 @@ describe('RemitoComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [RemitoComponent],
-      imports: [ReactiveFormsModule],
+      imports: [FormsModule, ReactiveFormsModule],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: RemitosService, useValue: remitosService },
@@ -80,13 +80,11 @@ describe('RemitoComponent', () => {
     });
   });
 
-  describe('onCustom', () => {
+  describe('agregarAlRemito', () => {
     it('should map book to RemitoItemModel and add', () => {
-      const event = {
-        data: { descripcion: 'Book', autor: 'Author', editorial: 'Ed', precio: 100, isbn: '123' }
-      };
+      const libro: any = { descripcion: 'Book', autor: 'Author', editorial: 'Ed', precio: 100, isbn: '123' };
 
-      component.onCustom(event);
+      component.agregarAlRemito(libro);
 
       expect(remitosService.addRemitoItem).toHaveBeenCalled();
     });
@@ -96,6 +94,29 @@ describe('RemitoComponent', () => {
     it('should reset form and generate new remito', () => {
       component.onReiniciar();
       expect(remitosService.generarNuevoRemito).toHaveBeenCalled();
+    });
+  });
+
+  describe('filtering and sorting', () => {
+    it('should filter libros by column', () => {
+      component.libros = [
+        { descripcion: 'Angular Book', autor: 'Author A' } as any,
+        { descripcion: 'React Book', autor: 'Author B' } as any
+      ];
+      component.filters.descripcion = 'Angular';
+      component.applyFiltersAndSort();
+      expect(component.filteredLibros.length).toBe(1);
+    });
+
+    it('should sort libros ascending', () => {
+      component.libros = [
+        { descripcion: 'Zebra' } as any,
+        { descripcion: 'Alpha' } as any
+      ];
+      component.sortColumn = 'descripcion';
+      component.sortDirection = 'asc';
+      component.applyFiltersAndSort();
+      expect(component.filteredLibros[0].descripcion).toBe('Alpha');
     });
   });
 });

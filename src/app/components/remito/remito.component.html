@@ -142,9 +142,73 @@
                     <i class="fa fa-info-circle" style="margin-right: 0.25rem;"></i>{{libros.length}} resultado{{libros.length !== 1 ? 's' : ''}}
                 </div>
 
-                <ng2-smart-table [settings]="settings" [source]="libros"
-                                (custom)="onCustom($event)"
-                                ></ng2-smart-table>
+                <div style="overflow-x: auto;">
+                  <table class="table" style="margin-bottom: 0;">
+                    <thead>
+                      <tr>
+                        <th style="width: 80px;">Acciones</th>
+                        <th style="min-width: 180px; cursor: pointer;" (click)="toggleSort('descripcion')">
+                          Nombre
+                          <i *ngIf="sortColumn === 'descripcion' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                          <i *ngIf="sortColumn === 'descripcion' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                          <i *ngIf="sortColumn !== 'descripcion'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                        </th>
+                        <th style="min-width: 120px; cursor: pointer;" (click)="toggleSort('autor')">
+                          Autor
+                          <i *ngIf="sortColumn === 'autor' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                          <i *ngIf="sortColumn === 'autor' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                          <i *ngIf="sortColumn !== 'autor'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                        </th>
+                        <th style="min-width: 90px; cursor: pointer;" (click)="toggleSort('precio')">
+                          Precio
+                          <i *ngIf="sortColumn === 'precio' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                          <i *ngIf="sortColumn === 'precio' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                          <i *ngIf="sortColumn !== 'precio'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                        </th>
+                        <th style="min-width: 120px; cursor: pointer;" (click)="toggleSort('editorial')">
+                          Editorial
+                          <i *ngIf="sortColumn === 'editorial' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                          <i *ngIf="sortColumn === 'editorial' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                          <i *ngIf="sortColumn !== 'editorial'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                        </th>
+                        <th style="min-width: 100px; cursor: pointer;" (click)="toggleSort('isbn')">
+                          ISBN
+                          <i *ngIf="sortColumn === 'isbn' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                          <i *ngIf="sortColumn === 'isbn' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                          <i *ngIf="sortColumn !== 'isbn'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                        </th>
+                      </tr>
+                      <tr>
+                        <th></th>
+                        <th><input type="text" class="form-control form-control-sm" [(ngModel)]="filters.descripcion" (ngModelChange)="onFilterChange()" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="form-control form-control-sm" [(ngModel)]="filters.autor" (ngModelChange)="onFilterChange()" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="form-control form-control-sm" [(ngModel)]="filters.precio" (ngModelChange)="onFilterChange()" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="form-control form-control-sm" [(ngModel)]="filters.editorial" (ngModelChange)="onFilterChange()" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="form-control form-control-sm" [(ngModel)]="filters.isbn" (ngModelChange)="onFilterChange()" placeholder="Filtrar..."></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let libro of filteredLibros">
+                        <td>
+                          <div class="table-actions">
+                            <button title="Agregar al remito" (click)="agregarAlRemito(libro)" type="button" class="btn btn-icon">
+                              <i class="fa fa-plus-circle"></i>
+                            </button>
+                          </div>
+                        </td>
+                        <td>{{libro.descripcion}}</td>
+                        <td>{{libro.autor}}</td>
+                        <td>{{formatPrecio(libro.precio)}}</td>
+                        <td>{{libro.editorial}}</td>
+                        <td>{{libro.isbn}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div *ngIf="!loading && (!filteredLibros || filteredLibros.length === 0)" style="text-align: center; padding: 2rem 1rem; color: #8C7A6A;">
+                  <i class="fa fa-book" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; opacity: 0.4;"></i>
+                  Busque un libro para agregarlo al remito
+                </div>
             </div>
         </div>
     </div>
