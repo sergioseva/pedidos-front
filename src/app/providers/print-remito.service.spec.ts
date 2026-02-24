@@ -1,13 +1,13 @@
-import { PrintPedidoService } from './print-pedido.service';
+import { PrintRemitoService } from './print-remito.service';
 import { mockRouter } from '../testing/test-helpers';
 
-describe('PrintPedidoService', () => {
-  let service: PrintPedidoService;
+describe('PrintRemitoService', () => {
+  let service: PrintRemitoService;
   let router: any;
 
   beforeEach(() => {
     router = mockRouter();
-    service = new PrintPedidoService(router);
+    service = new PrintRemitoService(router);
   });
 
   it('should be created', () => {
@@ -18,18 +18,16 @@ describe('PrintPedidoService', () => {
     expect(service.isPrinting).toBe(false);
   });
 
-  describe('imprimirPedido', () => {
+  describe('imprimirRemito', () => {
     it('should set isPrinting to true', () => {
-      service.imprimirPedido(1);
-
+      service.imprimirRemito(1);
       expect(service.isPrinting).toBe(true);
     });
 
-    it('should navigate to print outlet with pedidoId', () => {
-      service.imprimirPedido(42);
-
+    it('should navigate to print outlet with remitoId', () => {
+      service.imprimirRemito(42);
       expect(router.navigate).toHaveBeenCalledWith(['/', {
-        outlets: { 'print': ['print', 'printpedido', 42] }
+        outlets: { 'print': ['print', 'printremito', 42] }
       }]);
     });
   });

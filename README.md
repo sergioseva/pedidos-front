@@ -54,6 +54,28 @@ This config handles proxying `/api/` requests to the backend container (`pedidos
 
 The `deploy/config/config.json` file should also be mounted to `/usr/share/nginx/html/config.json` if you need to override the default backend URL.
 
+## CI/CD
+
+Automated via GitHub Actions (`.github/workflows/release.yml`):
+
+- **Push to `master`** → builds and pushes `ghcr.io/sergioseva/pedidos-front:master` → deploys to staging (`test.librosmario.store`)
+- **Push tag `v*`** → builds and pushes `:v1.0.0` + `:latest` → deploys to production (`pedidos.librosmario.store`)
+
+### Rollback
+
+Go to **Actions > Rollback > Run workflow**, pick the version tag (e.g. `v1.0.0`) and environment.
+
+### Version check
+
+The running version is available at:
+
+```bash
+curl https://pedidos.librosmario.store/version.json
+# {"version":"v1.0.0"}
+```
+
+On staging the version shows `master`.
+
 ## Other Commands
 
 - **Build**: `ng build` (production: `ng build --prod`)
