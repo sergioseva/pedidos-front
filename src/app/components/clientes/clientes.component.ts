@@ -122,7 +122,7 @@ export class ClientesComponent implements OnInit {
                           .catch( idCliente => Swal.fire({
                                                     title: 'Cliente',
                                                     text: `El cliente tiene pedidos, no se puede eliminar` ,
-                                                    type: 'error'
+                                                    icon: 'error'
                                  }));
 }
 
@@ -130,7 +130,7 @@ borrarCliente(cliente: ClienteModel) {
       Swal.fire({
         title: '¿Está seguro?',
         text: `Está seguro que desea borrar a ${ cliente.nombre }`,
-        type: 'question',
+        icon: 'question',
         showConfirmButton: true,
         showCancelButton: true
       }).then( resp => {
@@ -140,7 +140,7 @@ borrarCliente(cliente: ClienteModel) {
                 err => {Swal.fire({
                   title: 'Cliente',
                   text: `Error al procesar la operacion` ,
-                  type: 'error'
+                  icon: 'error'
                 });}
             );
           }

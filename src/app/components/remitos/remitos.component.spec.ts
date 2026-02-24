@@ -60,7 +60,7 @@ describe('RemitosComponent', () => {
     });
 
     it('should handle error', () => {
-      remitosService.buscarRemitos.and.returnValue(throwError({ error: { message: 'fail' } }));
+      remitosService.buscarRemitos.and.returnValue(throwError(() => ({ error: { message: 'fail' } })));
 
       component.buscarTermino('test');
 

@@ -126,7 +126,7 @@ export class UsuarioComponent implements OnInit {
 
     Swal.fire({
       allowOutsideClick: false,
-      type: 'info',
+      icon: 'info',
       text: 'Espere por favor...'
     });
     Swal.showLoading();
@@ -139,7 +139,7 @@ export class UsuarioComponent implements OnInit {
           Swal.fire({
             title: 'Usuario',
             text: 'Se procesó correctamente',
-            type: 'success'
+            icon: 'success'
           });
           this.router.navigate(['/usuarios']);
         },
@@ -147,7 +147,7 @@ export class UsuarioComponent implements OnInit {
           Swal.fire({
             title: 'Usuario',
             text: err.error.message || 'Error al procesar la operacion',
-            type: 'error'
+            icon: 'error'
           });
         }
       );
@@ -167,7 +167,7 @@ export class UsuarioComponent implements OnInit {
           Swal.fire({
             title: 'Usuario',
             text: 'Se procesó correctamente',
-            type: 'success'
+            icon: 'success'
           });
           this.router.navigate(['/usuarios']);
         },
@@ -175,7 +175,7 @@ export class UsuarioComponent implements OnInit {
           Swal.fire({
             title: 'Usuario',
             text: err.error.message || 'Error al procesar la operacion',
-            type: 'error'
+            icon: 'error'
           });
         }
       );

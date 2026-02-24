@@ -114,7 +114,7 @@ export class RegistroComponent implements OnInit {
     if (this.formRegistrar.invalid) {return;}
     Swal.fire({
       allowOutsideClick: false,
-      type: 'info',
+      icon: 'info',
       text: 'Espere por favor...'
     });
     Swal.showLoading();
@@ -130,7 +130,7 @@ export class RegistroComponent implements OnInit {
                 respagregar => {
                   Swal.close();
                   Swal.fire({
-                  type: 'info',
+                  icon: 'info',
                   text: 'Usuario agregado!'
                 });
                 this.router.navigateByUrl('/login');
@@ -138,32 +138,32 @@ export class RegistroComponent implements OnInit {
                 err => {
                   console.log(err);
                   Swal.fire({
-                  type: 'error',title: 'Error al agregar usuario', text: err.error.message
+                  icon: 'error',title: 'Error al agregar usuario', text: err.error.message
                 });}
               );
             } else {
               Swal.fire({
-                type: 'error', title: 'Error al agregar usuario',text:'El id del usuario ya existe'
+                icon: 'error', title: 'Error al agregar usuario',text:'El id del usuario ya existe'
               });
             }
           }, (err) => {
 
 
             Swal.fire({
-              type: 'error', title: 'Error al agregar usuario',text: err.error.message
+              icon: 'error', title: 'Error al agregar usuario',text: err.error.message
             });
           });
 
         } else {
           Swal.fire({
-            type: 'error', title: 'Error al agregar usuario',text:'El email del usuario ya existe'
+            icon: 'error', title: 'Error al agregar usuario',text:'El email del usuario ya existe'
           });
         }
       }, (err) => {
 
         console.log(err);
         Swal.fire({
-          type: 'error',title: 'Error al agregar usuario',text: err.error.message
+          icon: 'error',title: 'Error al agregar usuario',text: err.error.message
         });
       });
 

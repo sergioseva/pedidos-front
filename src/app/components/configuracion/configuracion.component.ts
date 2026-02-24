@@ -54,14 +54,14 @@ export class ConfiguracionComponent implements OnInit {
         Swal.fire({
           title: 'Configuracion',
           text: 'Se guardo correctamente',
-          type: 'success'
+          icon: 'success'
         });
       },
       err => {
         Swal.fire({
           title: 'Configuracion',
           text: 'Error al guardar la configuracion',
-          type: 'error'
+          icon: 'error'
         });
       }
     );
@@ -78,14 +78,14 @@ export class ConfiguracionComponent implements OnInit {
         Swal.fire({
           title: 'Logo',
           text: 'Logo subido correctamente',
-          type: 'success'
+          icon: 'success'
         });
       },
       err => {
         Swal.fire({
           title: 'Logo',
           text: 'Error al subir el logo',
-          type: 'error'
+          icon: 'error'
         });
       }
     );
@@ -99,14 +99,14 @@ export class ConfiguracionComponent implements OnInit {
         Swal.fire({
           title: 'Logo',
           text: 'Logo eliminado correctamente',
-          type: 'success'
+          icon: 'success'
         });
       },
       err => {
         Swal.fire({
           title: 'Logo',
           text: 'Error al eliminar el logo',
-          type: 'error'
+          icon: 'error'
         });
       }
     );

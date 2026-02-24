@@ -181,7 +181,7 @@ export class LibrosComponent implements OnInit {
     Swal.fire({
       title: 'Confirmar',
       text: 'Esta seguro que desea eliminar este libro?',
-      type: 'warning',
+      icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Si, eliminar',
       cancelButtonText: 'Cancelar'
@@ -205,7 +205,7 @@ export class LibrosComponent implements OnInit {
       Swal.fire({
         title: 'Pedido Finalizado',
         text: 'El pedido ya fue finalizado. Pulse Reiniciar para generar uno nuevo.',
-        type: 'warning'
+        icon: 'warning'
       });
       return;
     }
@@ -221,7 +221,7 @@ export class LibrosComponent implements OnInit {
     Swal.fire({
       toast: true,
       position: 'top-end',
-      type: 'success',
+      icon: 'success',
       title: 'Libro agregado al pedido',
       showConfirmButton: false,
       timer: 1500

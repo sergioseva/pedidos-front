@@ -45,14 +45,14 @@ export class ConfiguracionRemitoComponent implements OnInit {
         Swal.fire({
           title: 'Configuracion Remito',
           text: 'Se guardo correctamente',
-          type: 'success'
+          icon: 'success'
         });
       },
       err => {
         Swal.fire({
           title: 'Configuracion Remito',
           text: 'Error al guardar la configuracion',
-          type: 'error'
+          icon: 'error'
         });
       }
     );

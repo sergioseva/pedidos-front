@@ -83,7 +83,7 @@ export class ClienteComponent implements OnInit {
       Swal.fire({
         title: 'CLiente',
         text: `Se procesó correctamente`,
-        type: 'success'
+        icon: 'success'
       });
       this.router.navigate(['/clientes']);
     },
@@ -91,7 +91,7 @@ export class ClienteComponent implements OnInit {
       Swal.fire({
         title: 'Cliente',
         text: `Error al procesar la operacion`,
-        type: 'error'
+        icon: 'error'
       });
     });
 

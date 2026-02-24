@@ -64,7 +64,7 @@ export class PedidoComponent implements OnInit {
     Swal.fire({
       title: 'Confirmar',
       text: 'Esta seguro que desea finalizar el pedido? No podra modificarlo despues.',
-      type: 'warning',
+      icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Si, finalizar',
       cancelButtonText: 'Cancelar'
@@ -80,7 +80,7 @@ export class PedidoComponent implements OnInit {
     Swal.fire({
       title: 'Espere',
       text: 'Generando el pedido',
-      type: 'info',
+      icon: 'info',
       allowOutsideClick: false
     });
     Swal.showLoading();
@@ -90,7 +90,7 @@ export class PedidoComponent implements OnInit {
                   Swal.fire({
                   title: 'Pedido',
                   text: `Pedido ingresado!`,
-                  type: 'success'
+                  icon: 'success'
         });
         this.pedido.id = resp['id'];
         console.log(this.pedido.id);
@@ -99,7 +99,7 @@ export class PedidoComponent implements OnInit {
         err => {      Swal.fire({
                       title: 'Pedido',
                       text: 'Error al ingresar el pedido, ud está en el horno',
-                      type: 'error'
+                      icon: 'error'
         }); }
 
     );
@@ -138,7 +138,7 @@ export class PedidoComponent implements OnInit {
     Swal.fire({
       title: 'Espere',
       text: 'Guardando cliente...',
-      type: 'info',
+      icon: 'info',
       allowOutsideClick: false
     });
     Swal.showLoading();
@@ -157,7 +157,7 @@ export class PedidoComponent implements OnInit {
         Swal.fire({
           title: 'Cliente',
           text: 'Error al guardar el cliente',
-          type: 'error'
+          icon: 'error'
         });
       }
     );

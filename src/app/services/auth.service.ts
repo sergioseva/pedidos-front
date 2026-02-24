@@ -4,7 +4,7 @@ import { UsuarioModel } from '../models/usuario.model';
 
 import { map } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
-import * as jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 import { ConfigService } from '../providers/config.service';
 
 @Injectable({
@@ -152,7 +152,7 @@ export class AuthService {
   }
 
   getTokenExpirationDate(token: string): Date {
-    const decoded = jwt_decode(token);
+    const decoded: any = jwt_decode(token);
 
     if (decoded.exp === undefined) return null;
 

@@ -32,6 +32,9 @@
                             "src/assets/jquery/jquery-3.3.1.slim.min.js",
                             "src/assets/tether/tether.min.js",
                             "src/assets/b4/js/bootstrap.min.js"
+                        ],
+                        "allowedCommonJsDependencies": [
+                            "sweetalert2"
                         ]
                     },
                     "configurations": {
@@ -43,8 +46,6 @@
                             "optimization": true,
                             "outputHashing": "all",
                             "sourceMap": false,
-                            "namedChunks": false,
-                            "aot": true,
                             "extractLicenses": true,
                             "vendorChunk": false,
                             "buildOptimizer": true,
@@ -53,6 +54,10 @@
                                 "maximumWarning": "2mb",
                                 "maximumError": "5mb"
                             }]
+                        },
+                        "development": {
+                            "optimization": false,
+                            "sourceMap": true
                         }
                     },
                     "defaultConfiguration": "production"
@@ -65,8 +70,12 @@
                     "configurations": {
                         "production": {
                             "browserTarget": "libreria:build:production"
+                        },
+                        "development": {
+                            "browserTarget": "libreria:build:development"
                         }
-                    }
+                    },
+                    "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -77,8 +86,7 @@
                 "test": {
                     "builder": "@angular-devkit/build-angular:karma",
                     "options": {
-                        "main": "src/test.ts",
-                        "polyfills": "src/polyfills.ts",
+                        "polyfills": ["zone.js", "zone.js/testing"],
                         "tsConfig": "src/tsconfig.spec.json",
                         "karmaConfig": "src/karma.conf.js",
                         "styles": [
@@ -90,9 +98,20 @@
                             "src/assets"
                         ]
                     }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "src/**/*.ts",
+                            "src/**/*.html"
+                        ]
+                    }
                 }
             }
         }
     },
-    "defaultProject": "libreria"
+    "cli": {
+      "analytics": "66bacd46-03d8-4889-b9ec-d302254e44c9"
+    }
 }

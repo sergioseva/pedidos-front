@@ -4,16 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Angular 7 order management system for a bookstore ("Libros Mario"). Manages orders (pedidos), clients, and a book catalog with ISBN lookup via OpenLibrary. Spanish-language codebase.
+Angular 16 order management system for a bookstore ("Libros Mario"). Manages orders (pedidos), clients, and a book catalog with ISBN lookup via OpenLibrary. Spanish-language codebase.
 
 ## Commands
 
-- **Dev server**: `npm start` (requires Node ≤16). On Node 17+, use `npm run start:legacy`
-- **Build**: `ng build` (production: `ng build --prod`)
+- **Dev server**: `npm start` (requires Node 18+)
+- **Build**: `ng build` (production: `ng build --configuration production`)
 - **Unit tests**: `ng test`
 - **Single test**: modify the spec file's `describe`/`it` to `fdescribe`/`fit`, then `ng test`
 - **Lint**: `ng lint`
-- **E2E tests**: `ng e2e`
 
 ## Configuration
 
@@ -57,10 +56,11 @@ JWT tokens stored in `localStorage` (`'token'` and `'expira'` keys). Token decod
 
 ## Linting Rules
 
+ESLint with `@angular-eslint` and `@typescript-eslint`. Config in `.eslintrc.json`.
 - Single quotes, semicolons required, triple-equals enforced
 - Max line length: 140 characters
 - Component prefix: `app-`
 
 ## Deployment
 
-Multi-stage Dockerfile: Node builder → Nginx Alpine. Output goes to `dist/libreria/`.
+Multi-stage Dockerfile: Node 18 builder → Nginx Alpine. Output goes to `dist/libreria/`.

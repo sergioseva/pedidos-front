@@ -45,7 +45,7 @@ export class UsuariosComponent implements OnInit {
     Swal.fire({
       title: '¿Está seguro?',
       text: `Está seguro que desea borrar al usuario ${usuario.username}`,
-      type: 'question',
+      icon: 'question',
       showConfirmButton: true,
       showCancelButton: true
     }).then(resp => {
@@ -56,7 +56,7 @@ export class UsuariosComponent implements OnInit {
             Swal.fire({
               title: 'Usuario',
               text: 'Error al procesar la operacion',
-              type: 'error'
+              icon: 'error'
             });
           }
         );

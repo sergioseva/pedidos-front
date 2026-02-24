@@ -42,7 +42,7 @@ export class DistribuidorasComponent implements OnInit {
     Swal.fire({
       title: '¿Está seguro?',
       text: `Está seguro que desea borrar a ${distribuidora.descripcion}`,
-      type: 'question',
+      icon: 'question',
       showConfirmButton: true,
       showCancelButton: true
     }).then(resp => {
@@ -53,7 +53,7 @@ export class DistribuidorasComponent implements OnInit {
             Swal.fire({
               title: 'Distribuidora',
               text: 'Error al procesar la operacion',
-              type: 'error'
+              icon: 'error'
             });
           }
         );

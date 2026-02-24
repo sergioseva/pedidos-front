@@ -64,7 +64,7 @@ export class PedidoDistribuidoraComponent implements OnInit {
       Swal.fire({
         title: 'Espere',
         text: 'Confirmando el pedido',
-        type: 'info',
+        icon: 'info',
         allowOutsideClick: false
       });
       Swal.showLoading();
@@ -76,7 +76,7 @@ export class PedidoDistribuidoraComponent implements OnInit {
         err => {Swal.fire({
                   title: 'Confirmar Pedido',
                   text: `Error al procesar la operacion` ,
-                  type: 'error'
+                  icon: 'error'
                 });}
       );
   }
@@ -127,7 +127,7 @@ export class PedidoDistribuidoraComponent implements OnInit {
     Swal.fire({
       title: 'Espere',
       text: `Confirmando ${selected.length} item(s)`,
-      type: 'info',
+      icon: 'info',
       allowOutsideClick: false
     });
     Swal.showLoading();
@@ -142,7 +142,7 @@ export class PedidoDistribuidoraComponent implements OnInit {
         Swal.fire({
           title: 'Confirmar Pedido',
           text: 'Error al procesar la operacion',
-          type: 'error'
+          icon: 'error'
         });
       }
     );

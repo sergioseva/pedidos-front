@@ -1,10 +1,10 @@
 # pedidos-front
 
-Angular 7 order management system for "Libros Mario" bookstore. Manages orders, clients, and a book catalog.
+Angular 16 order management system for "Libros Mario" bookstore. Manages orders, clients, and a book catalog.
 
 ## Prerequisites
 
-- Node.js (v14–v16 recommended)
+- Node.js v18+
 - npm
 
 ## Setup
@@ -16,11 +16,7 @@ npm install
 ## Running
 
 ```bash
-# Node 14–16
 npm start
-
-# Node 17+ (requires OpenSSL legacy provider)
-npm run start:legacy
 ```
 
 The app runs at http://localhost:4200/.
@@ -78,7 +74,6 @@ On staging the version shows `master`.
 
 ## Other Commands
 
-- **Build**: `ng build` (production: `ng build --prod`)
+- **Build**: `ng build` (production: `ng build --configuration production`)
 - **Unit tests**: `ng test`
 - **Lint**: `ng lint`
-- **E2E tests**: `ng e2e`

@@ -39,7 +39,7 @@ export class ImportarCatalogoComponent implements OnInit {
     Swal.fire({
       title: 'Importando',
       text: `Subiendo ${this.selectedFile.name}...`,
-      type: 'info',
+      icon: 'info',
       allowOutsideClick: false
     });
     Swal.showLoading();
@@ -51,7 +51,7 @@ export class ImportarCatalogoComponent implements OnInit {
         Swal.fire({
           title: 'Importacion finalizada',
           text: 'El archivo fue importado correctamente',
-          type: 'success'
+          icon: 'success'
         });
         this.loadPage(1);
       },
@@ -63,7 +63,7 @@ export class ImportarCatalogoComponent implements OnInit {
         Swal.fire({
           title: 'Error',
           text: mensaje,
-          type: 'error'
+          icon: 'error'
         });
       }
     );

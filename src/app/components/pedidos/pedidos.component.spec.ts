@@ -62,7 +62,7 @@ describe('PedidosComponent', () => {
     });
 
     it('should handle error', () => {
-      pedidosService.buscarPedidos.and.returnValue(throwError({ error: { message: 'fail' } }));
+      pedidosService.buscarPedidos.and.returnValue(throwError(() => ({ error: { message: 'fail' } })));
 
       component.buscarTermino('test');
 

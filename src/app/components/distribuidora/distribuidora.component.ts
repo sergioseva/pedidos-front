@@ -64,7 +64,7 @@ export class DistribuidoraComponent implements OnInit {
       Swal.fire({
         title: 'Distribuidora',
         text: 'Se procesó correctamente',
-        type: 'success'
+        icon: 'success'
       });
       this.router.navigate(['/distribuidoras']);
     },
@@ -72,7 +72,7 @@ export class DistribuidoraComponent implements OnInit {
       Swal.fire({
         title: 'Distribuidora',
         text: 'Error al procesar la operacion',
-        type: 'error'
+        icon: 'error'
       });
     });
   }

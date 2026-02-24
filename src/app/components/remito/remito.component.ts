@@ -78,7 +78,7 @@ export class RemitoComponent implements OnInit {
     Swal.fire({
       title: 'Confirmar',
       text: 'Esta seguro que desea finalizar el remito? No podra modificarlo despues.',
-      type: 'warning',
+      icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Si, finalizar',
       cancelButtonText: 'Cancelar'
@@ -94,7 +94,7 @@ export class RemitoComponent implements OnInit {
     Swal.fire({
       title: 'Espere',
       text: 'Generando el remito',
-      type: 'info',
+      icon: 'info',
       allowOutsideClick: false
     });
     Swal.showLoading();
@@ -104,7 +104,7 @@ export class RemitoComponent implements OnInit {
         Swal.fire({
           title: 'Remito',
           text: 'Remito ingresado!',
-          type: 'success'
+          icon: 'success'
         });
         this.remito.re_remito_k = resp['re_remito_k'];
         this.remitosService.finalizarRemito();
@@ -113,7 +113,7 @@ export class RemitoComponent implements OnInit {
         Swal.fire({
           title: 'Remito',
           text: 'Error al ingresar el remito',
-          type: 'error'
+          icon: 'error'
         });
       }
     );
@@ -135,7 +135,7 @@ export class RemitoComponent implements OnInit {
       Swal.fire({
         title: 'Remito Finalizado',
         text: 'El remito ya fue finalizado. Pulse Reiniciar para generar uno nuevo.',
-        type: 'warning'
+        icon: 'warning'
       });
       return;
     }
@@ -150,7 +150,7 @@ export class RemitoComponent implements OnInit {
     Swal.fire({
       toast: true,
       position: 'top-end',
-      type: 'success',
+      icon: 'success',
       title: 'Libro agregado al remito',
       showConfirmButton: false,
       timer: 1500
