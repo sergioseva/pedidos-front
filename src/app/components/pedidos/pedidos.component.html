@@ -32,16 +32,41 @@
         <thead>
             <tr>
                 <th width="5%" scope="col"></th>
-                <th width="25%" scope="col">Cliente</th>
-                <th width="15%" scope="col">Fecha</th>
-                <th width="10%" scope="col">Total</th>
-                <th width="10%" scope="col">Seña</th>
-                <th width="20%" scope="col">Observaciones</th>
+                <th width="25%" scope="col" style="cursor: pointer;" (click)="toggleSort('cliente.nombre')">
+                    Cliente
+                    <i *ngIf="sortColumn === 'cliente.nombre' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'cliente.nombre' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'cliente.nombre'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th width="15%" scope="col" style="cursor: pointer;" (click)="toggleSort('fecha')">
+                    Fecha
+                    <i *ngIf="sortColumn === 'fecha' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'fecha' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'fecha'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th width="10%" scope="col" style="cursor: pointer;" (click)="toggleSort('total')">
+                    Total
+                    <i *ngIf="sortColumn === 'total' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'total' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'total'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th width="10%" scope="col" style="cursor: pointer;" (click)="toggleSort('senia')">
+                    Seña
+                    <i *ngIf="sortColumn === 'senia' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'senia' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'senia'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th width="20%" scope="col" style="cursor: pointer;" (click)="toggleSort('observaciones')">
+                    Observaciones
+                    <i *ngIf="sortColumn === 'observaciones' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'observaciones' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'observaciones'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
                 <th width="20%" scope="col">Libros</th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let pedido of pedidos">
+            <tr *ngFor="let pedido of filteredPedidos">
                 <td>
                     <button title="Imprimir" (click)="imprimir(pedido)" type="button" class="btn btn-icon">
                         <i class="fa fa-print"></i>

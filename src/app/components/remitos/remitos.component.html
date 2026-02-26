@@ -32,14 +32,29 @@
         <thead>
             <tr>
                 <th width="5%" scope="col"></th>
-                <th width="20%" scope="col">Distribuidora</th>
-                <th width="15%" scope="col">Fecha</th>
-                <th width="15%" scope="col">Observaciones</th>
+                <th width="20%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_distribuidora_ed.descripcion')">
+                    Distribuidora
+                    <i *ngIf="sortColumn === 're_distribuidora_ed.descripcion' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 're_distribuidora_ed.descripcion' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 're_distribuidora_ed.descripcion'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th width="15%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_fecha')">
+                    Fecha
+                    <i *ngIf="sortColumn === 're_fecha' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 're_fecha' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 're_fecha'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th width="15%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_observaciones')">
+                    Observaciones
+                    <i *ngIf="sortColumn === 're_observaciones' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 're_observaciones' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 're_observaciones'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
                 <th width="45%" scope="col">Items</th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let remito of remitos">
+            <tr *ngFor="let remito of filteredRemitos">
                 <td>
                     <button title="Imprimir" (click)="imprimir(remito)" type="button" class="btn btn-icon">
                         <i class="fa fa-print"></i>

@@ -14,12 +14,16 @@ import { PrintPedidoService } from 'src/app/providers/print-pedido.service';
 export class PedidosComponent implements OnInit {
 
   pedidos: any[];
+  filteredPedidos: any[] = [];
   fromDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   toDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   loading: boolean = false;
   error: boolean = false;
   errMessage: string;
   searchPerformed: boolean = false;
+
+  sortColumn = '';
+  sortDirection: 'asc' | 'desc' | '' = '';
 
   constructor(public printService: PrintPedidoService, private ps: PedidosService, private datePipe: DatePipe, private cdr: ChangeDetectorRef) { }
 
@@ -43,6 +47,7 @@ export class PedidosComponent implements OnInit {
       .subscribe( (data: any) => {
       console.log(data);
       this.pedidos = data;
+      this.applySort();
       this.loading = false;
       this.error = false;
       this.searchPerformed = true;
@@ -54,6 +59,46 @@ export class PedidosComponent implements OnInit {
       this.errMessage = (err.error && err.error.message) || 'Error al buscar pedidos';
       this.cdr.markForCheck();
     });
+  }
+
+  toggleSort(column: string) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : this.sortDirection === 'desc' ? '' : 'asc';
+      if (this.sortDirection === '') {
+        this.sortColumn = '';
+      }
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+    this.applySort();
+    this.cdr.markForCheck();
+  }
+
+  applySort() {
+    if (!this.pedidos) {
+      this.filteredPedidos = [];
+      return;
+    }
+    const result = this.pedidos.slice();
+    if (this.sortColumn && this.sortDirection) {
+      result.sort((a, b) => {
+        const valA = this.getNestedValue(a, this.sortColumn) ?? '';
+        const valB = this.getNestedValue(b, this.sortColumn) ?? '';
+        let comparison = 0;
+        if (typeof valA === 'number' && typeof valB === 'number') {
+          comparison = valA - valB;
+        } else {
+          comparison = String(valA).localeCompare(String(valB));
+        }
+        return this.sortDirection === 'desc' ? -comparison : comparison;
+      });
+    }
+    this.filteredPedidos = result;
+  }
+
+  private getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((o, k) => o?.[k], obj);
   }
 
   dateFilter(days:number){

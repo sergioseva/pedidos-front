@@ -12,31 +12,61 @@
                 </th>
                 <th scope="col" style="width: 40px;"></th>
                 <th scope="col">Distribuidora</th>
-                <th scope="col">Cantidad</th>
-                <th scope="col">Libro</th>
-                <th scope="col">Autor</th>
-                <th scope="col">Editorial</th>
-                <th scope="col">ISBN</th>
-                <th scope="col">Precio</th>
+                <th scope="col" style="cursor: pointer;" (click)="toggleSort('cantidad')">
+                    Cantidad
+                    <i *ngIf="sortColumn === 'cantidad' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'cantidad' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'cantidad'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th scope="col" style="cursor: pointer;" (click)="toggleSort('libro')">
+                    Libro
+                    <i *ngIf="sortColumn === 'libro' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'libro' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'libro'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th scope="col" style="cursor: pointer;" (click)="toggleSort('autor')">
+                    Autor
+                    <i *ngIf="sortColumn === 'autor' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'autor' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'autor'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th scope="col" style="cursor: pointer;" (click)="toggleSort('editorial')">
+                    Editorial
+                    <i *ngIf="sortColumn === 'editorial' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'editorial' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'editorial'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th scope="col" style="cursor: pointer;" (click)="toggleSort('isbn')">
+                    ISBN
+                    <i *ngIf="sortColumn === 'isbn' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'isbn' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'isbn'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
+                <th scope="col" style="cursor: pointer;" (click)="toggleSort('precio')">
+                    Precio
+                    <i *ngIf="sortColumn === 'precio' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'precio' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'precio'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                </th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let pedidoItem of pedidoItems; let i = index" [class.row-selected]="selectedItems[i]">
+            <tr *ngFor="let pedidoItem of filteredPedidoItems" [class.row-selected]="selectedItems[originalIndex(pedidoItem)]">
                 <td style="text-align: center;">
-                    <input type="checkbox" [ngModel]="selectedItems[i]" (change)="toggleItem(i)">
+                    <input type="checkbox" [ngModel]="selectedItems[originalIndex(pedidoItem)]" (change)="toggleItem(originalIndex(pedidoItem))">
                 </td>
                 <td>
-                    <button title="Confirmar" [disabled]="!distribuidoraSeleccionada[i]" (click)="confirmarPedido(pedidoItem,i)" type="button" class="btn btn-icon">
+                    <button title="Confirmar" [disabled]="!distribuidoraSeleccionada[originalIndex(pedidoItem)]" (click)="confirmarPedido(pedidoItem,originalIndex(pedidoItem))" type="button" class="btn btn-icon">
                         <i class="fa fa-check"></i>
                     </button>
                 </td>
                 <td>
                     <select class="form-control form-control-sm"
-                        (change)="onSelectChange($event, i)">
-                        <option value="" [selected]="!distribuidoraSeleccionada[i]">--</option>
+                        (change)="onSelectChange($event, originalIndex(pedidoItem))">
+                        <option value="" [selected]="!distribuidoraSeleccionada[originalIndex(pedidoItem)]">--</option>
                         <option *ngFor="let d of distribuidoras"
                             [value]="d.id"
-                            [selected]="distribuidoraSeleccionada[i]?.id === d.id">
+                            [selected]="distribuidoraSeleccionada[originalIndex(pedidoItem)]?.id === d.id">
                             {{d.descripcion}}
                         </option>
                     </select>

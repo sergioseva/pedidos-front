@@ -16,6 +16,7 @@ export class PedidoDistribuidoraComponent implements OnInit {
   distribuidoras: any[];
   distrSeleccionada = new DistribuidoraModel(1, 'Casassa');
   pedidoItems: PedidoItemModel[];
+  filteredPedidoItems: PedidoItemModel[] = [];
   distribuidoraSeleccionada: DistribuidoraModel[];
   loading:boolean = true;
   error:boolean=false;
@@ -24,6 +25,9 @@ export class PedidoDistribuidoraComponent implements OnInit {
   selectedItems: boolean[] = [];
   allSelected = false;
   bulkDistribuidora: DistribuidoraModel;
+
+  sortColumn = '';
+  sortDirection: 'asc' | 'desc' | '' = '';
 
   constructor(private pedidoItemsService: PedidoItemsService,
               private distribuidoraService: DistribuidoraService,
@@ -48,11 +52,51 @@ export class PedidoDistribuidoraComponent implements OnInit {
       (items: any[]) => {
         console.log(items);
         this.pedidoItems = items;
+        this.applySort();
         this.distribuidoraSeleccionada = new Array(items.length);
         this.selectedItems = new Array(items.length).fill(false);
         this.allSelected = false;
       }
     );
+  }
+
+  toggleSort(column: string) {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : this.sortDirection === 'desc' ? '' : 'asc';
+      if (this.sortDirection === '') {
+        this.sortColumn = '';
+      }
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+    this.applySort();
+  }
+
+  applySort() {
+    if (!this.pedidoItems) {
+      this.filteredPedidoItems = [];
+      return;
+    }
+    const result = this.pedidoItems.slice();
+    if (this.sortColumn && this.sortDirection) {
+      result.sort((a, b) => {
+        const valA = a[this.sortColumn] ?? '';
+        const valB = b[this.sortColumn] ?? '';
+        let comparison = 0;
+        if (typeof valA === 'number' && typeof valB === 'number') {
+          comparison = valA - valB;
+        } else {
+          comparison = String(valA).localeCompare(String(valB));
+        }
+        return this.sortDirection === 'desc' ? -comparison : comparison;
+      });
+    }
+    this.filteredPedidoItems = result;
+  }
+
+  originalIndex(item: PedidoItemModel): number {
+    return this.pedidoItems.indexOf(item);
   }
 
   confirmarPedido(pedidoItem,i){
