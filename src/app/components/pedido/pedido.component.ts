@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ApplicationRef } from '@angular/core';
 import { PedidoModel } from 'src/app/models/pedido.model';
 import { PedidosService } from 'src/app/providers/pedidos.service';
 import { PedidoItemModel } from '../../models/pedido.item';
@@ -29,7 +29,8 @@ export class PedidoComponent implements OnInit {
   constructor( private pedidosService: PedidosService,
                private clientesService: ClientesServiceService,
                private printService: PrintPedidoService,
-               private modalService: BsModalService) {
+               private modalService: BsModalService,
+               private appRef: ApplicationRef) {
                 this.buildForm();
 
   }
@@ -186,6 +187,10 @@ export class PedidoComponent implements OnInit {
       class: 'modal-lg',
       backdrop: 'static',
       keyboard: false
+    });
+    setTimeout(() => {
+      this.clientes = [...this.clientes];
+      this.appRef.tick();
     });
   }
 

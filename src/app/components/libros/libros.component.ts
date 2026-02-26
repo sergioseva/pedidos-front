@@ -18,6 +18,12 @@ export class LibrosComponent implements OnInit {
   pedidoFinalizado = false;
   loading = false;
   searchPerformed = false;
+  currentPage = 1;
+  totalItems = 0;
+  totalPages = 0;
+  pageSize = 20;
+  visiblePages: number[] = [];
+  private lastTermino = '';
 
   // Inline add/edit state
   isAdding = false;
@@ -52,10 +58,20 @@ export class LibrosComponent implements OnInit {
   }
 
   buscarLibros(termino: string) {
+    this.lastTermino = termino;
+    this.totalItems = 0;
+    this.loadPage(1);
+  }
+
+  loadPage(page: number) {
+    this.currentPage = page;
     this.loading = true;
-    this.librosService.buscarLibros(termino).subscribe(
-      (libros: any[]) => {
-        this.libros = libros;
+    this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize).subscribe(
+      (data: any) => {
+        this.libros = data.content;
+        this.totalItems = data.totalElements;
+        this.totalPages = data.totalPages;
+        this.updateVisiblePages();
         this.applyFiltersAndSort();
         this.loading = false;
         this.searchPerformed = true;
@@ -64,6 +80,25 @@ export class LibrosComponent implements OnInit {
         this.loading = false;
       }
     );
+  }
+
+  nextGroup() {
+    const firstOfNextGroup = Math.floor((this.currentPage - 1) / 10) * 10 + 11;
+    this.loadPage(Math.min(firstOfNextGroup, this.totalPages));
+  }
+
+  prevGroup() {
+    const firstOfPrevGroup = (Math.floor((this.currentPage - 1) / 10) - 1) * 10 + 1;
+    this.loadPage(Math.max(firstOfPrevGroup, 1));
+  }
+
+  private updateVisiblePages() {
+    const groupStart = Math.floor((this.currentPage - 1) / 10) * 10 + 1;
+    const groupEnd = Math.min(groupStart + 9, this.totalPages);
+    this.visiblePages = [];
+    for (let i = groupStart; i <= groupEnd; i++) {
+      this.visiblePages.push(i);
+    }
   }
 
   // --- Filtering ---

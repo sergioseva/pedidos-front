@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { PedidosService } from 'src/app/providers/pedidos.service';
 
 import { DatePipe } from '@angular/common';
@@ -8,7 +8,8 @@ import { PrintPedidoService } from 'src/app/providers/print-pedido.service';
 @Component({
   selector: 'app-pedidos',
   templateUrl: './pedidos.component.html',
-  styleUrls: ['./pedidos.component.css']
+  styleUrls: ['./pedidos.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PedidosComponent implements OnInit {
 
@@ -20,7 +21,7 @@ export class PedidosComponent implements OnInit {
   errMessage: string;
   searchPerformed: boolean = false;
 
-  constructor(public printService: PrintPedidoService, private ps: PedidosService, private datePipe: DatePipe) { }
+  constructor(public printService: PrintPedidoService, private ps: PedidosService, private datePipe: DatePipe, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
       this.dateFilter(0);
@@ -45,11 +46,13 @@ export class PedidosComponent implements OnInit {
       this.loading = false;
       this.error = false;
       this.searchPerformed = true;
+      this.cdr.markForCheck();
     },
     (err) => {
       this.loading = false;
       this.error = true;
       this.errMessage = (err.error && err.error.message) || 'Error al buscar pedidos';
+      this.cdr.markForCheck();
     });
   }
 

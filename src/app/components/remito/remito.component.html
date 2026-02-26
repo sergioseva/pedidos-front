@@ -139,7 +139,7 @@
                 </div>
 
                 <div *ngIf="searchPerformed && !loading && libros" class="small" style="color: #5C4A3A; margin: 0.5rem 0;">
-                    <i class="fa fa-info-circle" style="margin-right: 0.25rem;"></i>{{libros.length}} resultado{{libros.length !== 1 ? 's' : ''}}
+                    <i class="fa fa-info-circle" style="margin-right: 0.25rem;"></i>{{totalItems}} resultado{{totalItems !== 1 ? 's' : ''}}
                 </div>
 
                 <div style="overflow-x: auto;">
@@ -205,6 +205,33 @@
                     </tbody>
                   </table>
                 </div>
+
+                <nav *ngIf="totalItems > pageSize" style="display: flex; justify-content: center; margin-top: 1rem; cursor: pointer;">
+                    <ul class="pagination pagination-sm">
+                        <li class="page-item" [class.disabled]="currentPage <= 1">
+                            <a class="page-link" (click)="loadPage(1)">Inicio</a>
+                        </li>
+                        <li class="page-item" [class.disabled]="currentPage <= 10">
+                            <a class="page-link" (click)="prevGroup()">&laquo;</a>
+                        </li>
+                        <li class="page-item" [class.disabled]="currentPage <= 1">
+                            <a class="page-link" (click)="loadPage(currentPage - 1)">&lsaquo;</a>
+                        </li>
+                        <li *ngFor="let p of visiblePages" class="page-item" [class.active]="p === currentPage">
+                            <a class="page-link" (click)="loadPage(p)">{{p}}</a>
+                        </li>
+                        <li class="page-item" [class.disabled]="currentPage >= totalPages">
+                            <a class="page-link" (click)="loadPage(currentPage + 1)">&rsaquo;</a>
+                        </li>
+                        <li class="page-item" [class.disabled]="currentPage > totalPages - 10">
+                            <a class="page-link" (click)="nextGroup()">&raquo;</a>
+                        </li>
+                        <li class="page-item" [class.disabled]="currentPage >= totalPages">
+                            <a class="page-link" (click)="loadPage(totalPages)">Fin</a>
+                        </li>
+                    </ul>
+                </nav>
+
                 <div *ngIf="!loading && (!filteredLibros || filteredLibros.length === 0)" style="text-align: center; padding: 2rem 1rem; color: #8C7A6A;">
                   <i class="fa fa-book" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; opacity: 0.4;"></i>
                   Busque un libro para agregarlo al remito

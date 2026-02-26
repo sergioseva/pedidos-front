@@ -25,8 +25,8 @@ export class LibrosService {
                 this.URLLibrosService = `${config.baseUrl}/catalogos`;
   }
 
-  buscarLibros(termino: string ) {
-    const url = `${ this.URLLibrosService }/search/findByAny?parametro=${termino}`;
+  buscarLibros(termino: string, page = 0, size = 20) {
+    const url = `${ this.URLLibrosService }/search/findByAny?parametro=${termino}&page=${page}&size=${size}&sort=descripcion,asc`;
     return this.chttp.get(url);
   }
 

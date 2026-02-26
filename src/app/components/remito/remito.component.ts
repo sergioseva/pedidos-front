@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ApplicationRef } from '@angular/core';
 import { RemitoModel } from 'src/app/models/remito.model';
 import { RemitosService } from 'src/app/providers/remitos.service';
 import { RemitoItemModel } from '../../models/remito-item.model';
@@ -27,6 +27,12 @@ export class RemitoComponent implements OnInit {
   cantItemsRemito = 0;
   loading = false;
   searchPerformed = false;
+  currentPage = 1;
+  totalItems = 0;
+  totalPages = 0;
+  pageSize = 20;
+  visiblePages: number[] = [];
+  private lastTermino = '';
   modalRef: BsModalRef;
   itemModalRef: BsModalRef;
 
@@ -47,7 +53,8 @@ export class RemitoComponent implements OnInit {
               private distribuidoraService: DistribuidoraService,
               private librosService: LibrosService,
               public printService: PrintRemitoService,
-              private modalService: BsModalService) {
+              private modalService: BsModalService,
+              private appRef: ApplicationRef) {
     this.buildForm();
   }
 
@@ -158,10 +165,20 @@ export class RemitoComponent implements OnInit {
   }
 
   buscarLibros(termino: string) {
+    this.lastTermino = termino;
+    this.totalItems = 0;
+    this.loadPage(1);
+  }
+
+  loadPage(page: number) {
+    this.currentPage = page;
     this.loading = true;
-    this.librosService.buscarLibros(termino).subscribe(
-      (libros: any[]) => {
-        this.libros = libros;
+    this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize).subscribe(
+      (data: any) => {
+        this.libros = data.content;
+        this.totalItems = data.totalElements;
+        this.totalPages = data.totalPages;
+        this.updateVisiblePages();
         this.applyFiltersAndSort();
         this.loading = false;
         this.searchPerformed = true;
@@ -170,6 +187,25 @@ export class RemitoComponent implements OnInit {
         this.loading = false;
       }
     );
+  }
+
+  nextGroup() {
+    const firstOfNextGroup = Math.floor((this.currentPage - 1) / 10) * 10 + 11;
+    this.loadPage(Math.min(firstOfNextGroup, this.totalPages));
+  }
+
+  prevGroup() {
+    const firstOfPrevGroup = (Math.floor((this.currentPage - 1) / 10) - 1) * 10 + 1;
+    this.loadPage(Math.max(firstOfPrevGroup, 1));
+  }
+
+  private updateVisiblePages() {
+    const groupStart = Math.floor((this.currentPage - 1) / 10) * 10 + 1;
+    const groupEnd = Math.min(groupStart + 9, this.totalPages);
+    this.visiblePages = [];
+    for (let i = groupStart; i <= groupEnd; i++) {
+      this.visiblePages.push(i);
+    }
   }
 
   // --- Filtering ---
@@ -253,6 +289,10 @@ export class RemitoComponent implements OnInit {
       class: 'modal-lg',
       backdrop: 'static',
       keyboard: false
+    });
+    setTimeout(() => {
+      this.distribuidoras = [...this.distribuidoras];
+      this.appRef.tick();
     });
   }
 
