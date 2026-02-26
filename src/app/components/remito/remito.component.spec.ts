@@ -71,7 +71,7 @@ describe('RemitoComponent', () => {
   describe('buscarLibros', () => {
     it('should call librosService and set results', () => {
       const books = [{ id: 1, descripcion: 'Book' }];
-      librosService.buscarLibros.and.returnValue(of(books));
+      librosService.buscarLibros.and.returnValue(of({ content: books, totalElements: 1, totalPages: 1 }));
 
       component.buscarLibros('test');
 

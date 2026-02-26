@@ -52,11 +52,11 @@ describe('LibrosComponent', () => {
   describe('buscarLibros', () => {
     it('should call librosService.buscarLibros and set results', () => {
       const books = [{ id: 1, descripcion: 'Book' }];
-      librosService.buscarLibros.and.returnValue(of(books));
+      librosService.buscarLibros.and.returnValue(of({ content: books, totalElements: 1, totalPages: 1 }));
 
       component.buscarLibros('test');
 
-      expect(librosService.buscarLibros).toHaveBeenCalledWith('test');
+      expect(librosService.buscarLibros).toHaveBeenCalledWith('test', 0, 20);
       expect(component.libros).toEqual(books as any);
       expect(component.loading).toBe(false);
       expect(component.searchPerformed).toBe(true);

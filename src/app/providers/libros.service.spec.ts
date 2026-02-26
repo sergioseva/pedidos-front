@@ -43,7 +43,7 @@ describe('LibrosService', () => {
 
       service.buscarLibros('quijote');
 
-      expect(chttp.get).toHaveBeenCalledWith('http://test-api/catalogos/search/findByAny?parametro=quijote');
+      expect(chttp.get).toHaveBeenCalledWith('http://test-api/catalogos/search/findByAny?parametro=quijote&page=0&size=20&sort=descripcion,asc');
     });
   });
 
