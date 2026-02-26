@@ -78,6 +78,8 @@ export class RemitoComponent implements OnInit {
 
   onReiniciar() {
     this.forma.reset();
+    this.forma.enable();
+    this.distribuidoraSeleccionada = null;
     this.remitosService.generarNuevoRemito();
   }
 
@@ -108,6 +110,7 @@ export class RemitoComponent implements OnInit {
 
     this.remitosService.grabarRemito().subscribe(
       resp => {
+        this.closeModal();
         Swal.fire({
           title: 'Remito',
           text: 'Remito ingresado!',
@@ -176,8 +179,8 @@ export class RemitoComponent implements OnInit {
     this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize).subscribe(
       (data: any) => {
         this.libros = data.content;
-        this.totalItems = data.totalElements;
-        this.totalPages = data.totalPages;
+        this.totalItems = data.page.totalElements;
+        this.totalPages = data.page.totalPages;
         this.updateVisiblePages();
         this.applyFiltersAndSort();
         this.loading = false;

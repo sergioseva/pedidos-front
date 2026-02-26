@@ -57,7 +57,9 @@ export class PedidoComponent implements OnInit {
   }
 
   onReiniciar(){
-    this.forma.reset();
+    this.forma.reset({ senia: 0 });
+    this.forma.enable();
+    this.clienteSeleccionado = null;
     this.pedidosService.generarNuevoPedido();
   }
 
@@ -88,13 +90,13 @@ export class PedidoComponent implements OnInit {
 
     this.pedidosService.grabarPedido().subscribe(
         resp => {
-                  Swal.fire({
+        this.closeModal();
+        Swal.fire({
                   title: 'Pedido',
                   text: `Pedido ingresado!`,
                   icon: 'success'
         });
         this.pedido.id = resp['id'];
-        console.log(this.pedido.id);
         this.pedidosService.finalizarPedido();
       },
         err => {      Swal.fire({

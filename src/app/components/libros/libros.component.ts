@@ -69,8 +69,8 @@ export class LibrosComponent implements OnInit {
     this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize).subscribe(
       (data: any) => {
         this.libros = data.content;
-        this.totalItems = data.totalElements;
-        this.totalPages = data.totalPages;
+        this.totalItems = data.page.totalElements;
+        this.totalPages = data.page.totalPages;
         this.updateVisiblePages();
         this.applyFiltersAndSort();
         this.loading = false;

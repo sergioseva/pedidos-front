@@ -14,7 +14,7 @@ describe('ImportarCatalogoComponent', () => {
     batchService = {
       getBatchStatistics: jasmine.createSpy('getBatchStatistics').and.returnValue(of({
         content: [{ id: 1, proceso: 'import' }],
-        totalElements: 1
+        page: { totalElements: 1 }
       })),
       importCatalogo: jasmine.createSpy('importCatalogo').and.returnValue(of({}))
     };

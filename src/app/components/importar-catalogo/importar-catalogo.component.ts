@@ -76,7 +76,7 @@ export class ImportarCatalogoComponent implements OnInit {
     this.batchStatisticsService.getBatchStatistics(page - 1, this.pageSize).subscribe(
       (resp: any) => {
         this.statistics = resp.content;
-        this.totalItems = resp.totalElements;
+        this.totalItems = resp.page.totalElements;
         this.loading = false;
       },
       err => {
