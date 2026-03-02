@@ -146,6 +146,14 @@ export class LibrosComponent implements OnInit, OnDestroy {
 
   applyFiltersAndSort() {
     this.filteredLibros = this.libros ? this.libros.slice() : [];
+    if (this.sortColumn && this.sortDirection) {
+      const dir = this.sortDirection === 'asc' ? 1 : -1;
+      this.filteredLibros.sort((a: any, b: any) => {
+        const valA = (a[this.sortColumn] || '').toString().toLowerCase();
+        const valB = (b[this.sortColumn] || '').toString().toLowerCase();
+        return valA < valB ? -dir : valA > valB ? dir : 0;
+      });
+    }
   }
 
   formatPrecio(value: number): string {

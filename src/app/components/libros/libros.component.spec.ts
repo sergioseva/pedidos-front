@@ -56,7 +56,7 @@ describe('LibrosComponent', () => {
 
       component.buscarLibros('test');
 
-      expect(librosService.buscarLibros).toHaveBeenCalledWith('test', 0, 20, {});
+      expect(librosService.buscarLibros).toHaveBeenCalledWith('test', 0, 20, {}, 'descripcion,asc');
       expect(component.libros).toEqual(books as any);
       expect(component.loading).toBe(false);
       expect(component.searchPerformed).toBe(true);
