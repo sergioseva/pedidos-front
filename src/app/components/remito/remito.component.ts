@@ -197,7 +197,10 @@ export class RemitoComponent implements OnInit, OnDestroy {
         serverFilters[key] = this.filters[key];
       }
     });
-    this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize, serverFilters).subscribe(
+    const sort = this.sortColumn && this.sortDirection
+      ? `${this.sortColumn},${this.sortDirection}`
+      : 'descripcion,asc';
+    this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize, serverFilters, sort).subscribe(
       (data: any) => {
         this.libros = data.content;
         this.totalItems = data.page.totalElements;
@@ -248,32 +251,11 @@ export class RemitoComponent implements OnInit, OnDestroy {
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
-    this.applyFiltersAndSort();
+    this.loadPage(1);
   }
 
   applyFiltersAndSort() {
-    if (!this.libros) {
-      this.filteredLibros = [];
-      return;
-    }
-    let result = this.libros.slice();
-
-    // Apply sort
-    if (this.sortColumn && this.sortDirection) {
-      result.sort((a, b) => {
-        const valA = a[this.sortColumn] || '';
-        const valB = b[this.sortColumn] || '';
-        let comparison = 0;
-        if (typeof valA === 'number' && typeof valB === 'number') {
-          comparison = valA - valB;
-        } else {
-          comparison = String(valA).localeCompare(String(valB));
-        }
-        return this.sortDirection === 'desc' ? -comparison : comparison;
-      });
-    }
-
-    this.filteredLibros = result;
+    this.filteredLibros = this.libros ? this.libros.slice() : [];
   }
 
   formatPrecio(value: number): string {

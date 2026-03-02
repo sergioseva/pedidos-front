@@ -25,8 +25,8 @@ export class LibrosService {
                 this.URLLibrosService = `${config.baseUrl}/catalogos`;
   }
 
-  buscarLibros(termino: string, page = 0, size = 20, filters?: {[key: string]: string}) {
-    let url = `${ this.URLLibrosService }/search/findByAny?parametro=${encodeURIComponent(termino)}&page=${page}&size=${size}&sort=descripcion,asc`;
+  buscarLibros(termino: string, page = 0, size = 20, filters?: {[key: string]: string}, sort = 'descripcion,asc') {
+    let url = `${ this.URLLibrosService }/search/findByAny?parametro=${encodeURIComponent(termino)}&page=${page}&size=${size}&sort=${sort}`;
     if (filters) {
       Object.keys(filters).forEach(key => {
         if (filters[key]) {

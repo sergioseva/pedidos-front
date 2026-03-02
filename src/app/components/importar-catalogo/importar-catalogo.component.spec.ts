@@ -56,7 +56,7 @@ describe('ImportarCatalogoComponent', () => {
       const file = new File([''], 'test.csv');
       component.selectedFile = file;
       component.importar();
-      expect(batchService.importCatalogo).toHaveBeenCalledWith(file);
+      expect(batchService.importCatalogo).toHaveBeenCalledWith(file, true);
     });
   });
 
