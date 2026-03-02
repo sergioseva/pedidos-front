@@ -98,14 +98,13 @@ describe('RemitoComponent', () => {
   });
 
   describe('filtering and sorting', () => {
-    it('should filter libros by column', () => {
+    it('should pass all libros through applyFiltersAndSort (filtering is server-side)', () => {
       component.libros = [
         { descripcion: 'Angular Book', autor: 'Author A' } as any,
         { descripcion: 'React Book', autor: 'Author B' } as any
       ];
-      component.filters.descripcion = 'Angular';
       component.applyFiltersAndSort();
-      expect(component.filteredLibros.length).toBe(1);
+      expect(component.filteredLibros.length).toBe(2);
     });
 
     it('should sort libros ascending', () => {

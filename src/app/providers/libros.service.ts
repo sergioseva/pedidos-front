@@ -25,8 +25,15 @@ export class LibrosService {
                 this.URLLibrosService = `${config.baseUrl}/catalogos`;
   }
 
-  buscarLibros(termino: string, page = 0, size = 20) {
-    const url = `${ this.URLLibrosService }/search/findByAny?parametro=${termino}&page=${page}&size=${size}&sort=descripcion,asc`;
+  buscarLibros(termino: string, page = 0, size = 20, filters?: {[key: string]: string}) {
+    let url = `${ this.URLLibrosService }/search/findByAny?parametro=${encodeURIComponent(termino)}&page=${page}&size=${size}&sort=descripcion,asc`;
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        if (filters[key]) {
+          url += `&${key}=${encodeURIComponent(filters[key])}`;
+        }
+      });
+    }
     return this.chttp.get(url);
   }
 

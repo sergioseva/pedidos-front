@@ -1,4 +1,6 @@
-import { Component, OnInit, TemplateRef, ApplicationRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, TemplateRef, ApplicationRef } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { RemitoModel } from 'src/app/models/remito.model';
 import { RemitosService } from 'src/app/providers/remitos.service';
 import { RemitoItemModel } from '../../models/remito-item.model';
@@ -16,7 +18,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
   templateUrl: './remito.component.html',
   styleUrls: ['./remito.component.css']
 })
-export class RemitoComponent implements OnInit {
+export class RemitoComponent implements OnInit, OnDestroy {
 
   forma: FormGroup;
   remito: RemitoModel;
@@ -44,10 +46,12 @@ export class RemitoComponent implements OnInit {
   filters: any = {
     descripcion: '',
     autor: '',
-    precio: '',
     editorial: '',
     isbn: ''
   };
+
+  private filterSubject = new Subject<void>();
+  private filterSubscription: Subscription;
 
   constructor(private remitosService: RemitosService,
               private distribuidoraService: DistribuidoraService,
@@ -74,6 +78,17 @@ export class RemitoComponent implements OnInit {
       .subscribe((distribuidoras) => {
         this.distribuidoras = distribuidoras;
       });
+    this.filterSubscription = this.filterSubject.pipe(
+      debounceTime(400)
+    ).subscribe(() => {
+      this.loadPage(1);
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.filterSubscription) {
+      this.filterSubscription.unsubscribe();
+    }
   }
 
   onReiniciar() {
@@ -176,7 +191,13 @@ export class RemitoComponent implements OnInit {
   loadPage(page: number) {
     this.currentPage = page;
     this.loading = true;
-    this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize).subscribe(
+    const serverFilters: {[key: string]: string} = {};
+    Object.keys(this.filters).forEach(key => {
+      if (this.filters[key]) {
+        serverFilters[key] = this.filters[key];
+      }
+    });
+    this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize, serverFilters).subscribe(
       (data: any) => {
         this.libros = data.content;
         this.totalItems = data.page.totalElements;
@@ -213,7 +234,7 @@ export class RemitoComponent implements OnInit {
 
   // --- Filtering ---
   onFilterChange() {
-    this.applyFiltersAndSort();
+    this.filterSubject.next();
   }
 
   // --- Sorting ---
@@ -236,17 +257,6 @@ export class RemitoComponent implements OnInit {
       return;
     }
     let result = this.libros.slice();
-
-    // Apply filters
-    Object.keys(this.filters).forEach(key => {
-      const filterValue = (this.filters[key] || '').toLowerCase();
-      if (filterValue) {
-        result = result.filter(libro => {
-          const val = libro[key];
-          return val != null && String(val).toLowerCase().includes(filterValue);
-        });
-      }
-    });
 
     // Apply sort
     if (this.sortColumn && this.sortDirection) {

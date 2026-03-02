@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { LibroModel } from '../../models/libro.model';
 import { LibrosService } from '../../providers/libros.service';
 import { PedidosService } from '../../providers/pedidos.service';
@@ -11,7 +13,7 @@ import Swal from 'sweetalert2';
   templateUrl: './libros.component.html',
   styleUrls: ['./libros.component.css']
 })
-export class LibrosComponent implements OnInit {
+export class LibrosComponent implements OnInit, OnDestroy {
   libros: LibroModel[];
   filteredLibros: LibroModel[];
   cantItemsPedido = 0;
@@ -39,11 +41,13 @@ export class LibrosComponent implements OnInit {
   filters: any = {
     descripcion: '',
     autor: '',
-    precio: '',
     editorial: '',
     isbn: '',
     observaciones: ''
   };
+
+  private filterSubject = new Subject<void>();
+  private filterSubscription: Subscription;
 
   constructor(private librosService: LibrosService,
               private pedidosService: PedidosService,
@@ -55,6 +59,17 @@ export class LibrosComponent implements OnInit {
       this.cantItemsPedido = pedido.pedidoItems.length;
       this.pedidoFinalizado = pedido.finalizado;
     });
+    this.filterSubscription = this.filterSubject.pipe(
+      debounceTime(400)
+    ).subscribe(() => {
+      this.loadPage(1);
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.filterSubscription) {
+      this.filterSubscription.unsubscribe();
+    }
   }
 
   buscarLibros(termino: string) {
@@ -66,7 +81,13 @@ export class LibrosComponent implements OnInit {
   loadPage(page: number) {
     this.currentPage = page;
     this.loading = true;
-    this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize).subscribe(
+    const serverFilters: {[key: string]: string} = {};
+    Object.keys(this.filters).forEach(key => {
+      if (this.filters[key]) {
+        serverFilters[key] = this.filters[key];
+      }
+    });
+    this.librosService.buscarLibros(this.lastTermino, page - 1, this.pageSize, serverFilters).subscribe(
       (data: any) => {
         this.libros = data.content;
         this.totalItems = data.page.totalElements;
@@ -103,7 +124,7 @@ export class LibrosComponent implements OnInit {
 
   // --- Filtering ---
   onFilterChange() {
-    this.applyFiltersAndSort();
+    this.filterSubject.next();
   }
 
   // --- Sorting ---
@@ -126,17 +147,6 @@ export class LibrosComponent implements OnInit {
       return;
     }
     let result = this.libros.slice();
-
-    // Apply filters
-    Object.keys(this.filters).forEach(key => {
-      const filterValue = (this.filters[key] || '').toLowerCase();
-      if (filterValue) {
-        result = result.filter(libro => {
-          const val = libro[key];
-          return val != null && String(val).toLowerCase().includes(filterValue);
-        });
-      }
-    });
 
     // Apply sort
     if (this.sortColumn && this.sortDirection) {
