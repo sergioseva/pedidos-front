@@ -5,4 +5,6 @@ export class BatchStatisticModel {
   endtime: string;
   registros: number;
   errores: number;
+  fileName: string;
+  metadata: string;
 }

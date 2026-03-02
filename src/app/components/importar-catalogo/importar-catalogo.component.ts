@@ -20,6 +20,7 @@ export class ImportarCatalogoComponent implements OnInit {
 
   selectedFile: File = null;
   uploading = false;
+  deleteOldRecords = true;
 
   constructor(private batchStatisticsService: BatchStatisticsService) { }
 
@@ -44,7 +45,7 @@ export class ImportarCatalogoComponent implements OnInit {
     });
     Swal.showLoading();
 
-    this.batchStatisticsService.importCatalogo(this.selectedFile).subscribe(
+    this.batchStatisticsService.importCatalogo(this.selectedFile, this.deleteOldRecords).subscribe(
       resp => {
         this.uploading = false;
         this.selectedFile = null;
@@ -85,6 +86,21 @@ export class ImportarCatalogoComponent implements OnInit {
         this.errMessage = 'Error al cargar las estadisticas de importacion';
       }
     );
+  }
+
+  getMetadataLabel(metadata: string): string {
+    if (!metadata) {
+      return '';
+    }
+    try {
+      const data = JSON.parse(metadata);
+      if (data.deleteOldRecords === false) {
+        return 'No';
+      }
+      return 'Si';
+    } catch {
+      return '';
+    }
   }
 
   calcularDuracion(starttime: string, endtime: string): string {

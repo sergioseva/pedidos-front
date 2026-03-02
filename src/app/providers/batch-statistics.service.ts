@@ -23,9 +23,10 @@ export class BatchStatisticsService {
     return this.chttp.get(`${this.url}?page=${page}&size=${size}&sort=id,desc`);
   }
 
-  importCatalogo(file: File) {
+  importCatalogo(file: File, deleteOldRecords: boolean = true) {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('deleteOldRecords', String(deleteOldRecords));
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.auth.leerToken()}`);
     return this.http.post(this.importUrl, formData, { headers });
   }

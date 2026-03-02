@@ -8,6 +8,10 @@
         <input type="file" class="form-control" accept=".xlsx,.xls,.csv"
                (change)="onFileSelected($event)"
                style="flex: 1; max-width: 400px;">
+        <label style="display: flex; align-items: center; gap: 0.375rem; margin: 0; cursor: pointer; white-space: nowrap;">
+            <input type="checkbox" [(ngModel)]="deleteOldRecords">
+            Eliminar libros anteriores
+        </label>
         <button class="btn btn-action" [disabled]="!selectedFile || uploading" (click)="importar()">
             <i class="fa fa-upload" style="margin-right: 0.375rem;"></i>Importar
         </button>
@@ -16,17 +20,18 @@
     <table class="table" *ngIf="!loading && !error && statistics?.length > 0">
         <thead>
             <tr>
-                <th scope="col">Proceso</th>
+                <th scope="col">Archivo</th>
                 <th scope="col">Inicio</th>
                 <th scope="col">Fin</th>
                 <th scope="col">Duracion</th>
                 <th scope="col">Registros</th>
                 <th scope="col">Errores</th>
+                <th scope="col">Reemplazo</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let stat of statistics">
-                <td>{{stat.proceso}}</td>
+                <td>{{stat.fileName}}</td>
                 <td>{{stat.starttime | date:'dd/MM/yyyy HH:mm:ss'}}</td>
                 <td>{{stat.endtime | date:'dd/MM/yyyy HH:mm:ss'}}</td>
                 <td>{{calcularDuracion(stat.starttime, stat.endtime)}}</td>
@@ -37,6 +42,7 @@
                         {{stat.errores | number:'1.0':'es-AR'}}
                     </span>
                 </td>
+                <td>{{getMetadataLabel(stat.metadata)}}</td>
             </tr>
         </tbody>
     </table>
