@@ -119,8 +119,26 @@ export class PedidoComponent implements OnInit {
 
   }
 
-   borrarItem( pi: PedidoItemModel, i: number){
-      this.pedidosService.removePedidoItem(pi);
+  get groupedItems(): { libro: string; autor: string; editorial: string; precio: number; cantidad: number; items: PedidoItemModel[] }[] {
+    if (!this.pedido?.pedidoItems) { return []; }
+    const groups = new Map<string, any>();
+    for (const pi of this.pedido.pedidoItems) {
+      const key = `${pi.libro}||${pi.autor}||${pi.editorial}||${pi.precio}`;
+      if (groups.has(key)) {
+        const g = groups.get(key);
+        g.cantidad += pi.cantidad;
+        g.items.push(pi);
+      } else {
+        groups.set(key, { libro: pi.libro, autor: pi.autor, editorial: pi.editorial, precio: pi.precio, cantidad: pi.cantidad, items: [pi] });
+      }
+    }
+    return Array.from(groups.values());
+  }
+
+  borrarItem(group: any) {
+    // Remove one item from the group
+    const item = group.items[0];
+    this.pedidosService.removePedidoItem(item);
   }
 
   onImprimir(){

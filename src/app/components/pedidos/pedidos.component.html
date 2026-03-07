@@ -71,7 +71,10 @@
         </thead>
         <tbody>
             <tr *ngFor="let pedido of filteredPedidos">
-                <td>
+                <td style="white-space: nowrap;">
+                    <button title="Ver pedido" (click)="verPedido(pedido.id, pedidoModal)" type="button" class="btn btn-icon">
+                        <i class="fa fa-eye"></i>
+                    </button>
                     <button title="Imprimir" (click)="imprimir(pedido)" type="button" class="btn btn-icon">
                         <i class="fa fa-print"></i>
                     </button>
@@ -110,3 +113,64 @@
         </p>
     </div>
 </div>
+
+<ng-template #pedidoModal>
+    <div class="modal-header" style="background: #EDE9FE; border-bottom: 2px solid #8B5CF6;">
+        <h5 class="modal-title" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+            <i class="fa fa-clipboard" style="color: #7C3AED;"></i> Detalle del Pedido
+        </h5>
+        <button type="button" class="close" (click)="closeModal()">
+            <span>&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div *ngIf="loadingPedido" class="text-center" style="padding: 2rem;">
+            <i class="fa fa-spinner fa-spin fa-2x"></i>
+            <p class="mb-0" style="margin-top: 0.5rem;">Cargando pedido...</p>
+        </div>
+        <div *ngIf="pedidoDetalle">
+            <div class="row" style="margin-bottom: 1rem;">
+                <div class="col-md-4">
+                    <strong>Cliente:</strong> {{pedidoDetalle.cliente?.nombre}}
+                </div>
+                <div class="col-md-3">
+                    <strong>Fecha:</strong> {{pedidoDetalle.fecha | date:'mediumDate':'+0300':'es-AR'}}
+                </div>
+                <div class="col-md-2">
+                    <strong>Total:</strong> $ {{pedidoDetalle.total | number:'1.0-0':'es-AR'}}
+                </div>
+                <div class="col-md-3" *ngIf="pedidoDetalle.senia">
+                    <strong>Seña:</strong> $ {{pedidoDetalle.senia | number:'1.0-0':'es-AR'}}
+                </div>
+            </div>
+            <div *ngIf="pedidoDetalle.observaciones" style="margin-bottom: 1rem;">
+                <strong>Observaciones:</strong> {{pedidoDetalle.observaciones}}
+            </div>
+            <table class="table" style="margin-bottom: 0;">
+                <thead>
+                    <tr>
+                        <th>Titulo</th>
+                        <th>Autor</th>
+                        <th>Editorial</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of pedidoDetalle.groupedItems">
+                        <td>{{item.libro}}</td>
+                        <td>{{item.autor}}</td>
+                        <td>{{item.editorial}}</td>
+                        <td>$ {{item.precio | number:'1.0-0':'es-AR'}}</td>
+                        <td>{{item.cantidad}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-action-secondary" (click)="closeModal()">
+            <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cerrar
+        </button>
+    </div>
+</ng-template>

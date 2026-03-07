@@ -13,6 +13,7 @@ import { ConfiguracionService } from '../../../providers/configuracion.service';
 export class PedidoImpresoComponent implements OnInit {
   pedidoId: number;
   pedido: PedidoModel;
+  groupedItems: any[] = [];
 
   private pedidoLoaded = false;
   private configLoaded = false;
@@ -23,8 +24,9 @@ export class PedidoImpresoComponent implements OnInit {
               private configuracionService: ConfiguracionService) {
     this.pedidoId = route.snapshot.params['pedidoId'];
     this.pedidoService.getPedidoProjection(this.pedidoId).subscribe(
-      (pedido: PedidoModel) => {
+      (pedido: any) => {
         this.pedido = pedido;
+        this.groupedItems = this.groupItems(pedido.pedidoItems || []);
         this.pedidoLoaded = true;
         this.checkDataReady();
       });
@@ -40,6 +42,19 @@ export class PedidoImpresoComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  private groupItems(items: any[]): any[] {
+    const groups = new Map<string, any>();
+    for (const pi of items) {
+      const key = `${pi.libro}||${pi.autor}||${pi.editorial}||${pi.precio}`;
+      if (groups.has(key)) {
+        groups.get(key).cantidad += pi.cantidad;
+      } else {
+        groups.set(key, { ...pi, cantidad: pi.cantidad });
+      }
+    }
+    return Array.from(groups.values());
   }
 
   private checkDataReady() {

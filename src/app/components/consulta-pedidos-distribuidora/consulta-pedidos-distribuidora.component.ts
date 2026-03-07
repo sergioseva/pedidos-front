@@ -133,8 +133,22 @@ export class ConsultaPedidosDistribuidoraComponent implements OnInit {
     this.modalRef = this.modalService.show(template, { class: 'modal-lg' });
     this.pedidosService.getPedidoProjection(pedidoId).subscribe((data: any) => {
       this.pedidoDetalle = data;
+      this.pedidoDetalle.groupedItems = this.groupItems(data.pedidoItems);
       this.loadingPedido = false;
     });
+  }
+
+  groupItems(items: any[]): any[] {
+    const groups = new Map<string, any>();
+    for (const pi of items) {
+      const key = `${pi.libro}||${pi.autor}||${pi.editorial}||${pi.precio}`;
+      if (groups.has(key)) {
+        groups.get(key).cantidad += pi.cantidad;
+      } else {
+        groups.set(key, { ...pi, cantidad: pi.cantidad });
+      }
+    }
+    return Array.from(groups.values());
   }
 
   closeModal() {

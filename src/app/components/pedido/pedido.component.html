@@ -53,15 +53,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let pedidoItem of pedido.pedidoItems">
-                        <td>{{pedidoItem.libro}}</td>
-                        <td>{{pedidoItem.autor}}</td>
-                        <td>{{pedidoItem.editorial}}</td>
-                        <td>$ {{pedidoItem.precio | number:'1.0-0':'es-AR'}}</td>
-                        <td>{{pedidoItem.cantidad}}</td>
+                    <tr *ngFor="let group of groupedItems">
+                        <td>{{group.libro}}</td>
+                        <td>{{group.autor}}</td>
+                        <td>{{group.editorial}}</td>
+                        <td>$ {{group.precio | number:'1.0-0':'es-AR'}}</td>
+                        <td>{{group.cantidad}}</td>
                         <td>
                             <div class="table-actions">
-                                <button title="Eliminar" (click)="borrarItem(pedidoItem,i)" type="button" class="btn btn-icon btn-icon-danger">
+                                <button title="Eliminar" (click)="borrarItem(group)" type="button" class="btn btn-icon btn-icon-danger">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>

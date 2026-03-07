@@ -65,18 +65,19 @@ export class PedidosService {
       if (this.pedidosSource.getValue().finalizado) {
         return;
       }
-      const pItems: PedidoItemModel[]  = this.pedidosSource.getValue().pedidoItems;
-      const piFound: PedidoItemModel = pItems.find(e => e.codigoLuongo === pedidoItem.codigoLuongo);
-      if (piFound && pedidoItem.codigoLuongo) {
-        piFound.cantidad++;
-      } else {
-        this.pedidosSource.getValue().addPedidoItem(pedidoItem);
+      // Always add individual items (cantidad=1 each) so they can be assigned to different distribuidoras
+      const qty = pedidoItem.cantidad || 1;
+      for (let i = 0; i < qty; i++) {
+        const pi = new PedidoItemModel();
+        pi.codigoLuongo = pedidoItem.codigoLuongo;
+        pi.libro = pedidoItem.libro;
+        pi.autor = pedidoItem.autor;
+        pi.editorial = pedidoItem.editorial;
+        pi.precio = pedidoItem.precio;
+        pi.isbn = pedidoItem.isbn;
+        pi.cantidad = 1;
+        this.pedidosSource.getValue().addPedidoItem(pi);
       }
-      // this.pedidosSource.getValue().pedidoItems = this.pedidosSource.getValue().pedidoItems.filter(
-      //                 e => e.constructor.name==='PedidoItemModel'
-      //                 );
-      // console.log('this.pedidosSource.getValue().pedidoItems');
-      // console.log(this.pedidosSource.getValue().pedidoItems);
       this.pedidosSource.getValue().calcularTotal();
       this.pedidosSource.next(this.pedidosSource.getValue());
   }

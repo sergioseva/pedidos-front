@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, TemplateRef } from '@angular/core';
 import { PedidosService } from 'src/app/providers/pedidos.service';
 
 import { DatePipe } from '@angular/common';
 import { PedidoModel } from '../../models/pedido.model';
 import { PrintPedidoService } from 'src/app/providers/print-pedido.service';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-pedidos',
@@ -25,7 +26,11 @@ export class PedidosComponent implements OnInit {
   sortColumn = '';
   sortDirection: 'asc' | 'desc' | '' = '';
 
-  constructor(public printService: PrintPedidoService, private ps: PedidosService, private datePipe: DatePipe, private cdr: ChangeDetectorRef) { }
+  modalRef: BsModalRef;
+  pedidoDetalle: any = null;
+  loadingPedido = false;
+
+  constructor(public printService: PrintPedidoService, private ps: PedidosService, private datePipe: DatePipe, private cdr: ChangeDetectorRef, private modalService: BsModalService) { }
 
   ngOnInit() {
       this.dateFilter(0);
@@ -99,6 +104,37 @@ export class PedidosComponent implements OnInit {
 
   private getNestedValue(obj: any, path: string): any {
     return path.split('.').reduce((o, k) => o?.[k], obj);
+  }
+
+  verPedido(pedidoId: number, template: TemplateRef<any>) {
+    this.pedidoDetalle = null;
+    this.loadingPedido = true;
+    this.modalRef = this.modalService.show(template, { class: 'modal-lg' });
+    this.ps.getPedidoProjection(pedidoId).subscribe((data: any) => {
+      this.pedidoDetalle = data;
+      this.pedidoDetalle.groupedItems = this.groupItems(data.pedidoItems);
+      this.loadingPedido = false;
+      this.cdr.markForCheck();
+    });
+  }
+
+  closeModal() {
+    if (this.modalRef) {
+      this.modalRef.hide();
+    }
+  }
+
+  groupItems(items: any[]): any[] {
+    const groups = new Map<string, any>();
+    for (const pi of items) {
+      const key = `${pi.libro}||${pi.autor}||${pi.editorial}||${pi.precio}`;
+      if (groups.has(key)) {
+        groups.get(key).cantidad += pi.cantidad;
+      } else {
+        groups.set(key, { ...pi, cantidad: pi.cantidad });
+      }
+    }
+    return Array.from(groups.values());
   }
 
   dateFilter(days:number){

@@ -19,7 +19,7 @@
       </tr>
   </thead>
   <tbody>
-      <tr *ngFor="let pedidoItem of pedido?.pedidoItems">
+      <tr *ngFor="let pedidoItem of groupedItems">
           <td>{{pedidoItem.libro}}</td>
           <td>{{pedidoItem.autor}}</td>
           <td>{{pedidoItem.editorial}}</td>
