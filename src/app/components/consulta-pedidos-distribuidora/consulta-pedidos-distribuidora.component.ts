@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { PedidoDistribuidoraService } from 'src/app/providers/pedido-distribuidora.service';
+import { PedidosService } from 'src/app/providers/pedidos.service';
+import { DistribuidoraService } from 'src/app/providers/distribuidora.service';
 import { DatePipe } from '@angular/common';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-consulta-pedidos-distribuidora',
@@ -21,10 +24,26 @@ export class ConsultaPedidosDistribuidoraComponent implements OnInit {
   sortColumn = 'fecha';
   sortDirection: 'asc' | 'desc' | '' = 'desc';
 
+  distribuidoras: any[] = [];
+  filterDistribuidora: number = null;
+  filterConfirmado: string = '';
+
+  modalRef: BsModalRef;
+  pedidoDetalle: any = null;
+  loadingPedido = false;
+
   constructor(private pds: PedidoDistribuidoraService,
-              private datePipe: DatePipe) { }
+              private pedidosService: PedidosService,
+              private distribuidoraService: DistribuidoraService,
+              private datePipe: DatePipe,
+              private modalService: BsModalService) { }
 
   ngOnInit() {
+    this.distribuidoraService.getDistribuidoras().subscribe(
+      (items) => {
+        this.distribuidoras = items;
+      }
+    );
     this.dateFilter(0);
     this.buscarTermino('');
   }
@@ -37,7 +56,7 @@ export class ConsultaPedidosDistribuidoraComponent implements OnInit {
                           this.datePipe.transform(this.toDate, 'yyyy-MM-dd'))
       .subscribe((data: any) => {
         this.pedidos = data;
-        this.applySort();
+        this.applyFiltersAndSort();
         this.loading = false;
         this.error = false;
         this.searchPerformed = true;
@@ -59,15 +78,25 @@ export class ConsultaPedidosDistribuidoraComponent implements OnInit {
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
-    this.applySort();
+    this.applyFiltersAndSort();
   }
 
-  applySort() {
+  applyFiltersAndSort() {
     if (!this.pedidos) {
       this.filteredPedidos = [];
       return;
     }
-    const result = this.pedidos.slice();
+    let result = this.pedidos.slice();
+
+    if (this.filterDistribuidora) {
+      result = result.filter(p => p.distribuidora?.id === this.filterDistribuidora);
+    }
+    if (this.filterConfirmado === 'si') {
+      result = result.filter(p => p.realizado);
+    } else if (this.filterConfirmado === 'no') {
+      result = result.filter(p => !p.realizado);
+    }
+
     if (this.sortColumn && this.sortDirection) {
       result.sort((a, b) => {
         const valA = this.getNestedValue(a, this.sortColumn) ?? '';
@@ -96,5 +125,21 @@ export class ConsultaPedidosDistribuidoraComponent implements OnInit {
     this.fromDate = this.datePipe.transform(past, 'yyyy-MM-dd');
     this.toDate = this.datePipe.transform(today, 'yyyy-MM-dd');
     this.buscarTermino('');
+  }
+
+  verPedido(pedidoId: number, template: TemplateRef<any>) {
+    this.pedidoDetalle = null;
+    this.loadingPedido = true;
+    this.modalRef = this.modalService.show(template, { class: 'modal-lg' });
+    this.pedidosService.getPedidoProjection(pedidoId).subscribe((data: any) => {
+      this.pedidoDetalle = data;
+      this.loadingPedido = false;
+    });
+  }
+
+  closeModal() {
+    if (this.modalRef) {
+      this.modalRef.hide();
+    }
   }
 }

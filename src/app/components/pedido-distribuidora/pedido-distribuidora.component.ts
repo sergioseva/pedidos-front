@@ -56,6 +56,15 @@ export class PedidoDistribuidoraComponent implements OnInit {
         this.distribuidoraSeleccionada = new Array(items.length);
         this.selectedItems = new Array(items.length).fill(false);
         this.allSelected = false;
+        // Pre-select distribuidora for items already confirmed
+        items.forEach((item, i) => {
+          if (item.distribuidoraConfirmadaId) {
+            this.distribuidoraSeleccionada[i] = new DistribuidoraModel(
+              item.distribuidoraConfirmadaId,
+              item.distribuidoraConfirmadaNombre
+            );
+          }
+        });
       }
     );
   }
@@ -125,6 +134,41 @@ export class PedidoDistribuidoraComponent implements OnInit {
       );
   }
 
+  confirmarLlegada(pedidoItem) {
+    Swal.fire({
+      title: 'Confirmar',
+      text: '¿Confirmar que el libro llegó?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Si, llegó',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        Swal.fire({
+          title: 'Espere',
+          text: 'Confirmando llegada',
+          icon: 'info',
+          allowOutsideClick: false
+        });
+        Swal.showLoading();
+
+        this.pedidoDistriBuidoraServive.confirmarLlegada(pedidoItem.id).subscribe(
+          () => {
+            Swal.close();
+            this.getPedidosPendientes();
+          },
+          () => {
+            Swal.fire({
+              title: 'Error',
+              text: 'Error al confirmar la llegada',
+              icon: 'error'
+            });
+          }
+        );
+      }
+    });
+  }
+
   onChange(event, i){
     this.distribuidoraSeleccionada[i] = event;
   }
@@ -132,6 +176,9 @@ export class PedidoDistribuidoraComponent implements OnInit {
   onSelectChange(event, i) {
     const id = +event.target.value;
     this.distribuidoraSeleccionada[i] = id ? this.distribuidoras.find(d => d.id === id) : null;
+    if (this.distribuidoraSeleccionada[i]) {
+      this.confirmarPedido(this.pedidoItems[i], i);
+    }
   }
 
   toggleSelectAll() {
@@ -147,13 +194,58 @@ export class PedidoDistribuidoraComponent implements OnInit {
     return this.selectedItems.filter(v => v).length;
   }
 
-  getSelectedItems(): PedidoItemModel[] {
+  getSelectedItems(): any[] {
     return this.pedidoItems.filter((_, i) => this.selectedItems[i]);
+  }
+
+  allSelectedReadyForArrival(): boolean {
+    const selected = this.getSelectedItems();
+    return selected.length > 0 && selected.every(item => item.pedidoDistribuidoraId);
   }
 
   clearSelection() {
     this.selectedItems = this.selectedItems.map(() => false);
     this.allSelected = false;
+  }
+
+  confirmarLlegadaSeleccionados() {
+    const selected = this.getSelectedItems();
+    if (!selected.length) {
+      return;
+    }
+    Swal.fire({
+      title: 'Confirmar',
+      text: `¿Confirmar llegada de ${selected.length} libro(s)?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Si, llegaron',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.value) {
+        Swal.fire({
+          title: 'Espere',
+          text: `Confirmando llegada de ${selected.length} item(s)`,
+          icon: 'info',
+          allowOutsideClick: false
+        });
+        Swal.showLoading();
+
+        const itemIds = selected.map(item => item.id);
+        this.pedidoDistriBuidoraServive.confirmarLlegadaBulk(itemIds).subscribe(
+          () => {
+            Swal.close();
+            this.getPedidosPendientes();
+          },
+          () => {
+            Swal.fire({
+              title: 'Error',
+              text: 'Error al confirmar la llegada',
+              icon: 'error'
+            });
+          }
+        );
+      }
+    });
   }
 
   confirmarSeleccionados() {

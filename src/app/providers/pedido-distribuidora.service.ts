@@ -24,6 +24,14 @@ confirmarPedido(pedido){
   return this.chttp.post( this.URLPedidoItemsService  , pedido);
 }
 
+confirmarLlegada(itemId: number) {
+  return this.chttp.post(`${this.URLPedidoItemsService}/confirmarLlegada/${itemId}`, {});
+}
+
+confirmarLlegadaBulk(itemIds: number[]) {
+  return this.chttp.post(`${this.URLPedidoItemsService}/confirmarLlegadaBulk`, itemIds);
+}
+
 buscarPedidosDistribuidora(termino: string, desde: string, hasta: string) {
   const url = `${this.URLSearchService}/search/findByAny?parametro=${termino}&fechaDesde=${desde}&fechaHasta=${hasta}`;
   return this.chttp.get(url);

@@ -55,9 +55,9 @@
                 <td style="text-align: center;">
                     <input type="checkbox" [ngModel]="selectedItems[originalIndex(pedidoItem)]" (change)="toggleItem(originalIndex(pedidoItem))">
                 </td>
-                <td>
-                    <button title="Confirmar" [disabled]="!distribuidoraSeleccionada[originalIndex(pedidoItem)]" (click)="confirmarPedido(pedidoItem,originalIndex(pedidoItem))" type="button" class="btn btn-icon">
-                        <i class="fa fa-check"></i>
+                <td style="text-align: center;">
+                    <button *ngIf="pedidoItem.pedidoDistribuidoraId" title="Confirmar llegada" (click)="confirmarLlegada(pedidoItem)" type="button" class="btn btn-icon" style="color: #16a34a;">
+                        <i class="fa fa-truck"></i>
                     </button>
                 </td>
                 <td>
@@ -83,15 +83,20 @@
 
     <div class="floating-action-bar" *ngIf="getSelectedCount() > 0">
         <span class="fab-badge">{{getSelectedCount()}} item(s) seleccionados</span>
-        <div class="fab-distribuidora">
-            <ng-select [items]="distribuidoras"
-                [(ngModel)]="bulkDistribuidora"
-                placeholder="Distribuidora..."
-                dropdownPosition="top"
-            ></ng-select>
-        </div>
-        <button class="btn btn-action" [disabled]="!bulkDistribuidora" (click)="confirmarSeleccionados()">
-            <i class="fa fa-check" style="margin-right: 0.375rem;"></i>Confirmar Seleccionados
+        <ng-container *ngIf="!allSelectedReadyForArrival()">
+            <div class="fab-distribuidora">
+                <ng-select [items]="distribuidoras"
+                    [(ngModel)]="bulkDistribuidora"
+                    placeholder="Distribuidora..."
+                    dropdownPosition="top"
+                ></ng-select>
+            </div>
+            <button class="btn btn-action" [disabled]="!bulkDistribuidora" (click)="confirmarSeleccionados()">
+                <i class="fa fa-check" style="margin-right: 0.375rem;"></i>Confirmar Seleccionados
+            </button>
+        </ng-container>
+        <button *ngIf="allSelectedReadyForArrival()" class="btn btn-action" style="background: #16a34a;" (click)="confirmarLlegadaSeleccionados()">
+            <i class="fa fa-truck" style="margin-right: 0.375rem;"></i>Confirmar Llegada
         </button>
         <button class="btn btn-action-secondary" (click)="clearSelection()">
             Deseleccionar
