@@ -87,7 +87,8 @@ describe('PedidoComponent', () => {
   describe('borrarItem', () => {
     it('should call pedidosService.removePedidoItem', () => {
       const item = createPedidoItem();
-      component.borrarItem(item, 0);
+      const group = { libro: item.libro, autor: item.autor, editorial: item.editorial, precio: item.precio, cantidad: 1, items: [item] };
+      component.borrarItem(group);
 
       expect(pedidosService.removePedidoItem).toHaveBeenCalledWith(item);
     });
