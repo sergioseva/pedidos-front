@@ -1,7 +1,7 @@
-<div [class.isPrinting]="printService.isPrinting">
+<div>
     <div class="section-title">
-        <i class="fa fa-file-text"></i>
-        Consulta de Remitos
+        <i class="fa fa-truck"></i>
+        Consulta de Pedidos a Distribuidora
     </div>
     <div class="filter-pills">
         <button class="btn btn-action-secondary btn-sm" (click)="dateFilter(1)">Ayer</button>
@@ -14,7 +14,7 @@
             <div class="col">
                 <div style="position: relative;">
                     <input #termino type="text" (keyup.enter)="buscarTermino(termino.value)" class="form-control"
-                        placeholder="Buscar por Distribuidora, Observaciones o Libro" style="padding-left: 2.25rem;">
+                        placeholder="Buscar por Distribuidora o Libro" style="padding-left: 2.25rem;">
                     <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #8C7A6A;"></i>
                 </div>
             </div>
@@ -35,42 +35,29 @@
     <table class="table">
         <thead>
             <tr>
-                <th width="5%" scope="col"></th>
-                <th width="20%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_distribuidora_ed.descripcion')">
+                <th width="30%" scope="col" style="cursor: pointer;" (click)="toggleSort('distribuidora.descripcion')">
                     Distribuidora
-                    <i *ngIf="sortColumn === 're_distribuidora_ed.descripcion' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
-                    <i *ngIf="sortColumn === 're_distribuidora_ed.descripcion' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
-                    <i *ngIf="sortColumn !== 're_distribuidora_ed.descripcion'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                    <i *ngIf="sortColumn === 'distribuidora.descripcion' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'distribuidora.descripcion' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'distribuidora.descripcion'" class="fa fa-sort" style="opacity: 0.3;"></i>
                 </th>
-                <th width="15%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_fecha')">
+                <th width="15%" scope="col" style="cursor: pointer;" (click)="toggleSort('fecha')">
                     Fecha
-                    <i *ngIf="sortColumn === 're_fecha' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
-                    <i *ngIf="sortColumn === 're_fecha' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
-                    <i *ngIf="sortColumn !== 're_fecha'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                    <i *ngIf="sortColumn === 'fecha' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === 'fecha' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== 'fecha'" class="fa fa-sort" style="opacity: 0.3;"></i>
                 </th>
-                <th width="15%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_observaciones')">
-                    Observaciones
-                    <i *ngIf="sortColumn === 're_observaciones' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
-                    <i *ngIf="sortColumn === 're_observaciones' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
-                    <i *ngIf="sortColumn !== 're_observaciones'" class="fa fa-sort" style="opacity: 0.3;"></i>
-                </th>
-                <th width="45%" scope="col">Items</th>
+                <th width="55%" scope="col">Libros</th>
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let remito of filteredRemitos">
-                <td>
-                    <button title="Imprimir" (click)="imprimir(remito)" type="button" class="btn btn-icon">
-                        <i class="fa fa-print"></i>
-                    </button>
-                </td>
-                <td>{{remito.re_distribuidora_ed?.descripcion}}</td>
-                <td>{{remito.re_fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
-                <td>{{remito.re_observaciones}}</td>
+            <tr *ngFor="let pedido of filteredPedidos">
+                <td>{{pedido.distribuidora?.descripcion}}</td>
+                <td>{{pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
                 <td>
                     <ul style="margin: 0; padding-left: 1rem;">
-                        <li *ngFor="let item of remito.items">
-                            {{item.ri_cantidad}} - {{item.ri_nombre_libro}} ({{item.ri_autor}})
+                        <li *ngFor="let item of pedido.items">
+                            {{item.libro}}
                         </li>
                     </ul>
                 </td>
@@ -88,8 +75,8 @@
         </p>
     </div>
 
-    <div *ngIf="!loading && !error && searchPerformed && remitos?.length===0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
-        <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>No se encontraron remitos</h4>
+    <div *ngIf="!loading && !error && searchPerformed && pedidos?.length===0" class="alert alert-warning text-center mt-3 animated fadeIn faster">
+        <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>No se encontraron pedidos a distribuidora</h4>
         <p style="margin-bottom: 0;">Intente con otro criterio de busqueda o ajuste el rango de fechas.</p>
     </div>
 

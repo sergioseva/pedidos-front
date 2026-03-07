@@ -23,6 +23,7 @@ import { ConfiguracionComponent } from './components/configuracion/configuracion
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { UsuarioComponent } from './components/usuario/usuario.component';
 import { AdminGuard } from './guards/admin.guard';
+import { ConsultaPedidosDistribuidoraComponent } from './components/consulta-pedidos-distribuidora/consulta-pedidos-distribuidora.component';
 
 
 export const ROUTES: Routes = [
@@ -33,6 +34,7 @@ export const ROUTES: Routes = [
     { path: 'clientes/:page', component: ClientesComponent, canActivate: [AuthGuard] },
     { path: 'pedidos', component: PedidosComponent, canActivate: [AuthGuard] },
     { path: 'pedidosdistribuidora', component: PedidoDistribuidoraComponent, canActivate: [AuthGuard] },
+    { path: 'consultapedidosdistribuidora', component: ConsultaPedidosDistribuidoraComponent, canActivate: [AuthGuard] },
     { path: 'importarcatalogo', component: ImportarCatalogoComponent, canActivate: [AuthGuard] },
     { path: 'pedido', component: PedidoComponent, canActivate: [AuthGuard] },
     { path: 'remito', component: RemitoComponent, canActivate: [AuthGuard] },

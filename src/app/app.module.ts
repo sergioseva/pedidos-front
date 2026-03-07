@@ -49,6 +49,7 @@ import { ConfiguracionRemitoComponent } from './components/configuracion-remito/
 import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { UsuarioComponent } from './components/usuario/usuario.component';
+import { ConsultaPedidosDistribuidoraComponent } from './components/consulta-pedidos-distribuidora/consulta-pedidos-distribuidora.component';
 
 export function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>) {
   return (): Promise<boolean> => {
@@ -113,6 +114,7 @@ export function load(http: HttpClient, config: ConfigService): (() => Promise<bo
     ConfiguracionComponent,
     UsuariosComponent,
     UsuarioComponent,
+    ConsultaPedidosDistribuidoraComponent,
   ],
 
   imports: [

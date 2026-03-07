@@ -41,4 +41,26 @@ describe('PedidoDistribuidoraService', () => {
       expect(chttp.post).toHaveBeenCalledWith('http://test-api/pedidodistribuidora', pedido);
     });
   });
+
+  describe('buscarPedidosDistribuidora', () => {
+    it('should call correct search URL with params', () => {
+      chttp.get.and.returnValue(of([]));
+
+      service.buscarPedidosDistribuidora('test', '2024-01-01', '2024-01-31');
+
+      expect(chttp.get).toHaveBeenCalledWith(
+        'http://test-api/pedidosdistribuidora/search/findByAny?parametro=test&fechaDesde=2024-01-01&fechaHasta=2024-01-31'
+      );
+    });
+
+    it('should call with empty params', () => {
+      chttp.get.and.returnValue(of([]));
+
+      service.buscarPedidosDistribuidora('', '2024-01-01', '2024-01-31');
+
+      expect(chttp.get).toHaveBeenCalledWith(
+        'http://test-api/pedidosdistribuidora/search/findByAny?parametro=&fechaDesde=2024-01-01&fechaHasta=2024-01-31'
+      );
+    });
+  });
 });
