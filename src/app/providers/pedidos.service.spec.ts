@@ -84,7 +84,7 @@ describe('PedidosService', () => {
       expect(pedido.pedidoItems.length).toBe(1);
     });
 
-    it('should increment cantidad for duplicate codigoLuongo', () => {
+    it('should store individual items for duplicate codigoLuongo', () => {
       const item1 = createPedidoItem({ codigoLuongo: 'DUP', precio: 100, cantidad: 1 });
       const item2 = createPedidoItem({ codigoLuongo: 'DUP', precio: 100, cantidad: 1 });
 
@@ -93,8 +93,9 @@ describe('PedidosService', () => {
 
       let pedido: PedidoModel;
       service.currentPedido.subscribe(p => pedido = p);
-      expect(pedido.pedidoItems.length).toBe(1);
-      expect(pedido.pedidoItems[0].cantidad).toBe(2);
+      expect(pedido.pedidoItems.length).toBe(2);
+      expect(pedido.pedidoItems[0].cantidad).toBe(1);
+      expect(pedido.pedidoItems[1].cantidad).toBe(1);
     });
 
     it('should add as new item when codigoLuongo is falsy', () => {
@@ -126,22 +127,25 @@ describe('PedidosService', () => {
       const item = createPedidoItem();
       service.addPedidoItem(item);
 
-      service.removePedidoItem(item);
-
       let pedido: PedidoModel;
       service.currentPedido.subscribe(p => pedido = p);
+      const storedItem = pedido.pedidoItems[0];
+      service.removePedidoItem(storedItem);
+
       expect(pedido.pedidoItems.length).toBe(0);
     });
 
     it('should not remove when finalizado is true', () => {
       const item = createPedidoItem();
       service.addPedidoItem(item);
-      service.finalizarPedido();
-
-      service.removePedidoItem(item);
 
       let pedido: PedidoModel;
       service.currentPedido.subscribe(p => pedido = p);
+      const storedItem = pedido.pedidoItems[0];
+      service.finalizarPedido();
+
+      service.removePedidoItem(storedItem);
+
       expect(pedido.pedidoItems.length).toBe(1);
     });
   });

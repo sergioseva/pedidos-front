@@ -7,6 +7,7 @@ import { PedidosService } from '../../providers/pedidos.service';
 import { PrintPedidoService } from '../../providers/print-pedido.service';
 import { PedidoLibrosPipe } from '../../pipes/pedido-libros.pipe';
 import { of, throwError } from 'rxjs';
+import { BsModalService } from 'ngx-bootstrap/modal';
 
 describe('PedidosComponent', () => {
   let component: PedidosComponent;
@@ -30,6 +31,7 @@ describe('PedidosComponent', () => {
       providers: [
         { provide: PedidosService, useValue: pedidosService },
         { provide: PrintPedidoService, useValue: printService },
+        { provide: BsModalService, useValue: { show: jasmine.createSpy('show'), hide: jasmine.createSpy('hide') } },
         DatePipe
       ]
     }).compileComponents();
