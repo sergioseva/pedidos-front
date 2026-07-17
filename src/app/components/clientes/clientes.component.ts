@@ -22,8 +22,13 @@ export class ClientesComponent implements OnInit {
   last:string;
   currentPage:number;
   pagina:number;
-  currentIndex: number;
-  
+
+  // Sorting. The list is paginated on the server, so the sort has to go to the server too (a
+  // client-side sort would only reorder the 20 rows on screen). SDR sorts by entity property name.
+  sortField = 'id';
+  sortDir: 'asc' | 'desc' = 'desc';
+  searchTermino = '';
+
   constructor(private _activadedRoute:ActivatedRoute,private clientesService:ClientesServiceService) {
     this._activadedRoute.params.subscribe(params => {
       this.pagina=params['page'];
@@ -31,37 +36,74 @@ export class ClientesComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.clientesService.getClientes().subscribe(
+    this.load();
+  }
+
+  private load() {
+    this.clientesService.getClientes(this.sortParam()).subscribe(
       (cs:any)=>{
-        console.log(cs);
-        this.totalPages=cs.page.totalPages;
-        this.pages=new Array(this.totalPages);
-        this.clientes=cs._embedded.clientes;
-        this.total=cs.page.totalElements;
-        this.first=cs.page.first;
-        this.prev=cs.page.prev;
-        this.next=cs.page.next;
-        this.last=cs.page.last;
-        this.currentPage=1;
+        this.aplicarPagina(cs, 1);
       }
     )
   }
 
   setPage(p:number){
-    this.clientesService.getClientesPage(p).subscribe(
+    this.clientesService.getClientesPage(p, this.sortParam()).subscribe(
       (cs:any)=>{
-        console.log(cs);
-        this.totalPages=cs.page.totalPages;
-        this.pages=new Array(this.totalPages);
-        this.clientes=cs._embedded.clientes;
-        this.total=cs.page.totalElements;
-        this.first=cs.page.first;
-        this.prev=cs.page.prev;
-        this.next=cs.page.next;
-        this.last=cs.page.last;
-        this.currentPage=p;
+        this.aplicarPagina(cs, p);
       }
     )
+  }
+
+  private aplicarPagina(cs: any, page: number) {
+    this.totalPages=cs.page.totalPages;
+    this.pages=new Array(this.totalPages);
+    this.clientes=cs._embedded ? cs._embedded.clientes : [];
+    this.total=cs.page.totalElements;
+    this.first=cs.page.first;
+    this.prev=cs.page.prev;
+    this.next=cs.page.next;
+    this.last=cs.page.last;
+    this.currentPage=page;
+  }
+
+  private sortParam(): string {
+    return `${this.sortField},${this.sortDir}`;
+  }
+
+  toggleSort(field: string) {
+    if (this.sortField === field) {
+      this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDir = 'asc';
+    }
+    if (this.searchTermino) {
+      // Search results come back as a plain array; sort those in place.
+      this.ordenarLocal();
+    } else {
+      // Sorting resets to the first page, so you don't land mid-list in a new order.
+      this.load();
+    }
+  }
+
+  sortIcon(field: string): string {
+    if (this.sortField !== field) {
+      return 'fa-sort';
+    }
+    return this.sortDir === 'asc' ? 'fa-sort-asc' : 'fa-sort-desc';
+  }
+
+  private ordenarLocal() {
+    const field = this.sortField;
+    const dir = this.sortDir === 'asc' ? 1 : -1;
+    this.clientes = [...(this.clientes || [])].sort((a, b) => {
+      const va = a[field];
+      const vb = b[field];
+      if (va == null) { return 1; }
+      if (vb == null) { return -1; }
+      return va > vb ? dir : va < vb ? -dir : 0;
+    });
   }
   /* setPageF(inc:number){
 
@@ -88,22 +130,24 @@ export class ClientesComponent implements OnInit {
 
   buscarCliente(termino: string) {
       if (!termino || termino.trim() === '') {
-        this.ngOnInit();
+        this.searchTermino = '';
+        this.load();
         return;
       }
+      this.searchTermino = termino;
       this.clientesService.getClientesPorCualquier(termino).subscribe(
         (cs: any) => {
-          console.log(cs);
           this.clientes = cs;
           this.total = cs.length;
           this.totalPages = 1;
           this.currentPage = 1;
           this.pages = new Array(1);
+          this.ordenarLocal();
         }
       );
   }
 
-  validaryBorrarCliente( cliente: ClienteModel , i: number){
+  validaryBorrarCliente( cliente: ClienteModel ){
     const promiseTienePedidos= new Promise<ClienteModel>((resolve, reject) => {
           this.clientesService.checkPedidos(cliente.id)
           .subscribe(
@@ -111,7 +155,6 @@ export class ClientesComponent implements OnInit {
                        if (valor) {
                             reject(cliente);
                         } else {
-                            this.currentIndex = i;
                             resolve(cliente);
                       }
             }
@@ -136,7 +179,7 @@ borrarCliente(cliente: ClienteModel) {
       }).then( resp => {
           if ( resp.value ) {
             this.clientesService.deleteCliente(cliente.id).subscribe(
-                resp => {this.clientes.splice(this.currentIndex, 1); },
+                resp => { this.clientes = this.clientes.filter(c => c.id !== cliente.id); },
                 err => {Swal.fire({
                   title: 'Cliente',
                   text: `Error al procesar la operacion` ,

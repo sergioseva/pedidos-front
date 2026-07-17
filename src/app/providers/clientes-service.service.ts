@@ -21,8 +21,8 @@ export class ClientesServiceService {
 }
 
 
-  getClientes() {
-    let url:string=`${ this.URLClientesService }?sort=id,desc`
+  getClientes(sort: string = 'id,desc') {
+    let url:string=`${ this.URLClientesService }?sort=${sort}`
 
     return this.http.get(url)
           .pipe(
@@ -35,8 +35,8 @@ export class ClientesServiceService {
     return this.http.get(url);
   }
 
-  getClientesPage(page: number) {
-    const url = `${ this.URLClientesService }?page=${page}&sort=id,desc`
+  getClientesPage(page: number, sort: string = 'id,desc') {
+    const url = `${ this.URLClientesService }?page=${page}&sort=${sort}`
 
     return this.http.get(url)
           .pipe(

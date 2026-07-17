@@ -8,6 +8,8 @@ export class ClienteModel {
     telefonoOtro: string;
     telefonoOtroDescr: string;
     email: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 

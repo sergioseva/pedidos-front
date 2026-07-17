@@ -22,10 +22,18 @@
 <table class="table" style="margin-top: 1rem;">
     <thead>
         <tr>
-            <th scope="col">Nombre</th>
+            <th scope="col" style="cursor: pointer;" (click)="toggleSort('nombre')">
+                Nombre <i class="fa" [ngClass]="sortIcon('nombre')"></i>
+            </th>
             <th scope="col">Celular</th>
             <th scope="col">Fijo</th>
             <th scope="col">Email</th>
+            <th scope="col" style="cursor: pointer;" (click)="toggleSort('createdAt')">
+                Creado <i class="fa" [ngClass]="sortIcon('createdAt')"></i>
+            </th>
+            <th scope="col" style="cursor: pointer;" (click)="toggleSort('updatedAt')">
+                Modificado <i class="fa" [ngClass]="sortIcon('updatedAt')"></i>
+            </th>
             <th scope="col"></th>
         </tr>
     </thead>
@@ -35,12 +43,14 @@
             <td>{{cliente.telefonoMovil}}</td>
             <td>{{cliente.telefonoFijo}}</td>
             <td>{{cliente.email}}</td>
+            <td>{{cliente.createdAt | date:'short':'+0300':'es-AR'}}</td>
+            <td>{{cliente.updatedAt | date:'short':'+0300':'es-AR'}}</td>
             <td>
                 <div class="table-actions">
                     <button title="Modificar" [routerLink]="['/cliente', cliente.id]" type="button" class="btn btn-icon">
                         <i class="fa fa-pencil"></i>
                     </button>
-                    <button title="Eliminar" (click)="validaryBorrarCliente(cliente,i)" type="button" class="btn btn-icon btn-icon-danger">
+                    <button title="Eliminar" (click)="validaryBorrarCliente(cliente)" type="button" class="btn btn-icon btn-icon-danger">
                         <i class="fa fa-trash"></i>
                     </button>
                 </div>

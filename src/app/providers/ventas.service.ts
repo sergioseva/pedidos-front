@@ -44,6 +44,11 @@ export class VentasService {
     return this.chttp.get(url);
   }
 
+  /** Deletes a sale. Admin-only on the backend (@PreAuthorize). */
+  eliminarVenta(id: number) {
+    return this.chttp.delete(`${this.URLVentasService}/${id}`);
+  }
+
   /** Downloads the filtered ventas as an .xlsx blob (same filter the screen is showing). */
   descargarReporte(parametro: string, fechaDesde: string, fechaHasta: string) {
     const url = `${this.URLVentasService}/reporte`

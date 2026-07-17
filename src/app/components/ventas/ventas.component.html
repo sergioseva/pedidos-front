@@ -99,7 +99,7 @@
                     <th>Vendedor</th>
                     <th class="text-right">Unidades</th>
                     <th style="cursor: pointer;" class="text-right" (click)="toggleSort('total')">Total</th>
-                    <th style="width: 60px;"></th>
+                    <th style="width: 96px;"></th>
                 </tr>
             </thead>
             <tbody>
@@ -110,9 +110,12 @@
                     <td>{{ v.usuario ?? '—' }}</td>
                     <td class="text-right">{{ unidades(v) }}</td>
                     <td class="text-right">$ {{ v.total | number:'1.0-0':'es-AR' }}</td>
-                    <td>
+                    <td class="table-actions">
                         <button class="btn btn-icon" title="Ver detalle" (click)="verDetalle(v, detalleModal)">
                             <i class="fa fa-eye"></i>
+                        </button>
+                        <button class="btn btn-icon-danger" title="Eliminar venta" (click)="eliminar(v)">
+                            <i class="fa fa-trash"></i>
                         </button>
                     </td>
                 </tr>

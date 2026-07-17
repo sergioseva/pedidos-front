@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, TemplateRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import Swal from 'sweetalert2';
 
 import { VentasService } from '../../providers/ventas.service';
 
@@ -162,6 +163,39 @@ export class VentasComponent implements OnInit {
   verDetalle(venta: any, template: TemplateRef<any>): void {
     this.ventaSeleccionada = venta;
     this.modalRef = this.modalService.show(template, { class: 'modal-lg' });
+  }
+
+  /**
+   * Deleting a sale is destructive and affects the totals, so it always confirms first. Only admins
+   * reach this screen (AdminGuard) and the backend re-checks the role, so the button is safe to show.
+   */
+  eliminar(venta: any): void {
+    Swal.fire({
+      title: 'Eliminar venta',
+      html: `Se eliminara la venta <b>#${venta.id}</b> por <b>$${(venta.total ?? 0).toLocaleString('es-AR')}</b>.<br>Esta accion no se puede deshacer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#dc3545'
+    }).then(result => {
+      if (!result.isConfirmed) {
+        return;
+      }
+      this.vs.eliminarVenta(venta.id).subscribe(
+        () => {
+          Swal.fire({ title: 'Eliminada', text: `Venta #${venta.id} eliminada`, icon: 'success' });
+          // Reload so the list, per-day table and summary totals all reflect the removal.
+          this.buscar();
+        },
+        (err: any) => {
+          Swal.fire({
+            title: 'No se pudo eliminar',
+            text: err?.error?.message ?? 'Error al eliminar la venta',
+            icon: 'error'
+          });
+        });
+    });
   }
 
   /**

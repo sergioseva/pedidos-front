@@ -6,6 +6,8 @@ import localeAr from '@angular/common/locales/es-AR';
 import { of, throwError } from 'rxjs';
 import { BsModalService } from 'ngx-bootstrap/modal';
 
+import Swal from 'sweetalert2';
+
 import { VentasComponent } from './ventas.component';
 import { VentasService } from '../../providers/ventas.service';
 
@@ -24,6 +26,7 @@ describe('VentasComponent', () => {
       resumen: jasmine.createSpy('resumen').and.returnValue(of(RESUMEN)),
       ventasPorDia: jasmine.createSpy('ventasPorDia').and.returnValue(of(POR_DIA)),
       buscarVentas: jasmine.createSpy('buscarVentas').and.returnValue(of([])),
+      eliminarVenta: jasmine.createSpy('eliminarVenta').and.returnValue(of({})),
       descargarReporte: jasmine.createSpy('descargarReporte').and.returnValue(
         of(new Blob(['x'], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })))
     };
@@ -112,6 +115,27 @@ describe('VentasComponent', () => {
       component.descargando = true;
       component.descargar();
       expect(ventasService.descargarReporte).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('eliminar', () => {
+    it('deletes after confirmation and reloads so the totals update', async () => {
+      spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as any));
+      ventasService.buscarVentas.calls.reset();
+
+      component.eliminar({ id: 5, total: 100 });
+      await Promise.resolve();   // confirm resolves
+      await Promise.resolve();   // delete subscribe runs
+
+      expect(ventasService.eliminarVenta).toHaveBeenCalledWith(5);
+      expect(ventasService.buscarVentas).toHaveBeenCalled();
+    });
+
+    it('does nothing when the confirmation is cancelled', async () => {
+      spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: false } as any));
+      component.eliminar({ id: 5, total: 100 });
+      await Promise.resolve();
+      expect(ventasService.eliminarVenta).not.toHaveBeenCalled();
     });
   });
 
