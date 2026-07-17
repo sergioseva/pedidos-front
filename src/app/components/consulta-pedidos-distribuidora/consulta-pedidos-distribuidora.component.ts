@@ -14,6 +14,8 @@ export class ConsultaPedidosDistribuidoraComponent implements OnInit {
 
   pedidos: any[];
   filteredPedidos: any[] = [];
+  /** Which date preset is applied, so the pill shows as selected. */
+  filtroActivo: number = null;
   fromDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   toDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   loading = false;
@@ -118,6 +120,8 @@ export class ConsultaPedidosDistribuidoraComponent implements OnInit {
   }
 
   dateFilter(days: number) {
+
+    this.filtroActivo = days;
     const past = new Date();
     const today = new Date();
     past.setDate(past.getDate() - days);

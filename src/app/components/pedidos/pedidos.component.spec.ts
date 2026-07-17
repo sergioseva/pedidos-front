@@ -90,5 +90,19 @@ describe('PedidosComponent', () => {
       expect(component.toDate).toBeTruthy();
       expect(pedidosService.buscarPedidos).toHaveBeenCalled();
     });
+
+    // Drives the selected pill, so the screen shows which period is on without reading the dates.
+    it('should mark the chosen preset as active', () => {
+      component.dateFilter(7);
+      expect(component.filtroActivo).toBe(7);
+
+      component.dateFilter(30);
+      expect(component.filtroActivo).toBe(30);
+    });
+
+    // ngOnInit calls dateFilter(0), which is what lights the "Hoy" pill on load.
+    it('should mark Hoy as active on load', () => {
+      expect(component.filtroActivo).toBe(0);
+    });
   });
 });

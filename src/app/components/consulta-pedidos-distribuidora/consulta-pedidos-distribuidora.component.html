@@ -4,10 +4,17 @@
         Consulta de Pedidos a Distribuidora
     </div>
     <div class="filter-pills">
-        <button class="btn btn-action-secondary btn-sm" (click)="dateFilter(1)">Ayer</button>
-        <button class="btn btn-action-secondary btn-sm" (click)="dateFilter(7)">Ultima Semana</button>
-        <button class="btn btn-action-secondary btn-sm" (click)="dateFilter(30)">Ultimo Mes</button>
-        <button class="btn btn-action-secondary btn-sm" (click)="dateFilter(365)">Ultimo Anio</button>
+        <span class="periodo-label">Periodo:</span>
+        <button class="btn btn-sm pill" type="button" (click)="dateFilter(0)"
+                [class.active]="filtroActivo === 0">Hoy</button>
+        <button class="btn btn-sm pill" type="button" (click)="dateFilter(1)"
+                [class.active]="filtroActivo === 1">Ayer</button>
+        <button class="btn btn-sm pill" type="button" (click)="dateFilter(7)"
+                [class.active]="filtroActivo === 7">Ultima Semana</button>
+        <button class="btn btn-sm pill" type="button" (click)="dateFilter(30)"
+                [class.active]="filtroActivo === 30">Ultimo Mes</button>
+        <button class="btn btn-sm pill" type="button" (click)="dateFilter(365)"
+                [class.active]="filtroActivo === 365">Ultimo Año</button>
     </div>
     <div class="search-row">
         <div class="row align-items-center">

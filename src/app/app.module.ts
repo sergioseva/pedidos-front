@@ -30,6 +30,8 @@ import { ClienteComponent } from './components/cliente/cliente/cliente.component
 import { LibrosComponent } from './components/libros/libros.component';
 import { LibroImagenPipe } from './pipes/libro-imagen.pipe';
 import { PedidoComponent } from './components/pedido/pedido.component';
+import { VentaComponent } from './components/venta/venta.component';
+import { VentasComponent } from './components/ventas/ventas.component';
 import { ConfigService } from './providers/config.service';
 import { catchError, map } from 'rxjs/operators';
 import { PedidoItemComponent } from './components/pedido-item/pedido-item.component';
@@ -98,6 +100,8 @@ export function load(http: HttpClient, config: ConfigService): (() => Promise<bo
     LibrosComponent,
     LibroImagenPipe,
     PedidoComponent,
+    VentaComponent,
+    VentasComponent,
     PedidoItemComponent,
     DisableControlDirective,
     PrintLayoutComponent,

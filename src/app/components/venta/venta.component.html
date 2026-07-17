@@ -1,0 +1,176 @@
+<div class="container" style="padding-top: 1rem;">
+    <div class="section-title">
+        <i class="fa fa-barcode"></i>
+        Registrar Venta
+    </div>
+
+    <!-- The scan field: kept large and always focused, since the operator is looking at the books. -->
+    <div class="search-row" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <div style="flex: 1; max-width: 420px;">
+            <input #isbnInput type="text" class="form-control form-control-lg"
+                   [(ngModel)]="isbnScan" name="isbnScan"
+                   (keyup.enter)="onScan()"
+                   autocomplete="off"
+                   placeholder="Escanee el codigo de barras o escriba el ISBN">
+        </div>
+        <span *ngIf="buscando" class="text-hint"><i class="fa fa-spinner fa-spin"></i> Buscando...</span>
+        <span *ngIf="!buscando" class="text-hint">Escanee un libro y presione Enter</span>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger" role="alert">{{ errMessage }}</div>
+
+    <!-- Ticket -->
+    <div class="card" style="margin-bottom: 1rem;">
+        <table class="table table-sm" style="margin-bottom: 0;">
+            <thead>
+                <tr>
+                    <th>ISBN</th>
+                    <th>Libro</th>
+                    <th style="width: 110px;">Cantidad</th>
+                    <th style="width: 130px;">Precio</th>
+                    <th style="width: 120px;" class="text-right">Subtotal</th>
+                    <th style="width: 60px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of venta.items"
+                    [style.background-color]="item.isbn === ultimoIsbn ? 'rgba(22,163,74,0.12)' : 'transparent'">
+                    <td>{{ item.isbn }}</td>
+                    <td>
+                        {{ item.libro }}
+                        <div class="text-hint" *ngIf="item.autor">{{ item.autor }}</div>
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm" min="1"
+                               [(ngModel)]="item.cantidad" (ngModelChange)="recalcular()">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm" min="0" step="0.01"
+                               [(ngModel)]="item.precio" (ngModelChange)="recalcular()">
+                    </td>
+                    <td class="text-right">$ {{ item.cantidad * item.precio | number:'1.0-2':'es-AR' }}</td>
+                    <td>
+                        <button class="btn btn-icon btn-icon-danger" title="Quitar" (click)="removeItem(item)">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="!venta.items.length">
+                    <td colspan="6" class="text-hint" style="text-align: center; padding: 1.5rem;">
+                        Todavia no hay libros en esta venta. Escanee el primero.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Footer: cliente is explicitly optional -->
+    <div style="display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 260px;">
+            <label class="text-hint">Cliente (opcional)</label>
+            <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <ng-select [items]="clientes"
+                               bindLabel="label"
+                               placeholder="Sin cliente"
+                               [(ngModel)]="clienteSeleccionado">
+                    </ng-select>
+                </div>
+                <button class="btn btn-icon" title="Nuevo Cliente" type="button"
+                        (click)="toggleNuevoCliente()" style="margin-top: 1px;">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        <div style="min-width: 220px;">
+            <label class="text-hint">Observaciones (opcional)</label>
+            <input type="text" class="form-control" [(ngModel)]="venta.observaciones">
+        </div>
+        <div style="margin-left: auto; text-align: right;">
+            <div class="text-hint">Total</div>
+            <div style="font-size: 1.75rem; font-weight: 700;">
+                $ {{ venta.total | number:'1.0-2':'es-AR' }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick-add cliente, same inline panel as the pedido screen -->
+    <div *ngIf="showNuevoCliente" style="border: 1.5px solid var(--primary); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; background: #FEF3C7;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; font-weight: 600; color: var(--text);">
+            <i class="fa fa-user-plus"></i> Nuevo Cliente
+        </div>
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label>Nombre <span class="text-error">*</span></label>
+                <input type="text" class="form-control" placeholder="Nombre del cliente"
+                       [(ngModel)]="nuevoCliente.nombre" [ngModelOptions]="{standalone: true}">
+            </div>
+            <div class="col-md-6 form-group">
+                <label>Celular <span class="text-error">*</span></label>
+                <input type="text" class="form-control" placeholder="Ej: 3446123456"
+                       [(ngModel)]="nuevoCliente.telefonoMovil" [ngModelOptions]="{standalone: true}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label>Email</label>
+                <input type="text" class="form-control" placeholder="Email"
+                       [(ngModel)]="nuevoCliente.email" [ngModelOptions]="{standalone: true}">
+            </div>
+            <div class="col-md-6 form-group">
+                <label>Dirección</label>
+                <input type="text" class="form-control" placeholder="Dirección"
+                       [(ngModel)]="nuevoCliente.direccion" [ngModelOptions]="{standalone: true}">
+            </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+            <button class="btn btn-action-secondary btn-sm" type="button" (click)="toggleNuevoCliente()">
+                <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cancelar
+            </button>
+            <button class="btn btn-action btn-sm" type="button"
+                    [disabled]="!nuevoCliente.nombre || !nuevoCliente.telefonoMovil || guardandoCliente"
+                    (click)="guardarNuevoCliente()">
+                <i class="fa fa-save" style="margin-right: 0.25rem;"></i> Guardar Cliente
+            </button>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+        <button class="btn btn-action" [disabled]="!venta.items.length || guardando" (click)="finalizar()">
+            <i class="fa fa-check" style="margin-right: 0.375rem;"></i>Finalizar venta
+        </button>
+        <button class="btn btn-action-secondary" [disabled]="!venta.items.length || guardando" (click)="nuevaVenta()">
+            Cancelar venta
+        </button>
+    </div>
+</div>
+
+<!-- Manual entry: the catalog is rebuilt on every import, so a book on the shelf can be missing
+     from it. Refusing to sell it would be worse than any data gap. -->
+<ng-template #manualTemplate>
+    <div class="modal-header">
+        <h5 class="modal-title">Libro no encontrado</h5>
+        <button type="button" class="close" (click)="cerrarManual()">&times;</button>
+    </div>
+    <div class="modal-body">
+        <p class="text-hint">El ISBN <strong>{{ manualIsbn }}</strong> no esta en el catalogo. Cargue los datos para vender igual.</p>
+        <div class="form-group">
+            <label>Titulo</label>
+            <input type="text" class="form-control" [(ngModel)]="manualLibro" placeholder="Titulo del libro">
+        </div>
+        <div class="form-group">
+            <label>Precio</label>
+            <input type="number" class="form-control" min="0" step="0.01" [(ngModel)]="manualPrecio">
+        </div>
+        <div class="form-group">
+            <label>Cantidad</label>
+            <input type="number" class="form-control" min="1" [(ngModel)]="manualCantidad">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-action-secondary" (click)="cerrarManual()">Cancelar</button>
+        <button class="btn btn-action"
+                [disabled]="!manualLibro || manualPrecio == null || manualPrecio < 0 || manualCantidad < 1"
+                (click)="confirmarManual()">Agregar</button>
+    </div>
+</ng-template>

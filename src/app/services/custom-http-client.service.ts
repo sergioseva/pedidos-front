@@ -19,6 +19,15 @@ export class CustomHttpClientService {
     });
   }
 
+  // Binary download (e.g. an .xlsx report). The JWT rides in a header, so a plain <a href> link
+  // could not authenticate -- the bytes must be fetched here and saved by the caller.
+  getBlob(url: string) {
+    return this.http.get(url, {
+      headers: this.getHeaders(),
+      responseType: 'blob'
+    });
+  }
+
   post(url: string, data) {
     return this.http.post(url, data, {
       headers: this.getHeaders()

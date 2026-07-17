@@ -23,6 +23,8 @@ import { ConfiguracionComponent } from './components/configuracion/configuracion
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { UsuarioComponent } from './components/usuario/usuario.component';
 import { AdminGuard } from './guards/admin.guard';
+import { VentaComponent } from './components/venta/venta.component';
+import { VentasComponent } from './components/ventas/ventas.component';
 import { ConsultaPedidosDistribuidoraComponent } from './components/consulta-pedidos-distribuidora/consulta-pedidos-distribuidora.component';
 
 
@@ -37,6 +39,9 @@ export const ROUTES: Routes = [
     { path: 'consultapedidosdistribuidora', component: ConsultaPedidosDistribuidoraComponent, canActivate: [AuthGuard] },
     { path: 'importarcatalogo', component: ImportarCatalogoComponent, canActivate: [AuthGuard] },
     { path: 'pedido', component: PedidoComponent, canActivate: [AuthGuard] },
+    // Anyone at the counter can ring up a sale; only admins may read the money back.
+    { path: 'venta', component: VentaComponent, canActivate: [AuthGuard] },
+    { path: 'ventas', component: VentasComponent, canActivate: [AdminGuard] },
     { path: 'remito', component: RemitoComponent, canActivate: [AuthGuard] },
     { path: 'remitos', component: RemitosComponent, canActivate: [AuthGuard] },
     { path: 'distribuidoras', component: DistribuidorasComponent, canActivate: [AdminGuard] },

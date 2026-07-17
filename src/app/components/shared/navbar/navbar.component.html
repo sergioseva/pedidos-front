@@ -29,6 +29,15 @@
                 </div>
             </li>
             <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownVentas" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-shopping-cart" style="margin-right: 0.25rem;"></i> Ventas
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownVentas">
+                    <a class="dropdown-item" [routerLink]="['venta']"><i class="fa fa-barcode" style="margin-right: 0.375rem;"></i>Registrar Venta</a>
+                    <a class="dropdown-item" *ngIf="isAdmin$ | async" [routerLink]="['ventas']"><i class="fa fa-bar-chart" style="margin-right: 0.375rem;"></i>Consulta de Ventas</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRemitos" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-file-text" style="margin-right: 0.25rem;"></i> Remitos
                 </a>

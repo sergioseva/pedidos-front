@@ -13,6 +13,8 @@ export class RemitosComponent implements OnInit {
 
   remitos: any[];
   filteredRemitos: any[] = [];
+  /** Which date preset is applied, so the pill shows as selected. */
+  filtroActivo: number = null;
   fromDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   toDate: string = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   loading = false;
@@ -96,6 +98,8 @@ export class RemitosComponent implements OnInit {
   }
 
   dateFilter(days: number) {
+
+    this.filtroActivo = days;
     const past = new Date();
     const today = new Date();
     past.setDate(past.getDate() - days);
