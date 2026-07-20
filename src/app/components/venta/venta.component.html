@@ -13,6 +13,10 @@
                    autocomplete="off"
                    placeholder="Escanee el codigo de barras o escriba el ISBN">
         </div>
+        <button class="btn btn-action-secondary" type="button" (click)="agregarLibroManual()"
+                title="Cargar un libro que no esta en el catalogo">
+            <i class="fa fa-plus" style="margin-right: 0.375rem;"></i> Libro manual
+        </button>
         <span *ngIf="buscando" class="text-hint"><i class="fa fa-spinner fa-spin"></i> Buscando...</span>
         <span *ngIf="!buscando" class="text-hint">Escanee un libro y presione Enter</span>
     </div>
@@ -149,17 +153,30 @@
      from it. Refusing to sell it would be worse than any data gap. -->
 <ng-template #manualTemplate>
     <div class="modal-header">
-        <h5 class="modal-title">Libro no encontrado</h5>
+        <h5 class="modal-title">{{ manualDesdeScan ? 'Libro no encontrado' : 'Cargar libro manualmente' }}</h5>
         <button type="button" class="close" (click)="cerrarManual()">&times;</button>
     </div>
     <div class="modal-body">
-        <p class="text-hint">El ISBN <strong>{{ manualIsbn }}</strong> no esta en el catalogo. Cargue los datos para vender igual.</p>
+        <p class="text-hint" *ngIf="manualDesdeScan">
+            El ISBN <strong>{{ manualIsbn }}</strong> no esta en el catalogo. Cargue los datos para vender igual.
+        </p>
+        <p class="text-hint" *ngIf="!manualDesdeScan">
+            Cargue un libro que no esta en el catalogo.
+        </p>
         <div class="form-group">
-            <label>Titulo</label>
+            <label>ISBN <span class="text-hint">(opcional)</span></label>
+            <input type="text" class="form-control" [(ngModel)]="manualIsbn" placeholder="ISBN">
+        </div>
+        <div class="form-group">
+            <label>Titulo <span class="text-error">*</span></label>
             <input type="text" class="form-control" [(ngModel)]="manualLibro" placeholder="Titulo del libro">
         </div>
         <div class="form-group">
-            <label>Precio</label>
+            <label>Autor <span class="text-hint">(opcional)</span></label>
+            <input type="text" class="form-control" [(ngModel)]="manualAutor" placeholder="Autor">
+        </div>
+        <div class="form-group">
+            <label>Precio <span class="text-error">*</span></label>
             <input type="number" class="form-control" min="0" step="0.01" [(ngModel)]="manualPrecio">
         </div>
         <div class="form-group">

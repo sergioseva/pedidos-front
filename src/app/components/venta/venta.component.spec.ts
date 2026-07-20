@@ -176,6 +176,39 @@ describe('VentaComponent', () => {
       component.confirmarManual();
       expect(component.venta.items.length).toBe(0);
     });
+
+    // The proactive path: add a book the clerk knows isn't in the catalog, no failed scan first.
+    it('opens a blank manual form from the button, with no scan context', () => {
+      component.agregarLibroManual();
+      expect(component.manualDesdeScan).toBeFalse();
+      expect(component.manualIsbn).toBe('');
+      expect(modalService.show).toHaveBeenCalled();
+    });
+
+    it('adds a manual book with an optional ISBN and author', () => {
+      component.agregarLibroManual();
+      component.manualIsbn = '978-1-2345';
+      component.manualLibro = 'Sin catalogo';
+      component.manualAutor = 'Autora X';
+      component.manualPrecio = 300;
+      component.manualCantidad = 2;
+      component.confirmarManual();
+
+      expect(component.venta.items.length).toBe(1);
+      expect(component.venta.items[0].isbn).toBe('97812345'); // normalized (separators stripped)
+      expect(component.venta.items[0].autor).toBe('Autora X');
+      expect(component.venta.total).toBe(600);
+    });
+
+    it('allows a manual book with no ISBN at all', () => {
+      component.agregarLibroManual();
+      component.manualLibro = 'Libro sin isbn';
+      component.manualPrecio = 100;
+      component.confirmarManual();
+
+      expect(component.venta.items.length).toBe(1);
+      expect(component.venta.items[0].isbn).toBe('');
+    });
   });
 
   describe('the ticket', () => {

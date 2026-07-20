@@ -44,8 +44,10 @@ export class VentaComponent implements OnInit, AfterViewInit {
 
   // manual entry, shown when a scan finds nothing in the catalog
   modalRef: BsModalRef;
+  manualDesdeScan = false;   // true when the modal was opened by a failed scan (ISBN prefilled)
   manualIsbn = '';
   manualLibro = '';
+  manualAutor = '';
   manualPrecio: number = null;
   manualCantidad = 1;
 
@@ -129,8 +131,20 @@ export class VentaComponent implements OnInit, AfterViewInit {
 
   /** The catalog is replaced on every import, so a book on the shelf may legitimately be missing. */
   abrirManual(isbn: string): void {
+    this.manualDesdeScan = true;
+    this.prepararManual(isbn);
+  }
+
+  /** Same form, opened proactively from the button for a book known not to be in the catalog. */
+  agregarLibroManual(): void {
+    this.manualDesdeScan = false;
+    this.prepararManual('');
+  }
+
+  private prepararManual(isbn: string): void {
     this.manualIsbn = isbn;
     this.manualLibro = '';
+    this.manualAutor = '';
     this.manualPrecio = null;
     this.manualCantidad = 1;
     this.modalRef = this.modalService.show(this.manualTemplate);
@@ -141,9 +155,9 @@ export class VentaComponent implements OnInit, AfterViewInit {
       return;
     }
     const item = new VentaItemModel();
-    item.isbn = this.manualIsbn;
+    item.isbn = this.normalizarIsbn(this.manualIsbn);
     item.libro = this.manualLibro;
-    item.autor = '';
+    item.autor = this.manualAutor ?? '';
     item.editorial = '';
     item.precio = this.manualPrecio;
     item.cantidad = this.manualCantidad;
