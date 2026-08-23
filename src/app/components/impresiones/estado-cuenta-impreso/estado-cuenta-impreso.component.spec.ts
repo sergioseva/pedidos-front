@@ -71,6 +71,11 @@ describe('EstadoCuentaImpresoComponent', () => {
       .toHaveBeenCalledWith(2, '2025-01-01', '2025-12-31');
   });
 
+  /** El detalle se le deja al negocio: una sola hoja, sin duplicado. */
+  it('should render a single copy', () => {
+    expect(fixture.nativeElement.querySelectorAll('.estado-page').length).toBe(1);
+  });
+
   it('should total units and money', () => {
     expect(component.unidades).toBe(7);
     expect(component.total).toBe(11000);
