@@ -295,6 +295,53 @@ describe('EstadoCuentaConsignacionComponent', () => {
       expect(fixture.nativeElement.firstElementChild.classList).not.toContain('isPrinting');
     });
 
+    describe('exportar a Excel', () => {
+      let clickSpy: jasmine.Spy;
+
+      beforeEach(() => {
+        remitosService.descargarReporteConsignacion = jasmine.createSpy('descargarReporteConsignacion')
+          .and.returnValue(of(new Blob(['x'])));
+        spyOn(window.URL, 'createObjectURL').and.returnValue('blob:fake');
+        spyOn(window.URL, 'revokeObjectURL');
+        clickSpy = spyOn(HTMLAnchorElement.prototype, 'click');
+      });
+
+      it('should ask for that comercio with the screen dates', () => {
+        component.fromDate = '2025-01-01';
+        component.toDate = '2025-12-31';
+
+        component.exportarExcel(hotel());
+
+        expect(remitosService.descargarReporteConsignacion)
+          .toHaveBeenCalledWith(1, '2025-01-01', '2025-12-31');
+      });
+
+      it('should save the blob under a filename built from the comercio', () => {
+        component.exportarExcel(hotel());
+
+        expect(clickSpy).toHaveBeenCalled();
+        expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:fake');
+        expect(component.descargando).toBe(false);
+      });
+
+      /** Sin el guardia, dos clics seguidos bajan el archivo dos veces. */
+      it('should ignore a second click while one download is running', () => {
+        component.descargando = true;
+
+        component.exportarExcel(hotel());
+
+        expect(remitosService.descargarReporteConsignacion).not.toHaveBeenCalled();
+      });
+
+      it('should clear the flag when the download fails', () => {
+        remitosService.descargarReporteConsignacion.and.returnValue(throwError(() => ({ status: 500 })));
+
+        component.exportarExcel(hotel());
+
+        expect(component.descargando).toBe(false);
+      });
+    });
+
     it('should print the comercio statement with the screen dates', () => {
       component.fromDate = '2025-01-01';
       component.toDate = '2025-12-31';

@@ -56,6 +56,8 @@ Three rules here were each paid for with a real bug:
 
 3. **Never print from a dialog, or right after closing one.** Printing from inside an ngx-bootstrap modal yields a blank sheet even though `.modal` is hidden by the print rules, and a SweetAlert whose promise resolves mid-teardown does the same. The root cause is not pinned; Bootstrap's own `@media print` block forces `@page{size:a3}` and `min-width:992px!important` on `body` and `.container`, which makes the interaction hard to predict. Printing from a plain screen works. So the settlement flow closes its modal and offers the documents from a panel on the page, and payment confirmation is a non-blocking toast with the printing left to the row's own button.
 
+The shop detail can also be downloaded as `.xlsx`. The bytes are fetched through `CustomHttpClientService.getBlob` and saved with a temporary object URL, because a plain anchor link cannot carry the JWT header — same approach as the ventas report.
+
 Multi-copy documents put `page-break-before: always` on every copy **but the first** (`.remito-page + .remito-page`). Using `page-break-after` on all of them makes the browser open one extra sheet that comes out blank — invisible on distributor returns, where the box label happened to fill it, but plainly wrong everywhere else.
 
 `PrintLayoutComponent` picks its heading from the outlet URL — every new print route needs its case there, or the document prints titled "NOTA DE PEDIDO" with the order footer.

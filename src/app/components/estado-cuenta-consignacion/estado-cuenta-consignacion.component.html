@@ -101,6 +101,13 @@
                     (click)="imprimirEstadoCuenta(grupo)">
                 <i class="fa fa-print" style="margin-right: 0.25rem;"></i> Detalle para el negocio
             </button>
+            <button class="btn btn-action-secondary btn-sm"
+                    [disabled]="descargando"
+                    title="Descargar el detalle en Excel"
+                    (click)="exportarExcel(grupo)">
+                <i class="fa fa-file-excel-o" style="margin-right: 0.25rem;"></i>
+                {{ descargando ? 'Generando...' : 'Excel' }}
+            </button>
             <button class="btn btn-action-secondary btn-sm" (click)="devolverTodo(grupo)">
                 <i class="fa fa-undo" style="margin-right: 0.25rem;"></i> Devolver todo
             </button>

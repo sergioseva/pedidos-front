@@ -47,6 +47,7 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
   registrarPago = false;
   medioPago = 'Efectivo';
   liquidando = false;
+  descargando = false;
   modalRef: BsModalRef;
   /**
    * Los comprobantes de la ultima liquidacion se ofrecen desde la pantalla, no desde el modal.
@@ -242,6 +243,36 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
    */
   imprimirEstadoCuenta(grupo: GrupoComercio) {
     this.printService.imprimirEstadoCuenta(grupo.comercioId, this.fromDate, this.toDate);
+  }
+
+  /**
+   * Baja el mismo detalle en .xlsx. Los bytes se piden con el header del token y se guardan con
+   * un object URL temporal: un enlace comun no podria llevar la autorizacion.
+   */
+  exportarExcel(grupo: GrupoComercio) {
+    if (this.descargando) {
+      return;
+    }
+    this.descargando = true;
+    this.rs.descargarReporteConsignacion(grupo.comercioId, this.fromDate, this.toDate).subscribe(
+      (blob: Blob) => {
+        const limpio = (grupo.comercio || 'negocio').replace(/[^a-zA-Z0-9]+/g, '_');
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `consignacion_${limpio}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.descargando = false;
+      },
+      () => {
+        this.descargando = false;
+        Swal.fire({
+          title: 'Exportar',
+          text: 'No se pudo generar el reporte',
+          icon: 'error'
+        });
+      });
   }
 
   imprimirRemito(remitoId: number) {

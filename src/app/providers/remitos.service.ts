@@ -68,6 +68,16 @@ export class RemitosService {
     return this.chttp.get(`${this.URLRemitosService}/${remitoId}/recibo`) as Observable<ReciboModel>;
   }
 
+  /** El detalle de consignacion de un comercio como .xlsx, con el filtro de la pantalla. */
+  descargarReporteConsignacion(comercioId: number, desde: string, hasta: string) {
+    const params = [
+      `comercioId=${comercioId}`,
+      desde ? `fechaDesde=${desde}` : '',
+      hasta ? `fechaHasta=${hasta}` : ''
+    ].filter(p => p).join('&');
+    return this.chttp.getBlob(`${this.URLRemitosService}/consignacion/estadocuenta/reporte?${params}`);
+  }
+
   changeRemito(remito: RemitoModel) {
     this.remitosSource.next(remito);
   }
