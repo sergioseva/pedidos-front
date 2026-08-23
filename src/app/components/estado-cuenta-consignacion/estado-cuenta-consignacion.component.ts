@@ -80,7 +80,7 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
       (err) => {
         this.loading = false;
         this.error = true;
-        this.errMessage = (err.error && err.error.message) || 'Error al consultar el estado de cuenta';
+        this.errMessage = (err.error && err.error.message) || 'Error al consultar las consignaciones';
       });
   }
 

@@ -34,7 +34,7 @@ export class PrintLayoutComponent implements OnInit {
     // caia en el default y se imprimia un recibo de pago titulado "NOTA DE PEDIDO".
     const url = this.router.url;
     if (url.indexOf('printestadocuenta') !== -1) {
-      this.titulo = 'ESTADO DE CUENTA';
+      this.titulo = 'DETALLE DE CONSIGNACION';
     } else if (url.indexOf('printrecibo') !== -1) {
       this.titulo = 'RECIBO DE PAGO';
     } else if (url.indexOf('printremito') !== -1) {

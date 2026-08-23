@@ -42,7 +42,7 @@ Defined in `src/app/app.routes.ts`. All authenticated routes use `AuthGuard`; ad
 
 The consignment list asks the backend for a shop's **three** movement types at once (`CONSIGNACION,RETIRO,VENTA_CONSIGNACION`), otherwise the remitos produced by a settlement are invisible and cannot be reprinted. It also filters by type, by shop and by unpaid, and collects deferred payments — a sale remito with no receipt is money still owed.
 
-`EstadoCuentaConsignacionComponent` is where copies are marked sold/returned and settled. After settling it **re-reads the balance from the server** rather than subtracting locally, and the server validates against the real balance anyway.
+`EstadoCuentaConsignacionComponent` — shown to users as **"Consignaciones Actuales"** (route `consignaciones-actuales`) — is where copies are marked sold/returned and settled. The class and the backend endpoint still say *estado de cuenta*; the UI wording was changed because it read like a cash statement. After settling it **re-reads the balance from the server** rather than subtracting locally, and the server validates against the real balance anyway.
 
 ### Printing
 
@@ -55,6 +55,8 @@ Three rules here were each paid for with a real bug:
 2. **Teardown waits for `afterprint`.** Clearing the outlet as soon as `window.print()` returns removes the document from the DOM while the `isPrinting` class that hides the screen only lifts on the next change-detection pass. A 60s timer is the fallback so a browser that never fires the event cannot strand the app behind a hidden screen.
 
 3. **Never print from a dialog, or right after closing one.** Printing from inside an ngx-bootstrap modal yields a blank sheet even though `.modal` is hidden by the print rules, and a SweetAlert whose promise resolves mid-teardown does the same. The root cause is not pinned; Bootstrap's own `@media print` block forces `@page{size:a3}` and `min-width:992px!important` on `body` and `.container`, which makes the interaction hard to predict. Printing from a plain screen works. So the settlement flow closes its modal and offers the documents from a panel on the page, and payment confirmation is a non-blocking toast with the printing left to the row's own button.
+
+Multi-copy documents put `page-break-before: always` on every copy **but the first** (`.remito-page + .remito-page`). Using `page-break-after` on all of them makes the browser open one extra sheet that comes out blank — invisible on distributor returns, where the box label happened to fill it, but plainly wrong everywhere else.
 
 `PrintLayoutComponent` picks its heading from the outlet URL — every new print route needs its case there, or the document prints titled "NOTA DE PEDIDO" with the order footer.
 

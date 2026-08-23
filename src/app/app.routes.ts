@@ -53,7 +53,7 @@ export const ROUTES: Routes = [
     { path: 'remitos', component: RemitosComponent, canActivate: [AuthGuard], data: { tipo: TIPO_DEVOLUCION } },
     { path: 'remito-consignacion', component: RemitoComponent, canActivate: [AuthGuard], data: { tipo: TIPO_CONSIGNACION } },
     { path: 'remitos-consignacion', component: RemitosComponent, canActivate: [AuthGuard], data: { tipo: TIPO_CONSIGNACION } },
-    { path: 'consignacion-estadocuenta', component: EstadoCuentaConsignacionComponent, canActivate: [AuthGuard] },
+    { path: 'consignaciones-actuales', component: EstadoCuentaConsignacionComponent, canActivate: [AuthGuard] },
     { path: 'distribuidoras', component: DistribuidorasComponent, canActivate: [AdminGuard] },
     { path: 'distribuidora/:id', component: DistribuidoraComponent, canActivate: [AdminGuard] },
     { path: 'comercios', component: ComerciosComponent, canActivate: [AdminGuard] },

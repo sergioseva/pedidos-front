@@ -1,5 +1,14 @@
+/*
+ * El salto va ANTES de cada copia menos la primera, no despues de todas. Con
+ * page-break-after en la ultima copia el navegador abre una hoja mas que queda
+ * vacia: en los remitos de devolucion la ocupaba la etiqueta de caja y no se
+ * notaba, pero en consignacion, donde la etiqueta no va, salia una hoja en blanco.
+ */
+.estado-page + .estado-page {
+    page-break-before: always;
+}
+
 .estado-page {
-    page-break-after: always;
     padding: 1rem;
 }
 

@@ -85,9 +85,9 @@ describe('PrintLayoutComponent', () => {
       expect(c.isPedido).toBeFalse();
     });
 
-    it('titles an estado de cuenta without the pedido footer', () => {
+    it('titles a consignment detail without the pedido footer', () => {
       const c = conUrl('/print/printestadocuenta/1');
-      expect(c.titulo).toBe('ESTADO DE CUENTA');
+      expect(c.titulo).toBe('DETALLE DE CONSIGNACION');
       expect(c.isPedido).toBeFalse();
     });
 
