@@ -24,17 +24,39 @@ Backend URL is configured in `src/config.json`. Fallback URL (if config fails to
 
 ### Key directories under `src/app/`
 
-- **`components/`** — Feature components: `pedido/` (single order), `pedidos/` (order list), `pedido-distribuidora/` (distributor orders), `cliente/`/`clientes/`, `libros/`, `login/`, `registro/`, `home/`, `impresiones/` (print)
-- **`providers/`** — Domain services (despite the folder name, these are Angular services): `pedidos.service`, `clientes-service.service`, `libros.service`, `pedido-items.service`, `distribuidora.service`, `pedido-distribuidora.service`, `config.service`, `print-pedido.service`
+- **`components/`** — Feature components: `pedido/` (single order), `pedidos/` (order list), `pedido-distribuidora/` (distributor orders), `cliente/`/`clientes/`, `libros/`, `venta/`/`ventas/`, `remito/`/`remitos/`, `comercio/`/`comercios/`, `estado-cuenta-consignacion/`, `login/`, `registro/`, `home/`, `impresiones/` (print)
+- **`providers/`** — Domain services (despite the folder name, these are Angular services): `pedidos.service`, `clientes-service.service`, `libros.service`, `pedido-items.service`, `distribuidora.service`, `pedido-distribuidora.service`, `remitos.service`, `comercio.service`, `ventas.service`, `config.service`, `print-pedido.service`, `print-remito.service`
 - **`services/`** — Core infrastructure: `auth.service` (JWT auth), `custom-http-client.service` (HTTP wrapper adding Bearer token)
-- **`models/`** — TypeScript classes: `PedidoModel`, `ClienteModel`, `LibroModel`, `PedidoItemModel`, `UsuarioModel`, `DistribuidoraModel`
+- **`models/`** — TypeScript classes: `PedidoModel`, `ClienteModel`, `LibroModel`, `PedidoItemModel`, `UsuarioModel`, `DistribuidoraModel`, `RemitoModel`, `ComercioModel`, `ReciboModel`, `LiquidacionModel`
 - **`guards/`** — `AuthGuard` protecting all routes except `/login` and `/registro`
 - **`pipes/`** — `PedidoLibrosPipe`, `LibroImagenPipe`
 - **`directives/`** — `DisableControlDirective`
 
 ### Routing
 
-Defined in `src/app/app.routes.ts`. All authenticated routes use `AuthGuard`. A named outlet `'print'` handles print views via `PrintLayoutComponent`/`PedidoImpresoComponent`.
+Defined in `src/app/app.routes.ts`. All authenticated routes use `AuthGuard`; admin-only screens use `AdminGuard`. A named outlet `'print'` handles print views via `PrintLayoutComponent` and its children (`printpedido`, `printremito`, `printrecibo`, `printestadocuenta`).
+
+### Remitos and consignment
+
+`RemitoComponent` and `RemitosComponent` are **shared by every remito type** and read `data.tipo` from the route (`remito`/`remitos` for returns to distributors, `remito-consignacion`/`remitos-consignacion` for consignment). Duplicating them was rejected: the delta is the destinatario, the labels and the printout, everything else is identical and would have drifted apart.
+
+The consignment list asks the backend for a shop's **three** movement types at once (`CONSIGNACION,RETIRO,VENTA_CONSIGNACION`), otherwise the remitos produced by a settlement are invisible and cannot be reprinted. It also filters by type, by shop and by unpaid, and collects deferred payments — a sale remito with no receipt is money still owed.
+
+`EstadoCuentaConsignacionComponent` is where copies are marked sold/returned and settled. After settling it **re-reads the balance from the server** rather than subtracting locally, and the server validates against the real balance anyway.
+
+### Printing
+
+Print views render into the named `print` outlet, which sits **beside** the primary outlet in `app.component.html`. A screen hides itself by putting `[class.isPrinting]="printService.isPrinting"` on its **outermost** element; `@media print` in `styles.css` hides that element's direct children, while `app-print-layout` — a sibling, not a child — stays visible.
+
+Three rules here were each paid for with a real bug:
+
+1. **The print rules carry `!important`.** `bootstrap.min.css` loads *after* `styles.css` (see the `styles` array in `angular.json`) and several of its display rules tie with `.isPrinting > *` at 0,1,0 specificity — `.card` declares `display: flex`. On a tie the later sheet wins, so without `!important` any screen whose direct children are cards printed its whole list behind the document. The older printing screens repeat the block in their component CSS, which Angular injects after Bootstrap; that local copy is now redundant.
+
+2. **Teardown waits for `afterprint`.** Clearing the outlet as soon as `window.print()` returns removes the document from the DOM while the `isPrinting` class that hides the screen only lifts on the next change-detection pass. A 60s timer is the fallback so a browser that never fires the event cannot strand the app behind a hidden screen.
+
+3. **Never print from a dialog, or right after closing one.** Printing from inside an ngx-bootstrap modal yields a blank sheet even though `.modal` is hidden by the print rules, and a SweetAlert whose promise resolves mid-teardown does the same. The root cause is not pinned; Bootstrap's own `@media print` block forces `@page{size:a3}` and `min-width:992px!important` on `body` and `.container`, which makes the interaction hard to predict. Printing from a plain screen works. So the settlement flow closes its modal and offers the documents from a panel on the page, and payment confirmation is a non-blocking toast with the printing left to the row's own button.
+
+`PrintLayoutComponent` picks its heading from the outlet URL — every new print route needs its case there, or the document prints titled "NOTA DE PEDIDO" with the order footer.
 
 ### State Management
 
@@ -52,7 +74,19 @@ JWT tokens stored in `localStorage` (`'token'` and `'expira'` keys). Token decod
 
 ### Models
 
-`PedidoModel` has business logic methods: `calcularTotal()`, `addPedidoItem()`, `removePedidoItem()`.
+`PedidoModel` has business logic methods: `calcularTotal()`, `addPedidoItem()`, `removePedidoItem()`. `RemitoModel` carries `re_tipo` and both possible destinatarios.
+
+Note that list responses arrive as **plain JSON, not model instances**, so the getters defined on a model are unavailable there — screens that render a list compute those values with their own helper methods.
+
+## Tests
+
+`ng test` (Karma/Jasmine). On this machine:
+
+```bash
+CHROME_BIN=/usr/bin/google-chrome npx ng test --watch=false --browsers=ChromeHeadless
+```
+
+Build expectations from dates in **local** time, never `toISOString()` — the components format with `DatePipe`, which is local by design (a till report's "Hoy" must mean today in the shop). Comparing a local value against a UTC expectation makes tests fail every evening after 21:00 in UTC-3.
 
 ## Linting Rules
 
