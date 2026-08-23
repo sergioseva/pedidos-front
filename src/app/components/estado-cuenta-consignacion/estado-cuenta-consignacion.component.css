@@ -33,3 +33,45 @@
     margin-bottom: 1rem;
     border: 2px solid #16A34A;
 }
+
+/*
+ * La grilla tiene diez columnas y con el padding de bootstrap (0.75rem por lado) se iban unos
+ * 240px solo en espacio en blanco, lo justo para desbordar y dejar una barra horizontal molesta.
+ * Se aprieta el padding y se acotan los anchos en vez de esconder columnas: la informacion que
+ * hay es la que se necesita para decidir que liquidar. El overflow-x del contenedor se mantiene
+ * como red para pantallas realmente angostas.
+ */
+.card-body table th,
+.card-body table td {
+    padding: 0.4rem 0.35rem;
+    vertical-align: middle;
+}
+
+.col-titulo {
+    min-width: 150px;
+}
+
+.col-autor {
+    min-width: 95px;
+}
+
+.col-isbn {
+    min-width: 95px;
+}
+
+/* Los numeros no necesitan mas que sus encabezados. */
+.card-body table th.text-right {
+    white-space: nowrap;
+}
+
+.col-input {
+    width: 72px;
+}
+
+.col-input input,
+.card-body table td input[type="number"] {
+    width: 100%;
+    min-width: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+}

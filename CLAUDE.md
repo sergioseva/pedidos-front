@@ -44,6 +44,8 @@ The consignment list asks the backend for a shop's **three** movement types at o
 
 `RemitosService.addRemitoItem` identifies a book by **ISBN and title together** (`claveLibro`), the same key the backend uses for balances. Matching on ISBN alone fails twice over in this catalog: many books have no ISBN at all, so every click added a fresh line instead of incrementing, and many others share a scientific-notation ISBN, so different titles would be merged into one. The key trims and lowercases, since catalog titles routinely carry leading spaces. Quantities are editable in the items grid and never drop below 1 — removing a book is what the delete button is for.
 
+Its ten-column grid overflowed its `.container` by 27px with Bootstrap's default `.table` padding — enough for a permanent, annoying horizontal scrollbar and no more. The component tightens the cell padding and caps the column widths rather than hiding columns; the container keeps `overflow-x: auto` as a fallback for genuinely narrow screens. Measured at 0 overflow from 1280px up (`.container` caps at 1140px, so the figure does not change with the viewport).
+
 `EstadoCuentaConsignacionComponent` — shown to users as **"Consignaciones Actuales"** (route `consignaciones-actuales`) — is where copies are marked sold/returned and settled. The class and the backend endpoint still say *estado de cuenta*; the UI wording was changed because it read like a cash statement. After settling it **re-reads the balance from the server** rather than subtracting locally, and the server validates against the real balance anyway.
 
 ### Printing
