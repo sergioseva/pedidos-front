@@ -13,7 +13,7 @@
 </table>
 
 <div class="header">
-  <div class="header-title">{{ isRemito ? 'REMITO' : 'NOTA DE PEDIDO' }}</div>
+  <div class="header-title">{{ titulo }}</div>
   <div class="header-info">
     <img [src]="logoUrl" alt="Logo" class="header-logo" [hidden]="!showLogo" (error)="onLogoError()">
     <div>
@@ -24,6 +24,6 @@
   </div>
   <hr class="header-hr">
 </div>
-<div class="footer" *ngIf="!isRemito"> <h4> ESTA NOTA DE PEDIDO ES REQUISITO INDISPENSABLE PARA RETIRAR LOS LIBROS </h4>
+<div class="footer" *ngIf="isPedido"> <h4> ESTA NOTA DE PEDIDO ES REQUISITO INDISPENSABLE PARA RETIRAR LOS LIBROS </h4>
   <h4> LOS PRECIOS DE LOS TEXTOS ESCOLARES SON EN EFECTIVO </h4>
 </div>

@@ -1091,8 +1091,31 @@ a.dashboard-card:active {
     padding: 10mm;
   }
 
-  .isPrinting > * { display: none; }
-  .isPrinting app-print-layout { display: block; }
+  /*
+   * !important porque bootstrap.min.css se carga DESPUES de este archivo (ver angular.json) y
+   * varias de sus reglas de display empatan en especificidad con el selector de abajo: `.card`
+   * declara `display: flex` con los mismos 0,1,0, asi que sin el !important gana bootstrap por
+   * orden y la tarjeta sobrevive a la impresion. Le paso a Estado de Cuenta, cuyos hijos
+   * directos son tarjetas: se imprimia la lista entera detras del remito. Las pantallas viejas
+   * se salvaban por repetir estas reglas en su CSS de componente, que Angular inyecta despues
+   * de bootstrap; esa copia local ya no hace falta.
+   */
+  .isPrinting > * { display: none !important; }
+  /* Mas especifico (0,1,1) que la regla de arriba, asi que la excepcion sigue ganando. */
+  .isPrinting app-print-layout { display: block !important; }
+
+  /*
+   * Los modales de ngx-bootstrap (body.modal-open) y los de SweetAlert dejan overflow:hidden en
+   * html y body mientras estan abiertos, y tambien durante su animacion de cierre. Al imprimir,
+   * ese overflow recorta el documento al alto de la ventana: sale la primera hoja y las
+   * siguientes salen en blanco. Imprimir desde una pantalla con un modal abierto es normal en
+   * esta aplicacion -- la liquidacion ofrece sus comprobantes desde el propio modal -- asi que
+   * hay que neutralizarlo en vez de confiar en que no haya ninguno abierto.
+   */
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+  }
 
   .modal, .modal-backdrop, .modal-dialog, .modal-content {
     display: none !important;

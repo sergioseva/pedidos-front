@@ -55,4 +55,41 @@ describe('PrintLayoutComponent', () => {
     component.onLogoError();
     expect(component.showLogo).toBe(false);
   });
+
+  describe('encabezado segun el documento', () => {
+    function conUrl(url: string) {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        declarations: [PrintLayoutComponent],
+        schemas: [NO_ERRORS_SCHEMA],
+        providers: [
+          { provide: ConfigService, useValue: mockConfigService() },
+          { provide: ConfiguracionService, useValue: configuracionService },
+          { provide: Router, useValue: { ...mockRouter(), url } }
+        ]
+      });
+      const f = TestBed.createComponent(PrintLayoutComponent);
+      f.detectChanges();
+      return f.componentInstance;
+    }
+
+    it('titles a pedido and keeps its footer', () => {
+      const c = conUrl('/print/printpedido/1');
+      expect(c.titulo).toBe('NOTA DE PEDIDO');
+      expect(c.isPedido).toBeTrue();
+    });
+
+    it('titles a remito without the pedido footer', () => {
+      const c = conUrl('/print/printremito/1');
+      expect(c.titulo).toBe('REMITO');
+      expect(c.isPedido).toBeFalse();
+    });
+
+    /** Sin este caso el recibo caia en el default y salia titulado "NOTA DE PEDIDO". */
+    it('titles a recibo without the pedido footer', () => {
+      const c = conUrl('/print/printrecibo/1');
+      expect(c.titulo).toBe('RECIBO DE PAGO');
+      expect(c.isPedido).toBeFalse();
+    });
+  });
 });

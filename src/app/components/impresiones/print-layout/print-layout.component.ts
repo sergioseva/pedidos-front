@@ -15,7 +15,9 @@ export class PrintLayoutComponent implements OnInit {
   telefono: string;
   logoUrl: string;
   showLogo: boolean = false;
-  isRemito = false;
+  /** El pie ("esta nota es requisito para retirar") solo corresponde a la nota de pedido. */
+  isPedido = false;
+  titulo = 'NOTA DE PEDIDO';
 
   constructor(private config: ConfigService,
               private router: Router,
@@ -28,7 +30,17 @@ export class PrintLayoutComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.isRemito = this.router.url.indexOf('printremito') !== -1;
+    // El encabezado se decide por la ruta del outlet de impresion. Sin el caso del recibo,
+    // caia en el default y se imprimia un recibo de pago titulado "NOTA DE PEDIDO".
+    const url = this.router.url;
+    if (url.indexOf('printrecibo') !== -1) {
+      this.titulo = 'RECIBO DE PAGO';
+    } else if (url.indexOf('printremito') !== -1) {
+      this.titulo = 'REMITO';
+    } else {
+      this.titulo = 'NOTA DE PEDIDO';
+      this.isPedido = true;
+    }
     this.configuracionService.getConfiguracion().subscribe(
       c => {
         if (c.nombre) { this.nombre = c.nombre; }

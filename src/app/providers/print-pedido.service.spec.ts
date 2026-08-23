@@ -35,7 +35,8 @@ describe('PrintPedidoService', () => {
   });
 
   describe('onDataReady', () => {
-    it('should call window.print and reset isPrinting', (done) => {
+    /** Mismo desarme diferido que el servicio de remitos: sin esto la hoja sale en blanco. */
+    it('keeps the document mounted until afterprint', (done) => {
       spyOn(window, 'print');
       service.isPrinting = true;
 
@@ -43,6 +44,11 @@ describe('PrintPedidoService', () => {
 
       setTimeout(() => {
         expect(window.print).toHaveBeenCalled();
+        expect(service.isPrinting).toBe(true);
+        expect(router.navigate).not.toHaveBeenCalled();
+
+        window.dispatchEvent(new Event('afterprint'));
+
         expect(service.isPrinting).toBe(false);
         expect(router.navigate).toHaveBeenCalledWith([{ outlets: { print: null } }]);
         done();

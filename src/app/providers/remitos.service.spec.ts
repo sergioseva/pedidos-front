@@ -6,9 +6,10 @@ import { AuthService } from '../services/auth.service';
 import { ConfigService } from './config.service';
 import { mockCustomHttpClient, mockAuthService, mockConfigService, createRemitoItem, createDistribuidora } from '../testing/test-helpers';
 import { of } from 'rxjs';
-import { RemitoModel } from '../models/remito.model';
+import { RemitoModel, TIPO_CONSIGNACION } from '../models/remito.model';
 import { RemitoItemModel } from '../models/remito-item.model';
 import { DistribuidoraModel } from '../models/distribuidora.model';
+import { ComercioModel } from '../models/comercio.model';
 
 describe('RemitosService', () => {
   let service: RemitosService;
@@ -41,7 +42,37 @@ describe('RemitosService', () => {
       service.buscarRemitos('test', '2024-01-01', '2024-01-31');
 
       expect(chttp.get).toHaveBeenCalledWith(
-        'http://test-api/remitos/search/findByAny?parametro=test&fechaDesde=2024-01-01&fechaHasta=2024-01-31'
+        'http://test-api/remitos/search/findByAny?parametro=test&fechaDesde=2024-01-01&fechaHasta=2024-01-31&tipo='
+      );
+    });
+
+    it('should pass tipo when given', () => {
+      chttp.get.and.returnValue(of([]));
+
+      service.buscarRemitos('test', '2024-01-01', '2024-01-31', TIPO_CONSIGNACION);
+
+      expect(chttp.get).toHaveBeenCalledWith(
+        'http://test-api/remitos/search/findByAny?parametro=test&fechaDesde=2024-01-01&fechaHasta=2024-01-31&tipo=CONSIGNACION'
+      );
+    });
+  });
+
+  describe('estadoCuentaConsignacion', () => {
+    it('should omit the query string when no filter is given', () => {
+      chttp.get.and.returnValue(of([]));
+
+      service.estadoCuentaConsignacion(null, '', '');
+
+      expect(chttp.get).toHaveBeenCalledWith('http://test-api/remitos/consignacion/estadocuenta');
+    });
+
+    it('should only send the filters that are set', () => {
+      chttp.get.and.returnValue(of([]));
+
+      service.estadoCuentaConsignacion(7, '2024-01-01', '');
+
+      expect(chttp.get).toHaveBeenCalledWith(
+        'http://test-api/remitos/consignacion/estadocuenta?comercioId=7&fechaDesde=2024-01-01'
       );
     });
   });
@@ -161,6 +192,15 @@ describe('RemitosService', () => {
       expect(remito.items.length).toBe(0);
       expect(remito.finalizado).toBe(false);
     });
+
+    it('should carry the tipo it is given', () => {
+      service.generarNuevoRemito(TIPO_CONSIGNACION);
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.re_tipo).toBe(TIPO_CONSIGNACION);
+      expect(remito.esConsignacion).toBe(true);
+    });
   });
 
   describe('asignarDatos', () => {
@@ -172,8 +212,21 @@ describe('RemitosService', () => {
       let remito: RemitoModel;
       service.currentRemito.subscribe(r => remito = r);
       expect(remito.re_distribuidora_ed).toBe(dist);
+      expect(remito.re_comercio_cm).toBeNull();
       expect(remito.re_observaciones).toBe('test notes');
       expect(remito.re_fecha).toBeTruthy();
+    });
+
+    it('should set comercio instead of distribuidora on a consignacion', () => {
+      service.generarNuevoRemito(TIPO_CONSIGNACION);
+      const comercio = new ComercioModel(3, 'Hotel Costa Azul');
+
+      service.asignarDatos(comercio, 'entrega');
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.re_comercio_cm).toBe(comercio);
+      expect(remito.re_distribuidora_ed).toBeNull();
     });
   });
 

@@ -1,0 +1,84 @@
+import { Component, OnInit } from '@angular/core';
+import { ComercioModel } from '../../models/comercio.model';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ComercioService } from '../../providers/comercio.service';
+import Swal from 'sweetalert2';
+import { Observable } from 'rxjs';
+
+@Component({
+  selector: 'app-comercio',
+  templateUrl: './comercio.component.html',
+  styleUrls: ['./comercio.component.css']
+})
+export class ComercioComponent implements OnInit {
+  comercio: ComercioModel;
+  forma: FormGroup;
+  id: any;
+  headerText = 'Nuevo Negocio';
+
+  constructor(private router: Router,
+              private route: ActivatedRoute,
+              private comercioService: ComercioService) {
+    this.comercio = new ComercioModel();
+    this.buildForm();
+    this.retrieveData();
+  }
+
+  ngOnInit() {
+  }
+
+  private retrieveData(): void {
+    this.route.params
+      .subscribe(parametros => {
+        this.id = parametros['id'];
+        if (this.id !== 'nuevo') {
+          this.comercioService.getComercio(this.id)
+            .subscribe((comercio: any) => {
+              this.comercio = comercio;
+              this.headerText = comercio.descripcion;
+              this.forma.patchValue(comercio);
+            });
+        }
+      });
+  }
+
+  private buildForm() {
+    this.forma = new FormGroup({
+      'descripcion': new FormControl(this.comercio.descripcion, Validators.required),
+      'direccion': new FormControl(this.comercio.direccion),
+      'contacto': new FormControl(this.comercio.contacto),
+      'telefono': new FormControl(this.comercio.telefono),
+      'cuit': new FormControl(this.comercio.cuit),
+      'comision': new FormControl(this.comercio.comision,
+        [Validators.min(0), Validators.max(100)])
+    });
+  }
+
+  onSubmit() {
+    this.comercio = this.forma.value;
+    let peticion: Observable<any>;
+
+    if (this.id !== 'nuevo') {
+      peticion = this.comercioService.updateComercio(this.id, this.comercio);
+    } else {
+      peticion = this.comercioService.insertComercio(this.comercio);
+    }
+
+    peticion.subscribe(() => {
+      Swal.fire({
+        title: 'Negocio',
+        text: 'Se procesó correctamente',
+        icon: 'success'
+      });
+      this.router.navigate(['/comercios']);
+    },
+    () => {
+      Swal.fire({
+        title: 'Negocio',
+        text: 'Error al procesar la operacion',
+        icon: 'error'
+      });
+    });
+  }
+}

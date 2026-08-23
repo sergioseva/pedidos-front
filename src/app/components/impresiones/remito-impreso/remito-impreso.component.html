@@ -4,10 +4,10 @@
 <!-- Copia 2 del remito -->
 <ng-container *ngTemplateOutlet="remitoTemplate"></ng-container>
 
-<!-- Hoja 3: etiqueta para la caja -->
-<div class="box-label">
+<!-- Hoja 3: etiqueta para la caja. Solo en devoluciones: la consignacion se entrega en mano. -->
+<div *ngIf="!esConsignacion" class="box-label">
     <div class="box-label-title">
-        DEVOLUCION PARA {{ remito?.re_distribuidora_ed?.descripcion | uppercase }}
+        DEVOLUCION PARA {{ destinatario | uppercase }}
     </div>
     <div class="box-label-sender">
         {{ remitente | uppercase }}
@@ -23,13 +23,20 @@
         <div class="row">
             <div class="col-4">Fecha: {{ remito?.re_fecha | date:'mediumDate':'+0300': 'es-AR' }}</div>
             <div class="col-4">Remito: {{ remitoId }}</div>
+            <div class="col-4">{{ titulo }}</div>
         </div>
         <hr>
         <div style="font-weight: bold;">
-            PARA {{ remito?.re_distribuidora_ed?.descripcion | uppercase }}. DE: {{ remitente | uppercase }}
+            PARA {{ destinatario | uppercase }}. DE: {{ remitente | uppercase }}
         </div>
-        <div *ngIf="remito?.re_distribuidora_ed?.nroCuenta" style="font-weight: bold;">
+        <div *ngIf="!esConsignacion && remito?.re_distribuidora_ed?.nroCuenta" style="font-weight: bold;">
             N° DE CUENTA: {{ remito?.re_distribuidora_ed?.nroCuenta }}
+        </div>
+        <div *ngIf="esConsignacion && remito?.re_comercio_cm?.direccion">
+            {{ remito?.re_comercio_cm?.direccion }}
+        </div>
+        <div *ngIf="esConsignacion && remito?.re_comercio_cm?.cuit">
+            CUIT: {{ remito?.re_comercio_cm?.cuit }}
         </div>
 
         <table class="table">
@@ -39,7 +46,9 @@
                     <th scope="col">Autor</th>
                     <th scope="col">Editorial</th>
                     <th scope="col">ISBN</th>
-                    <th scope="col">Cantidad</th>
+                    <th scope="col" class="text-right">Cantidad</th>
+                    <th scope="col" class="text-right">Precio</th>
+                    <th scope="col" class="text-right">Subtotal</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,13 +57,37 @@
                     <td>{{item.ri_autor}}</td>
                     <td>{{item.ri_editorial}}</td>
                     <td>{{item.ri_isbn}}</td>
-                    <td>{{item.ri_cantidad}}</td>
+                    <td class="text-right">{{item.ri_cantidad}}</td>
+                    <td class="text-right">{{formatPrecio(item.ri_precio)}}</td>
+                    <td class="text-right">{{formatPrecio(item.ri_cantidad * (item.ri_precio || 0))}}</td>
                 </tr>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4"></td>
+                    <td class="text-right" style="font-weight: bold;">{{ totalUnidades }}</td>
+                    <td class="text-right" style="font-weight: bold;">TOTAL</td>
+                    <td class="text-right" style="font-weight: bold;">{{ formatPrecio(total) }}</td>
+                </tr>
+            </tfoot>
         </table>
+        <!-- Solo el remito de venta lleva plata a cobrar; el de retiro es puro movimiento. -->
+        <div *ngIf="esVenta" style="margin-top: 0.5rem;">
+            <div *ngIf="comision">Comision del negocio ({{ comision }}%): - {{ formatPrecio(total - netoAPagar) }}</div>
+            <div style="font-weight: bold;">NETO A COBRAR: {{ formatPrecio(netoAPagar) }}</div>
+        </div>
+
+        <div *ngIf="leyenda" class="small" style="margin-top: 0.5rem;">{{ leyenda }}</div>
+
         <div *ngIf="remito?.re_observaciones" class="row" style="margin-top: 0.5rem;">
             <div class="col-2">Observaciones:</div>
             <div class="col-10">{{ remito?.re_observaciones }}</div>
+        </div>
+
+        <!-- La consignacion deja mercaderia sin cobrar: hace falta constancia de quien la recibio. -->
+        <div *ngIf="esConsignacion" class="firma-row">
+            <div class="firma-box">Firma y aclaracion del receptor</div>
+            <div class="firma-box">Firma del entregador</div>
         </div>
     </div>
 </ng-template>

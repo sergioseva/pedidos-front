@@ -1,0 +1,35 @@
+.grupo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-muted {
+    color: #8C7A6A;
+}
+
+/* Lo marcado y todavia sin confirmar se distingue de un vistazo. */
+.fila-marcada {
+    background: #FEF3C7;
+}
+
+.fila-total {
+    background: #F5F1EA;
+}
+
+.text-warning-cell {
+    background: #FEF3C7;
+    color: #7C5E10;
+    font-size: 0.85rem;
+}
+
+.comprobantes-panel {
+    margin-bottom: 1rem;
+    border: 2px solid #16A34A;
+}

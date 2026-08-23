@@ -158,12 +158,22 @@ describe('VentasComponent', () => {
   });
 
   describe('dateFilter presets', () => {
-    const iso = (d: Date) => d.toISOString().slice(0, 10);
-    const hoy = () => iso(new Date());
+    /**
+     * Fecha calendario LOCAL, no UTC. El componente formatea con DatePipe, que es local a
+     * proposito: en un reporte de caja "Hoy" tiene que significar hoy en el local. Armar la
+     * expectativa con toISOString() comparaba UTC contra local, asi que en UTC-3 estos tests
+     * fallaban todas las noches entre las 21:00 y medianoche.
+     */
+    const local = (d: Date) => {
+      const mes = `${d.getMonth() + 1}`.padStart(2, '0');
+      const dia = `${d.getDate()}`.padStart(2, '0');
+      return `${d.getFullYear()}-${mes}-${dia}`;
+    };
+    const hoy = () => local(new Date());
     const hace = (dias: number) => {
       const d = new Date();
       d.setDate(d.getDate() - dias);
-      return iso(d);
+      return local(d);
     };
 
     it('defaults to the last month on load', () => {

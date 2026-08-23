@@ -2,13 +2,15 @@ import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RemitoComponent } from './remito.component';
+import { ActivatedRoute } from '@angular/router';
 import { RemitosService } from '../../providers/remitos.service';
 import { DistribuidoraService } from '../../providers/distribuidora.service';
+import { ComercioService } from '../../providers/comercio.service';
 import { LibrosService } from '../../providers/libros.service';
 import { PrintRemitoService } from '../../providers/print-remito.service';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { of } from 'rxjs';
-import { RemitoModel } from '../../models/remito.model';
+import { RemitoModel, TIPO_CONSIGNACION, TIPO_DEVOLUCION } from '../../models/remito.model';
 import { mockBsModalService, createRemitoItem } from '../../testing/test-helpers';
 
 describe('RemitoComponent', () => {
@@ -16,6 +18,34 @@ describe('RemitoComponent', () => {
   let fixture: ComponentFixture<RemitoComponent>;
   let remitosService: any;
   let librosService: any;
+  let distribuidoraService: any;
+  let comercioService: any;
+
+  /** El tipo llega por `data` de la ruta; cada suite arma el componente con el que necesita. */
+  function configurar(tipo: string) {
+    // Reconfigurar rearma el componente, asi que los spies traen las llamadas del armado anterior.
+    distribuidoraService.getDistribuidoras.calls.reset();
+    comercioService.getComercios.calls.reset();
+    remitosService.generarNuevoRemito.calls.reset();
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      declarations: [RemitoComponent],
+      imports: [FormsModule, ReactiveFormsModule],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        { provide: RemitosService, useValue: remitosService },
+        { provide: DistribuidoraService, useValue: distribuidoraService },
+        { provide: ComercioService, useValue: comercioService },
+        { provide: LibrosService, useValue: librosService },
+        { provide: PrintRemitoService, useValue: { imprimirRemito: jasmine.createSpy(), isPrinting: false } },
+        { provide: BsModalService, useValue: mockBsModalService() },
+        { provide: ActivatedRoute, useValue: { snapshot: { data: { tipo } } } }
+      ]
+    });
+    fixture = TestBed.createComponent(RemitoComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }
 
   beforeEach(waitForAsync(() => {
     remitosService = {
@@ -32,32 +62,62 @@ describe('RemitoComponent', () => {
       buscarLibros: jasmine.createSpy('buscarLibros').and.returnValue(of([]))
     };
 
-    TestBed.configureTestingModule({
-      declarations: [RemitoComponent],
-      imports: [FormsModule, ReactiveFormsModule],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        { provide: RemitosService, useValue: remitosService },
-        { provide: DistribuidoraService, useValue: { getDistribuidoras: jasmine.createSpy().and.returnValue(of([])) } },
-        { provide: LibrosService, useValue: librosService },
-        { provide: PrintRemitoService, useValue: { imprimirRemito: jasmine.createSpy(), isPrinting: false } },
-        { provide: BsModalService, useValue: mockBsModalService() }
-      ]
-    }).compileComponents();
+    distribuidoraService = {
+      getDistribuidoras: jasmine.createSpy('getDistribuidoras')
+        .and.returnValue(of([{ id: 1, descripcion: 'Dist A' }]))
+    };
+
+    comercioService = {
+      getComercios: jasmine.createSpy('getComercios')
+        .and.returnValue(of([{ id: 1, descripcion: 'Hotel Costa Azul' }]))
+    };
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RemitoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    configurar(TIPO_DEVOLUCION);
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should require distribuidora in form', () => {
-    expect(component.forma.controls.distribuidora.valid).toBe(false);
+  it('should require destinatario in form', () => {
+    expect(component.forma.controls.destinatario.valid).toBe(false);
+  });
+
+  describe('tipo DEVOLUCION', () => {
+    it('should load distribuidoras as destinatarios', () => {
+      expect(distribuidoraService.getDistribuidoras).toHaveBeenCalled();
+      expect(comercioService.getComercios).not.toHaveBeenCalled();
+      expect(component.destinatarios.length).toBe(1);
+      expect(component.esConsignacion).toBe(false);
+    });
+
+    it('should start a fresh remito of its own tipo', () => {
+      expect(remitosService.generarNuevoRemito).toHaveBeenCalledWith(TIPO_DEVOLUCION);
+    });
+  });
+
+  describe('tipo CONSIGNACION', () => {
+    beforeEach(() => {
+      configurar(TIPO_CONSIGNACION);
+    });
+
+    it('should load comercios as destinatarios', () => {
+      expect(comercioService.getComercios).toHaveBeenCalled();
+      expect(distribuidoraService.getDistribuidoras).not.toHaveBeenCalled();
+      expect(component.destinatarios[0].descripcion).toBe('Hotel Costa Azul');
+      expect(component.esConsignacion).toBe(true);
+    });
+
+    it('should start a fresh remito of its own tipo', () => {
+      expect(remitosService.generarNuevoRemito).toHaveBeenCalledWith(TIPO_CONSIGNACION);
+    });
+
+    it('should label the destinatario as the destination business', () => {
+      expect(component.labelDestinatario).toContain('negocio destino');
+      expect(component.tituloSeccion).toContain('Consignacion');
+    });
   });
 
   describe('borrarItem', () => {
@@ -91,9 +151,10 @@ describe('RemitoComponent', () => {
   });
 
   describe('onReiniciar', () => {
-    it('should reset form and generate new remito', () => {
+    it('should reset form and generate new remito of the same tipo', () => {
       component.onReiniciar();
-      expect(remitosService.generarNuevoRemito).toHaveBeenCalled();
+      expect(remitosService.generarNuevoRemito).toHaveBeenCalledWith(TIPO_DEVOLUCION);
+      expect(component.destinatarioSeleccionado).toBeNull();
     });
   });
 

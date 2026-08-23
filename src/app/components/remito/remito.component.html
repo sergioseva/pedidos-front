@@ -13,7 +13,7 @@
         <div class="card-header" id="headingRemito">
             <h2 class="mb-0">
                 <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseRemito" aria-expanded="true" aria-controls="collapseRemito">
-                    <i class="fa fa-file-text" style="margin-right: 0.375rem;"></i>Remito
+                    <i class="fa fa-file-text" style="margin-right: 0.375rem;"></i>{{tituloSeccion}}
                     <span class="badge badge-primary" style="margin-left: 0.5rem; font-size: 0.75rem;">{{cantItemsRemito}}</span>
                 </button>
             </h2>
@@ -73,7 +73,7 @@
                                         <td>{{item.ri_autor}}</td>
                                         <td>{{item.ri_editorial}}</td>
                                         <td>{{item.ri_isbn}}</td>
-                                        <td>{{item.ri_precio}}</td>
+                                        <td>{{formatPrecio(item.ri_precio)}}</td>
                                         <td>{{item.ri_cantidad}}</td>
                                         <td>
                                             <div class="table-actions">
@@ -89,7 +89,7 @@
                         <div *ngIf="remito.items.length > 0"
                              style="display: flex; justify-content: flex-end; padding: 0.75rem 0.5rem 0; border-top: 2px solid #C8BFB2;">
                             <div class="summary-box" style="min-width: 160px; text-align: center;">
-                                Total $ {{remito.calcularTotal()}}
+                                Total {{formatPrecio(remito.calcularTotal())}}
                             </div>
                         </div>
                         <div *ngIf="remito.items.length === 0" style="text-align: center; padding: 2rem 1rem; color: #8C7A6A;">
@@ -245,7 +245,7 @@
 <ng-template #detalleModal>
     <div class="modal-header" style="background: #EDE9FE; border-bottom: 2px solid #8B5CF6;">
         <h5 class="modal-title" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
-            <i class="fa fa-file-text-o" style="color: #7C3AED;"></i> Detalle del Remito
+            <i class="fa fa-file-text-o" style="color: #7C3AED;"></i> Detalle del {{tituloSeccion}}
         </h5>
         <button type="button" class="close" (click)="closeModal()">
             <span>&times;</span>
@@ -256,14 +256,18 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="distribuidoraSelect">Seleccione la distribuidora</label>
-                        <div id="distribuidoraSelect">
-                            <ng-select [items]="distribuidoras"
+                        <label for="destinatarioSelect">{{labelDestinatario}}</label>
+                        <div id="destinatarioSelect">
+                            <ng-select [items]="destinatarios"
                                 bindLabel="descripcion"
                                 [disableControl]="remito.finalizado"
-                                formControlName="distribuidora"
-                                [(ngModel)]="distribuidoraSeleccionada">
+                                formControlName="destinatario"
+                                [(ngModel)]="destinatarioSeleccionado">
                             </ng-select>
+                        </div>
+                        <div *ngIf="esConsignacion && destinatarios.length === 0" class="small" style="margin-top: 0.35rem; color: #8C7A6A;">
+                            <i class="fa fa-info-circle" style="margin-right: 0.25rem;"></i>
+                            No hay negocios cargados. Cargue uno en Configuracion &rsaquo; Negocios de Consignacion.
                         </div>
                     </div>
                 </div>
@@ -271,7 +275,7 @@
                     <div class="form-group">
                         <label>&nbsp;</label>
                         <div class="summary-box">
-                            Total $ {{remito.calcularTotal()}}
+                            Total {{formatPrecio(remito.calcularTotal())}}
                         </div>
                     </div>
                 </div>
@@ -291,7 +295,7 @@
             <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cerrar
         </button>
         <button *ngIf="!remito.finalizado"
-                [disabled]="remito.items.length <= 0 || !distribuidoraSeleccionada"
+                [disabled]="remito.items.length <= 0 || !destinatarioSeleccionado"
                 class="btn btn-action" (click)="onSubmit()">
             <i class="fa fa-save" style="margin-right: 0.25rem;"></i> Guardar Remito
         </button>

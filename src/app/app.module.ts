@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { NgModule, APP_INITIALIZER, ErrorHandler } from '@angular/core';
+import * as Sentry from '@sentry/angular-ivy';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/shared/navbar/navbar.component';
@@ -45,6 +46,7 @@ import { RemitoComponent } from './components/remito/remito.component';
 import { RemitosComponent } from './components/remitos/remitos.component';
 import { RemitoItemComponent } from './components/remito-item/remito-item.component';
 import { RemitoImpresoComponent } from './components/impresiones/remito-impreso/remito-impreso.component';
+import { ReciboImpresoComponent } from './components/impresiones/recibo-impreso/recibo-impreso.component';
 import { DistribuidorasComponent } from './components/distribuidoras/distribuidoras.component';
 import { DistribuidoraComponent } from './components/distribuidora/distribuidora.component';
 import { ConfiguracionRemitoComponent } from './components/configuracion-remito/configuracion-remito.component';
@@ -52,6 +54,9 @@ import { ConfiguracionComponent } from './components/configuracion/configuracion
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { UsuarioComponent } from './components/usuario/usuario.component';
 import { ConsultaPedidosDistribuidoraComponent } from './components/consulta-pedidos-distribuidora/consulta-pedidos-distribuidora.component';
+import { ComerciosComponent } from './components/comercios/comercios.component';
+import { ComercioComponent } from './components/comercio/comercio.component';
+import { EstadoCuentaConsignacionComponent } from './components/estado-cuenta-consignacion/estado-cuenta-consignacion.component';
 
 export function load(http: HttpClient, config: ConfigService): (() => Promise<boolean>) {
   return (): Promise<boolean> => {
@@ -119,6 +124,10 @@ export function load(http: HttpClient, config: ConfigService): (() => Promise<bo
     UsuariosComponent,
     UsuarioComponent,
     ConsultaPedidosDistribuidoraComponent,
+    ComerciosComponent,
+    ComercioComponent,
+    EstadoCuentaConsignacionComponent,
+    ReciboImpresoComponent,
   ],
 
   imports: [
@@ -142,6 +151,10 @@ export function load(http: HttpClient, config: ConfigService): (() => Promise<bo
         ConfigService
       ],
       multi: true
+    },
+    {
+      provide: ErrorHandler,
+      useValue: Sentry.createErrorHandler({ showDialog: false })
     }
   ],
   bootstrap: [AppComponent]

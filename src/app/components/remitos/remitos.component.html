@@ -1,7 +1,7 @@
 <div [class.isPrinting]="printService.isPrinting">
     <div class="section-title">
         <i class="fa fa-file-text"></i>
-        Consulta de Remitos
+        {{tituloSeccion}}
     </div>
     <div class="filter-pills">
         <span class="periodo-label">Periodo:</span>
@@ -21,7 +21,7 @@
             <div class="col">
                 <div style="position: relative;">
                     <input #termino type="text" (keyup.enter)="buscarTermino(termino.value)" class="form-control"
-                        placeholder="Buscar por Distribuidora, Observaciones o Libro" style="padding-left: 2.25rem;">
+                        placeholder="Buscar por {{labelDestinatario}}, Observaciones o Libro" style="padding-left: 2.25rem;">
                     <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #8C7A6A;"></i>
                 </div>
             </div>
@@ -36,6 +36,31 @@
                     <i class="fa fa-search" style="margin-right: 0.25rem;"></i> Buscar
                 </button>
             </div>
+            <div class="col-auto" *ngIf="esConsignacion">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="soloImpagos"
+                           [(ngModel)]="soloImpagos" (ngModelChange)="applySort()">
+                    <label class="custom-control-label" for="soloImpagos">Solo impagos</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros explicitos de consignacion, en su propia fila para que respiren. -->
+        <div class="row align-items-center" *ngIf="esConsignacion" style="margin-top: 0.5rem;">
+            <div class="col-md-4">
+                <select class="form-control" [(ngModel)]="tipoFiltro" (ngModelChange)="onTipoFiltroChange()"
+                        title="Tipo de movimiento">
+                    <option *ngFor="let t of tiposDisponibles" [ngValue]="t.valor">{{t.etiqueta}}</option>
+                </select>
+            </div>
+            <div class="col-md-5">
+                <ng-select [items]="comercios"
+                    bindLabel="descripcion"
+                    placeholder="Todos los negocios"
+                    [(ngModel)]="comercioFiltro"
+                    (change)="applySort()">
+                </ng-select>
+            </div>
         </div>
     </div>
 
@@ -43,11 +68,12 @@
         <thead>
             <tr>
                 <th width="5%" scope="col"></th>
-                <th width="20%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_distribuidora_ed.descripcion')">
-                    Distribuidora
-                    <i *ngIf="sortColumn === 're_distribuidora_ed.descripcion' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
-                    <i *ngIf="sortColumn === 're_distribuidora_ed.descripcion' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
-                    <i *ngIf="sortColumn !== 're_distribuidora_ed.descripcion'" class="fa fa-sort" style="opacity: 0.3;"></i>
+                <th *ngIf="esConsignacion" width="8%" scope="col">Tipo</th>
+                <th width="18%" scope="col" style="cursor: pointer;" (click)="toggleSort(columnaDestinatario)">
+                    {{labelDestinatario}}
+                    <i *ngIf="sortColumn === columnaDestinatario && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
+                    <i *ngIf="sortColumn === columnaDestinatario && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
+                    <i *ngIf="sortColumn !== columnaDestinatario" class="fa fa-sort" style="opacity: 0.3;"></i>
                 </th>
                 <th width="15%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_fecha')">
                     Fecha
@@ -55,13 +81,15 @@
                     <i *ngIf="sortColumn === 're_fecha' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
                     <i *ngIf="sortColumn !== 're_fecha'" class="fa fa-sort" style="opacity: 0.3;"></i>
                 </th>
-                <th width="15%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_observaciones')">
+                <th width="12%" scope="col" style="cursor: pointer;" (click)="toggleSort('re_observaciones')">
                     Observaciones
                     <i *ngIf="sortColumn === 're_observaciones' && sortDirection === 'asc'" class="fa fa-sort-asc"></i>
                     <i *ngIf="sortColumn === 're_observaciones' && sortDirection === 'desc'" class="fa fa-sort-desc"></i>
                     <i *ngIf="sortColumn !== 're_observaciones'" class="fa fa-sort" style="opacity: 0.3;"></i>
                 </th>
-                <th width="45%" scope="col">Items</th>
+                <th width="40%" scope="col">Items</th>
+                <th width="10%" scope="col" class="text-right">Total</th>
+                <th *ngIf="esConsignacion" width="14%" scope="col">Cobro</th>
             </tr>
         </thead>
         <tbody>
@@ -71,7 +99,10 @@
                         <i class="fa fa-print"></i>
                     </button>
                 </td>
-                <td>{{remito.re_distribuidora_ed?.descripcion}}</td>
+                <td *ngIf="esConsignacion">
+                    <span class="badge" [ngClass]="claseTipo(remito)">{{etiquetaTipo(remito)}}</span>
+                </td>
+                <td>{{destinatario(remito)}}</td>
                 <td>{{remito.re_fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
                 <td>{{remito.re_observaciones}}</td>
                 <td>
@@ -80,6 +111,24 @@
                             {{item.ri_cantidad}} - {{item.ri_nombre_libro}} ({{item.ri_autor}})
                         </li>
                     </ul>
+                </td>
+                <td class="text-right">{{total(remito)}}</td>
+                <td *ngIf="esConsignacion">
+                    <ng-container *ngIf="esVenta(remito)">
+                        <span *ngIf="remito.recibo" class="badge badge-success">
+                            Pagado
+                        </span>
+                        <button *ngIf="remito.recibo" title="Reimprimir recibo"
+                                (click)="imprimirRecibo(remito.re_remito_k)"
+                                type="button" class="btn btn-icon">
+                            <i class="fa fa-print"></i>
+                        </button>
+                        <button *ngIf="!remito.recibo"
+                                class="btn btn-action btn-sm"
+                                (click)="abrirCobro(remito, cobroModal)">
+                            <i class="fa fa-money" style="margin-right: 0.25rem;"></i> Cobrar
+                        </button>
+                    </ng-container>
                 </td>
             </tr>
         </tbody>
@@ -99,6 +148,42 @@
         <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>No se encontraron remitos</h4>
         <p style="margin-bottom: 0;">Intente con otro criterio de busqueda o ajuste el rango de fechas.</p>
     </div>
+
+    <ng-template #cobroModal>
+        <div class="modal-header" style="background: #DCFCE7; border-bottom: 2px solid #16A34A;">
+            <h5 class="modal-title" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+                <i class="fa fa-money" style="color: #15803D;"></i> Registrar pago
+            </h5>
+            <button type="button" class="close" (click)="cerrarModal()"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 0.75rem;">
+                Remito de venta N° <strong>{{remitoACobrar?.re_remito_k}}</strong> —
+                {{destinatario(remitoACobrar)}}
+            </p>
+            <div class="summary-box" style="text-align: center; margin-bottom: 1rem;">
+                A cobrar {{formatPrecio(netoAPagar(remitoACobrar))}}
+            </div>
+            <div class="form-group">
+                <label>Medio de pago</label>
+                <select class="form-control" [(ngModel)]="medioPago">
+                    <option>Efectivo</option>
+                    <option>Transferencia</option>
+                    <option>Cheque</option>
+                    <option>Otro</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+            <button class="btn btn-action-secondary" (click)="cerrarModal()">
+                <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cancelar
+            </button>
+            <button class="btn btn-action" [disabled]="cobrando" (click)="confirmarCobro()">
+                <i class="fa fa-check" style="margin-right: 0.25rem;"></i>
+                {{ cobrando ? 'Procesando...' : 'Confirmar pago' }}
+            </button>
+        </div>
+    </ng-template>
 
     <div *ngIf="error" class="alert alert-danger text-center mt-3 animated fadeIn faster">
         <h4 class="alert-heading"><i class="fa fa-times-circle" style="margin-right: 0.375rem;"></i>Error general</h4>

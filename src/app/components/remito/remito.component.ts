@@ -1,11 +1,14 @@
 import { Component, OnInit, OnDestroy, TemplateRef, ApplicationRef } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { RemitoModel } from 'src/app/models/remito.model';
+import { RemitoModel, TIPO_CONSIGNACION, TIPO_DEVOLUCION } from 'src/app/models/remito.model';
 import { RemitosService } from 'src/app/providers/remitos.service';
 import { RemitoItemModel } from '../../models/remito-item.model';
 import { DistribuidoraModel } from '../../models/distribuidora.model';
+import { ComercioModel } from '../../models/comercio.model';
 import { DistribuidoraService } from '../../providers/distribuidora.service';
+import { ComercioService } from '../../providers/comercio.service';
 import { LibrosService } from '../../providers/libros.service';
 import { LibroModel } from '../../models/libro.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -22,8 +25,12 @@ export class RemitoComponent implements OnInit, OnDestroy {
 
   forma: FormGroup;
   remito: RemitoModel;
-  distribuidoras: DistribuidoraModel[];
-  distribuidoraSeleccionada: DistribuidoraModel;
+  /** DEVOLUCION o CONSIGNACION, fijado por la ruta. Decide destinatario, textos e impresion. */
+  tipo = TIPO_DEVOLUCION;
+  esConsignacion = false;
+  /** Distribuidoras o comercios segun el tipo; la vista no necesita saber cual de los dos es. */
+  destinatarios: (DistribuidoraModel | ComercioModel)[] = [];
+  destinatarioSeleccionado: DistribuidoraModel | ComercioModel;
   libros: LibroModel[];
   filteredLibros: LibroModel[];
   cantItemsRemito = 0;
@@ -55,16 +62,29 @@ export class RemitoComponent implements OnInit, OnDestroy {
 
   constructor(private remitosService: RemitosService,
               private distribuidoraService: DistribuidoraService,
+              private comercioService: ComercioService,
               private librosService: LibrosService,
               public printService: PrintRemitoService,
               private modalService: BsModalService,
+              private route: ActivatedRoute,
               private appRef: ApplicationRef) {
+    this.tipo = this.route.snapshot.data['tipo'] || TIPO_DEVOLUCION;
+    this.esConsignacion = this.tipo === TIPO_CONSIGNACION;
     this.buildForm();
+  }
+
+  /** Etiquetas que cambian entre los dos tipos, para no repetir el condicional en la plantilla. */
+  get tituloSeccion(): string {
+    return this.esConsignacion ? 'Remito de Consignacion' : 'Remito de Devolucion';
+  }
+
+  get labelDestinatario(): string {
+    return this.esConsignacion ? 'Seleccione el negocio destino' : 'Seleccione la distribuidora';
   }
 
   private buildForm() {
     this.forma = new FormGroup({
-      'distribuidora': new FormControl(null, Validators.required),
+      'destinatario': new FormControl(null, Validators.required),
       'observaciones': new FormControl(''),
     });
   }
@@ -74,10 +94,10 @@ export class RemitoComponent implements OnInit, OnDestroy {
       this.remito = remito;
       this.cantItemsRemito = remito.items.length;
     });
-    this.distribuidoraService.getDistribuidoras()
-      .subscribe((distribuidoras) => {
-        this.distribuidoras = distribuidoras;
-      });
+    // El remito vive en un BehaviorSubject compartido: si vengo de la otra pantalla, arrastro
+    // su tipo y sus items. Arrancar de cero es lo unico correcto al entrar.
+    this.remitosService.generarNuevoRemito(this.tipo);
+    this.cargarDestinatarios();
     this.filterSubscription = this.filterSubject.pipe(
       debounceTime(400)
     ).subscribe(() => {
@@ -91,11 +111,20 @@ export class RemitoComponent implements OnInit, OnDestroy {
     }
   }
 
+  private cargarDestinatarios() {
+    const origen: Observable<(DistribuidoraModel | ComercioModel)[]> = this.esConsignacion
+      ? this.comercioService.getComercios()
+      : this.distribuidoraService.getDistribuidoras();
+    origen.subscribe((destinatarios) => {
+      this.destinatarios = destinatarios;
+    });
+  }
+
   onReiniciar() {
     this.forma.reset();
     this.forma.enable();
-    this.distribuidoraSeleccionada = null;
-    this.remitosService.generarNuevoRemito();
+    this.destinatarioSeleccionado = null;
+    this.remitosService.generarNuevoRemito(this.tipo);
   }
 
   onSubmit() {
@@ -114,7 +143,7 @@ export class RemitoComponent implements OnInit, OnDestroy {
   }
 
   private guardarRemito() {
-    this.remitosService.asignarDatos(this.distribuidoraSeleccionada, this.forma.controls.observaciones.value);
+    this.remitosService.asignarDatos(this.destinatarioSeleccionado, this.forma.controls.observaciones.value);
     Swal.fire({
       title: 'Espere',
       text: 'Generando el remito',
@@ -294,7 +323,7 @@ export class RemitoComponent implements OnInit, OnDestroy {
       keyboard: false
     });
     setTimeout(() => {
-      this.distribuidoras = [...this.distribuidoras];
+      this.destinatarios = [...this.destinatarios];
       this.appRef.tick();
     });
   }

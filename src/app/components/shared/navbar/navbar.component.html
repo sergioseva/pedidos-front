@@ -42,8 +42,15 @@
                     <i class="fa fa-file-text" style="margin-right: 0.25rem;"></i> Remitos
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownRemitos">
+                    <h6 class="dropdown-header">Devolucion a distribuidora</h6>
                     <a class="dropdown-item" [routerLink]="['remito']"><i class="fa fa-plus-circle" style="margin-right: 0.375rem;"></i>Generar Remito</a>
                     <a class="dropdown-item" [routerLink]="['remitos']"><i class="fa fa-list-alt" style="margin-right: 0.375rem;"></i>Consulta de Remitos</a>
+                    <div class="dropdown-divider"></div>
+                    <h6 class="dropdown-header">Consignacion</h6>
+                    <a class="dropdown-item" [routerLink]="['remito-consignacion']"><i class="fa fa-plus-circle" style="margin-right: 0.375rem;"></i>Generar Remito de Consignacion</a>
+                    <a class="dropdown-item" [routerLink]="['remitos-consignacion']"><i class="fa fa-list-alt" style="margin-right: 0.375rem;"></i>Consulta de Consignaciones</a>
+                    <a class="dropdown-item" [routerLink]="['consignacion-estadocuenta']"><i class="fa fa-briefcase" style="margin-right: 0.375rem;"></i>Estado de Cuenta</a>
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" [routerLink]="['configuracion-remito']"><i class="fa fa-cog" style="margin-right: 0.375rem;"></i>Configuracion Remito</a>
                 </div>
             </li>
@@ -54,6 +61,7 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownConfig">
                     <a class="dropdown-item" [routerLink]="['configuracion']"><i class="fa fa-cog" style="margin-right: 0.375rem;"></i>Configuracion General</a>
                     <a class="dropdown-item" [routerLink]="['distribuidoras']"><i class="fa fa-building" style="margin-right: 0.375rem;"></i>Distribuidoras</a>
+                    <a class="dropdown-item" [routerLink]="['comercios']"><i class="fa fa-shopping-bag" style="margin-right: 0.375rem;"></i>Negocios de Consignacion</a>
                     <a class="dropdown-item" [routerLink]="['usuarios']"><i class="fa fa-user-circle" style="margin-right: 0.375rem;"></i>Usuarios</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" [routerLink]="['importarcatalogo']"><i class="fa fa-upload" style="margin-right: 0.375rem;"></i>Importar Catalogo</a>

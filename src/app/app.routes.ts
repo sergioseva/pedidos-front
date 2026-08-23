@@ -16,6 +16,7 @@ import { ImportarCatalogoComponent } from './components/importar-catalogo/import
 import { RemitoComponent } from './components/remito/remito.component';
 import { RemitosComponent } from './components/remitos/remitos.component';
 import { RemitoImpresoComponent } from './components/impresiones/remito-impreso/remito-impreso.component';
+import { ReciboImpresoComponent } from './components/impresiones/recibo-impreso/recibo-impreso.component';
 import { DistribuidorasComponent } from './components/distribuidoras/distribuidoras.component';
 import { DistribuidoraComponent } from './components/distribuidora/distribuidora.component';
 import { ConfiguracionRemitoComponent } from './components/configuracion-remito/configuracion-remito.component';
@@ -26,6 +27,10 @@ import { AdminGuard } from './guards/admin.guard';
 import { VentaComponent } from './components/venta/venta.component';
 import { VentasComponent } from './components/ventas/ventas.component';
 import { ConsultaPedidosDistribuidoraComponent } from './components/consulta-pedidos-distribuidora/consulta-pedidos-distribuidora.component';
+import { ComerciosComponent } from './components/comercios/comercios.component';
+import { ComercioComponent } from './components/comercio/comercio.component';
+import { EstadoCuentaConsignacionComponent } from './components/estado-cuenta-consignacion/estado-cuenta-consignacion.component';
+import { TIPO_CONSIGNACION, TIPO_DEVOLUCION } from './models/remito.model';
 
 
 export const ROUTES: Routes = [
@@ -42,10 +47,16 @@ export const ROUTES: Routes = [
     // Anyone at the counter can ring up a sale; only admins may read the money back.
     { path: 'venta', component: VentaComponent, canActivate: [AuthGuard] },
     { path: 'ventas', component: VentasComponent, canActivate: [AdminGuard] },
-    { path: 'remito', component: RemitoComponent, canActivate: [AuthGuard] },
-    { path: 'remitos', component: RemitosComponent, canActivate: [AuthGuard] },
+    // Los dos tipos de remito comparten componente; `data.tipo` decide destinatario, textos e impresion.
+    { path: 'remito', component: RemitoComponent, canActivate: [AuthGuard], data: { tipo: TIPO_DEVOLUCION } },
+    { path: 'remitos', component: RemitosComponent, canActivate: [AuthGuard], data: { tipo: TIPO_DEVOLUCION } },
+    { path: 'remito-consignacion', component: RemitoComponent, canActivate: [AuthGuard], data: { tipo: TIPO_CONSIGNACION } },
+    { path: 'remitos-consignacion', component: RemitosComponent, canActivate: [AuthGuard], data: { tipo: TIPO_CONSIGNACION } },
+    { path: 'consignacion-estadocuenta', component: EstadoCuentaConsignacionComponent, canActivate: [AuthGuard] },
     { path: 'distribuidoras', component: DistribuidorasComponent, canActivate: [AdminGuard] },
     { path: 'distribuidora/:id', component: DistribuidoraComponent, canActivate: [AdminGuard] },
+    { path: 'comercios', component: ComerciosComponent, canActivate: [AdminGuard] },
+    { path: 'comercio/:id', component: ComercioComponent, canActivate: [AdminGuard] },
     { path: 'configuracion-remito', component: ConfiguracionRemitoComponent, canActivate: [AuthGuard] },
     { path: 'configuracion', component: ConfiguracionComponent, canActivate: [AdminGuard] },
     { path: 'usuarios', component: UsuariosComponent, canActivate: [AdminGuard] },
@@ -55,7 +66,8 @@ export const ROUTES: Routes = [
     { path: 'print', outlet: 'print', component: PrintLayoutComponent,
             children: [
                         { path: 'printpedido/:pedidoId', component: PedidoImpresoComponent },
-                        { path: 'printremito/:remitoId', component: RemitoImpresoComponent }
+                        { path: 'printremito/:remitoId', component: RemitoImpresoComponent },
+                        { path: 'printrecibo/:remitoId', component: ReciboImpresoComponent }
             ]
     },
     { path: '**', component: HomeComponent },

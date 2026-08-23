@@ -1,0 +1,260 @@
+import { Component, OnInit, TemplateRef } from '@angular/core';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import Swal from 'sweetalert2';
+import { RemitosService } from 'src/app/providers/remitos.service';
+import { ComercioService } from 'src/app/providers/comercio.service';
+import { ComercioModel } from 'src/app/models/comercio.model';
+import { ConsignacionEstadoCuentaModel } from 'src/app/models/consignacion-estado-cuenta.model';
+import { LiquidacionModel, LiquidacionResultadoModel } from 'src/app/models/liquidacion.model';
+import { PrintRemitoService } from 'src/app/providers/print-remito.service';
+
+/** Una fila del estado de cuenta mas lo que el operador marco todavia sin confirmar. */
+export interface FilaLiquidable extends ConsignacionEstadoCuentaModel {
+  vendidos: number;
+  devueltos: number;
+}
+
+/** Un comercio con sus lineas, ya sumadas. */
+interface GrupoComercio {
+  comercioId: number;
+  comercio: string;
+  comision: number;
+  filas: FilaLiquidable[];
+  unidades: number;
+  total: number;
+}
+
+@Component({
+  selector: 'app-estado-cuenta-consignacion',
+  templateUrl: './estado-cuenta-consignacion.component.html',
+  styleUrls: ['./estado-cuenta-consignacion.component.css']
+})
+export class EstadoCuentaConsignacionComponent implements OnInit {
+
+  comercios: ComercioModel[] = [];
+  comercioSeleccionado: ComercioModel;
+  fromDate = '';
+  toDate = '';
+  grupos: GrupoComercio[] = [];
+  loading = false;
+  error = false;
+  errMessage: string;
+  searchPerformed = false;
+
+  /** Grupo que se esta liquidando en el modal. */
+  grupoALiquidar: GrupoComercio;
+  observaciones = '';
+  registrarPago = false;
+  medioPago = 'Efectivo';
+  liquidando = false;
+  modalRef: BsModalRef;
+  /**
+   * Los comprobantes de la ultima liquidacion se ofrecen desde la pantalla, no desde el modal.
+   * Imprimir con el modal abierto sale en blanco, y ademas una liquidacion emite hasta tres
+   * papeles: el panel queda a la vista hasta que se lo cierra y se pueden imprimir de a uno.
+   */
+  resultado: LiquidacionResultadoModel;
+  comercioLiquidado: string;
+
+  constructor(private rs: RemitosService,
+              private comercioService: ComercioService,
+              public printService: PrintRemitoService,
+              private modalService: BsModalService) { }
+
+  ngOnInit() {
+    this.comercioService.getComercios().subscribe(comercios => this.comercios = comercios);
+    this.buscar();
+  }
+
+  buscar() {
+    this.loading = true;
+    this.grupos = [];
+    const comercioId = this.comercioSeleccionado ? this.comercioSeleccionado.id : null;
+    this.rs.estadoCuentaConsignacion(comercioId, this.fromDate, this.toDate).subscribe(
+      (filas: ConsignacionEstadoCuentaModel[]) => {
+        this.grupos = this.agrupar(filas);
+        this.loading = false;
+        this.error = false;
+        this.searchPerformed = true;
+      },
+      (err) => {
+        this.loading = false;
+        this.error = true;
+        this.errMessage = (err.error && err.error.message) || 'Error al consultar el estado de cuenta';
+      });
+  }
+
+  limpiar() {
+    this.comercioSeleccionado = null;
+    this.fromDate = '';
+    this.toDate = '';
+    this.buscar();
+  }
+
+  /** El backend ya devuelve las filas ordenadas por comercio, asi que un solo recorrido alcanza. */
+  private agrupar(filas: ConsignacionEstadoCuentaModel[]): GrupoComercio[] {
+    const grupos: GrupoComercio[] = [];
+    (filas || []).forEach(fila => {
+      let grupo = grupos.find(g => g.comercioId === fila.comercioId);
+      if (!grupo) {
+        grupo = {
+          comercioId: fila.comercioId,
+          comercio: fila.comercio,
+          comision: this.comisionDe(fila.comercioId),
+          filas: [], unidades: 0, total: 0
+        };
+        grupos.push(grupo);
+      }
+      grupo.filas.push({ ...fila, vendidos: 0, devueltos: 0 });
+      grupo.unidades += fila.cantidad;
+      grupo.total += fila.subtotal;
+    });
+    return grupos;
+  }
+
+  private comisionDe(comercioId: number): number {
+    const comercio = this.comercios.find(c => c.id === comercioId);
+    return comercio && comercio.comision ? comercio.comision : 0;
+  }
+
+  // --- Marcado ---
+
+  /**
+   * Vendidos y devueltos comparten el mismo saldo, asi que el tope de cada uno es lo que queda
+   * despues del otro. Sin esto se podria marcar 5 y 5 sobre un saldo de 5 y el backend rechazaria
+   * la liquidacion entera recien al confirmar.
+   */
+  maxVendidos(fila: FilaLiquidable): number {
+    return fila.cantidad - (fila.devueltos || 0);
+  }
+
+  maxDevueltos(fila: FilaLiquidable): number {
+    return fila.cantidad - (fila.vendidos || 0);
+  }
+
+  onCantidadChange(fila: FilaLiquidable) {
+    fila.vendidos = this.acotar(fila.vendidos, fila.cantidad);
+    fila.devueltos = this.acotar(fila.devueltos, fila.cantidad - fila.vendidos);
+  }
+
+  private acotar(valor: number, max: number): number {
+    const n = Math.floor(Number(valor) || 0);
+    return Math.min(Math.max(n, 0), Math.max(max, 0));
+  }
+
+  /** Marca todo el saldo de un grupo como devuelto, que es el caso mas comun al levantar. */
+  devolverTodo(grupo: GrupoComercio) {
+    grupo.filas.forEach(f => { f.vendidos = 0; f.devueltos = f.cantidad; });
+  }
+
+  limpiarMarcas(grupo: GrupoComercio) {
+    grupo.filas.forEach(f => { f.vendidos = 0; f.devueltos = 0; });
+  }
+
+  // --- Totales de lo marcado ---
+
+  vendidosDe(grupo: GrupoComercio): number {
+    return grupo.filas.reduce((acc, f) => acc + (f.vendidos || 0), 0);
+  }
+
+  devueltosDe(grupo: GrupoComercio): number {
+    return grupo.filas.reduce((acc, f) => acc + (f.devueltos || 0), 0);
+  }
+
+  totalTapaDe(grupo: GrupoComercio): number {
+    return grupo.filas.reduce((acc, f) => acc + (f.vendidos || 0) * (f.precio || 0), 0);
+  }
+
+  netoAPagarDe(grupo: GrupoComercio): number {
+    return this.totalTapaDe(grupo) * (100 - (grupo.comision || 0)) / 100;
+  }
+
+  hayMarcas(grupo: GrupoComercio): boolean {
+    return this.vendidosDe(grupo) > 0 || this.devueltosDe(grupo) > 0;
+  }
+
+  // --- Liquidacion ---
+
+  abrirLiquidacion(grupo: GrupoComercio, template: TemplateRef<any>) {
+    this.grupoALiquidar = grupo;
+    this.observaciones = '';
+    this.registrarPago = false;
+    this.medioPago = 'Efectivo';
+    this.resultado = null;
+    this.comercioLiquidado = null;
+    this.modalRef = this.modalService.show(template, { class: 'modal-lg', backdrop: 'static', keyboard: false });
+  }
+
+  cerrarModal() {
+    if (this.modalRef) {
+      this.modalRef.hide();
+    }
+  }
+
+  confirmarLiquidacion() {
+    const grupo = this.grupoALiquidar;
+    const liquidacion = new LiquidacionModel();
+    liquidacion.comercioId = grupo.comercioId;
+    liquidacion.observaciones = this.observaciones;
+    liquidacion.registrarPago = this.registrarPago;
+    liquidacion.medioPago = this.registrarPago ? this.medioPago : null;
+    liquidacion.lineas = grupo.filas
+      .filter(f => (f.vendidos || 0) > 0 || (f.devueltos || 0) > 0)
+      .map(f => ({
+        isbn: f.isbn,
+        nombreLibro: f.nombreLibro,
+        autor: f.autor,
+        editorial: f.editorial,
+        precio: f.precio,
+        cantidadVendida: f.vendidos || 0,
+        cantidadDevuelta: f.devueltos || 0
+      }));
+
+    this.liquidando = true;
+    this.rs.liquidarConsignacion(liquidacion).subscribe(
+      (resultado) => {
+        this.liquidando = false;
+        this.resultado = resultado;
+        this.comercioLiquidado = grupo.comercio;
+        // El modal se cierra: los comprobantes se imprimen desde el panel de la pantalla.
+        this.cerrarModal();
+        // El saldo cambio: hay que releerlo, no descontarlo a mano en la pantalla.
+        this.buscar();
+      },
+      (err) => {
+        this.liquidando = false;
+        Swal.fire({
+          title: 'Liquidacion',
+          text: (err.error && err.error.message) || 'Error al liquidar',
+          icon: 'error'
+        });
+      });
+  }
+
+  cerrarPanelComprobantes() {
+    this.resultado = null;
+    this.comercioLiquidado = null;
+  }
+
+  imprimirRemito(remitoId: number) {
+    this.printService.imprimirRemito(remitoId);
+  }
+
+  imprimirRecibo(remitoVentaId: number) {
+    this.printService.imprimirRecibo(remitoVentaId);
+  }
+
+  // --- Totales generales ---
+
+  get totalGeneral(): number {
+    return this.grupos.reduce((acc, g) => acc + g.total, 0);
+  }
+
+  get unidadesGenerales(): number {
+    return this.grupos.reduce((acc, g) => acc + g.unidades, 0);
+  }
+
+  formatPrecio(value: number): string {
+    return '$ ' + Intl.NumberFormat('es-AR', {maximumFractionDigits: 0}).format(value || 0);
+  }
+}

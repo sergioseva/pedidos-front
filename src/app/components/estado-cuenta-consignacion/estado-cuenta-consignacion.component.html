@@ -1,0 +1,276 @@
+<div [class.isPrinting]="printService?.isPrinting">
+<div class="section-title">
+    <i class="fa fa-briefcase"></i>
+    Estado de Cuenta de Consignacion
+</div>
+
+<div class="alert alert-info" style="margin-bottom: 1rem;">
+    <i class="fa fa-info-circle" style="margin-right: 0.375rem;"></i>
+    Libros entregados que siguen en poder del negocio. Marque cuantos ejemplares se
+    <strong>vendieron</strong> y cuantos <strong>vuelven</strong>, y liquide: se emite un remito de
+    retiro por lo devuelto y uno de venta por lo vendido, con su recibo de pago.
+</div>
+
+<!-- Comprobantes de la ultima liquidacion. Vive fuera del modal: imprimir con un modal abierto
+     sale en blanco, y ademas asi se pueden imprimir los tres papeles de a uno. -->
+<div *ngIf="resultado" class="card comprobantes-panel">
+    <div class="card-header grupo-header">
+        <div class="card-icon-header">
+            <i class="fa fa-check-circle" style="color: #15803D;"></i>
+            <span>Liquidacion de {{comercioLiquidado}} registrada</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="summary-box" style="text-align: center;">
+                Neto {{formatPrecio(resultado.netoAPagar)}}
+            </span>
+            <button class="btn btn-action-secondary btn-sm" (click)="cerrarPanelComprobantes()">
+                <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cerrar
+            </button>
+        </div>
+    </div>
+    <div class="card-body" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+        <button *ngIf="resultado.remitoRetiroId" class="btn btn-action-secondary btn-sm"
+                (click)="imprimirRemito(resultado.remitoRetiroId)">
+            <i class="fa fa-print" style="margin-right: 0.25rem;"></i> Remito de retiro
+        </button>
+        <button *ngIf="resultado.remitoVentaId" class="btn btn-action-secondary btn-sm"
+                (click)="imprimirRemito(resultado.remitoVentaId)">
+            <i class="fa fa-print" style="margin-right: 0.25rem;"></i> Remito de venta
+        </button>
+        <button *ngIf="resultado.reciboId" class="btn btn-action btn-sm"
+                (click)="imprimirRecibo(resultado.remitoVentaId)">
+            <i class="fa fa-print" style="margin-right: 0.25rem;"></i> Recibo de pago
+        </button>
+        <span *ngIf="resultado.remitoVentaId && !resultado.reciboId" class="small" style="color: #8C7A6A;">
+            Quedo impago: el recibo se emite desde Consulta de Consignaciones cuando el negocio pague.
+        </span>
+        <span class="small" style="color: #8C7A6A;">Imprima los comprobantes de a uno.</span>
+    </div>
+</div>
+
+<div class="search-row">
+    <div class="row align-items-center">
+        <div class="col">
+            <ng-select [items]="comercios"
+                bindLabel="descripcion"
+                placeholder="Todos los negocios"
+                [(ngModel)]="comercioSeleccionado"
+                (change)="buscar()">
+            </ng-select>
+        </div>
+        <div class="col-auto">
+            <input type="date" class="form-control" [(ngModel)]="fromDate" title="Entregado desde">
+        </div>
+        <div class="col-auto">
+            <input type="date" class="form-control" [(ngModel)]="toDate" title="Entregado hasta">
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-action btn-sm" (click)="buscar()">
+                <i class="fa fa-search" style="margin-right: 0.25rem;"></i> Buscar
+            </button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-action-secondary btn-sm" (click)="limpiar()">
+                <i class="fa fa-refresh" style="margin-right: 0.25rem;"></i> Limpiar
+            </button>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="grupos.length > 1" style="display: flex; justify-content: flex-end; margin: 1rem 0;">
+    <div class="summary-box" style="min-width: 260px; text-align: center;">
+        Total general: {{unidadesGenerales}} ejemplares — {{formatPrecio(totalGeneral)}}
+    </div>
+</div>
+
+<div *ngFor="let grupo of grupos" class="card" style="margin-top: 1rem;">
+    <div class="card-header grupo-header">
+        <div class="card-icon-header">
+            <i class="fa fa-shopping-bag"></i>
+            <span>{{grupo.comercio}}</span>
+            <span *ngIf="grupo.comision" class="badge badge-secondary" style="margin-left: 0.5rem;">
+                comision {{grupo.comision}}%
+            </span>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <div class="summary-box" style="min-width: 220px; text-align: center;">
+                {{grupo.unidades}} en la calle — {{formatPrecio(grupo.total)}}
+            </div>
+            <button class="btn btn-action-secondary btn-sm" (click)="devolverTodo(grupo)">
+                <i class="fa fa-undo" style="margin-right: 0.25rem;"></i> Devolver todo
+            </button>
+            <button class="btn btn-action-secondary btn-sm" [disabled]="!hayMarcas(grupo)" (click)="limpiarMarcas(grupo)">
+                <i class="fa fa-eraser" style="margin-right: 0.25rem;"></i> Limpiar
+            </button>
+            <button class="btn btn-action btn-sm"
+                    [disabled]="!hayMarcas(grupo)"
+                    (click)="abrirLiquidacion(grupo, liquidacionModal)">
+                <i class="fa fa-check-circle" style="margin-right: 0.25rem;"></i> Liquidar
+            </button>
+        </div>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        <div style="overflow-x: auto;">
+            <table class="table" style="margin-bottom: 0;">
+                <thead>
+                    <tr>
+                        <th scope="col" style="min-width: 200px;">Titulo</th>
+                        <th scope="col" style="min-width: 120px;">Autor</th>
+                        <th scope="col" style="min-width: 110px;">ISBN</th>
+                        <th scope="col" class="text-right">Entregado</th>
+                        <th scope="col" class="text-right">Devuelto</th>
+                        <th scope="col" class="text-right">Vendido</th>
+                        <th scope="col" class="text-right">En la calle</th>
+                        <th scope="col" class="text-right">Precio</th>
+                        <th scope="col" style="width: 110px;">Vender</th>
+                        <th scope="col" style="width: 110px;">Devolver</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let fila of grupo.filas" [class.fila-marcada]="fila.vendidos || fila.devueltos">
+                        <td>{{fila.nombreLibro}}</td>
+                        <td>{{fila.autor}}</td>
+                        <td>{{fila.isbn}}</td>
+                        <td class="text-right text-muted">{{fila.entregado}}</td>
+                        <td class="text-right text-muted">{{fila.devuelto}}</td>
+                        <td class="text-right text-muted">{{fila.vendido}}</td>
+                        <td class="text-right" style="font-weight: 600;">{{fila.cantidad}}</td>
+                        <td class="text-right">{{formatPrecio(fila.precio)}}</td>
+                        <td>
+                            <input type="number" class="form-control form-control-sm text-right"
+                                   min="0" [max]="maxVendidos(fila)"
+                                   [(ngModel)]="fila.vendidos" (ngModelChange)="onCantidadChange(fila)">
+                        </td>
+                        <td>
+                            <input type="number" class="form-control form-control-sm text-right"
+                                   min="0" [max]="maxDevueltos(fila)"
+                                   [(ngModel)]="fila.devueltos" (ngModelChange)="onCantidadChange(fila)">
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot *ngIf="hayMarcas(grupo)">
+                    <tr class="fila-total">
+                        <td colspan="7" class="text-right" style="font-weight: 600;">
+                            Marcado: {{vendidosDe(grupo)}} vendidos, {{devueltosDe(grupo)}} a devolver
+                        </td>
+                        <td colspan="3" class="text-right" style="font-weight: 600;">
+                            A cobrar {{formatPrecio(netoAPagarDe(grupo))}}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="loading" class="alert alert-info text-center mt-3 animated fadeIn faster">
+    <h4 class="alert-heading"><i class="fa fa-search" style="margin-right: 0.375rem;"></i>Buscando</h4>
+    <p><i class="fa fa-spinner fa-spin fa-2x"></i></p>
+</div>
+
+<div *ngIf="!loading && !error && searchPerformed && grupos.length === 0"
+     class="alert alert-warning text-center mt-3 animated fadeIn faster">
+    <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>Sin libros en consignacion</h4>
+    <p style="margin-bottom: 0;">No hay entregas pendientes de liquidar con el filtro elegido.</p>
+</div>
+
+<div *ngIf="error" class="alert alert-danger text-center mt-3 animated fadeIn faster">
+    <h4 class="alert-heading"><i class="fa fa-times-circle" style="margin-right: 0.375rem;"></i>Error general</h4>
+    <p class="mb-0">{{errMessage}}</p>
+</div>
+
+<!-- Confirmacion de la liquidacion -->
+<ng-template #liquidacionModal>
+    <div class="modal-header" style="background: #EDE9FE; border-bottom: 2px solid #8B5CF6;">
+        <h5 class="modal-title" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600;">
+            <i class="fa fa-check-circle" style="color: #7C3AED;"></i>
+            Liquidar con {{grupoALiquidar?.comercio}}
+        </h5>
+        <button type="button" class="close" (click)="cerrarModal()"><span>&times;</span></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="summary-box" style="text-align: center;">
+                    <i class="fa fa-undo" style="margin-right: 0.25rem;"></i>
+                    Vuelven {{devueltosDe(grupoALiquidar)}} ejemplares
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="summary-box" style="text-align: center;">
+                    <i class="fa fa-shopping-cart" style="margin-right: 0.25rem;"></i>
+                    Vendidos {{vendidosDe(grupoALiquidar)}} ejemplares
+                </div>
+            </div>
+        </div>
+
+        <table class="table" style="margin-top: 1rem;">
+            <tbody>
+                <tr>
+                    <td>Total de tapa</td>
+                    <td class="text-right">{{formatPrecio(totalTapaDe(grupoALiquidar))}}</td>
+                </tr>
+                <tr *ngIf="grupoALiquidar?.comision">
+                    <td>Comision del negocio ({{grupoALiquidar?.comision}}%)</td>
+                    <td class="text-right">- {{formatPrecio(totalTapaDe(grupoALiquidar) - netoAPagarDe(grupoALiquidar))}}</td>
+                </tr>
+                <!-- Sin comision el negocio paga la tapa entera. Se avisa en vez de callarlo:
+                     olvidarse de cargarla hace que el recibo salga por el monto equivocado. -->
+                <tr *ngIf="!grupoALiquidar?.comision && vendidosDe(grupoALiquidar) > 0">
+                    <td colspan="2" class="text-warning-cell">
+                        <i class="fa fa-exclamation-triangle" style="margin-right: 0.375rem;"></i>
+                        Este negocio no tiene comision cargada: paga el precio de tapa completo.
+                        Cargala en Configuracion &rsaquo; Negocios de Consignacion si corresponde.
+                    </td>
+                </tr>
+                <tr style="font-weight: 700; border-top: 2px solid #C8BFB2;">
+                    <td>Neto a cobrar al negocio</td>
+                    <td class="text-right">{{formatPrecio(netoAPagarDe(grupoALiquidar))}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="form-group" *ngIf="vendidosDe(grupoALiquidar) > 0">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="registrarPago" [(ngModel)]="registrarPago">
+                <label class="custom-control-label" for="registrarPago">
+                    El negocio paga ahora — emitir recibo
+                </label>
+            </div>
+            <div class="small" style="color: #8C7A6A; margin-top: 0.25rem;">
+                Si no paga, el remito de venta queda impago y el recibo se emite despues.
+            </div>
+        </div>
+
+        <div class="form-group" *ngIf="registrarPago">
+            <label>Medio de pago</label>
+            <select class="form-control" [(ngModel)]="medioPago">
+                <option>Efectivo</option>
+                <option>Transferencia</option>
+                <option>Cheque</option>
+                <option>Otro</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Observaciones</label>
+            <textarea class="form-control" rows="2" placeholder="Observaciones"
+                      [(ngModel)]="observaciones"></textarea>
+        </div>
+    </div>
+
+    <!-- Emitida: queda ofrecer los papeles -->
+    <div class="modal-footer" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+        <button class="btn btn-action-secondary" (click)="cerrarModal()">
+            <i class="fa fa-times" style="margin-right: 0.25rem;"></i> Cancelar
+        </button>
+        <button class="btn btn-action"
+                [disabled]="liquidando || !hayMarcas(grupoALiquidar)"
+                (click)="confirmarLiquidacion()">
+            <i class="fa fa-check" style="margin-right: 0.25rem;"></i>
+            {{ liquidando ? 'Procesando...' : 'Confirmar liquidacion' }}
+        </button>
+    </div>
+</ng-template>
+</div>

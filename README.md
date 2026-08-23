@@ -55,7 +55,7 @@ The `deploy/config/config.json` file should also be mounted to `/usr/share/nginx
 Automated via GitHub Actions (`.github/workflows/release.yml`):
 
 - **Push to `master`** → builds and pushes `ghcr.io/sergioseva/pedidos-front:master` → deploys to staging (`test.librosmario.store`)
-- **Push tag `v*`** → builds and pushes `:v1.0.0` + `:latest` → deploys to production (`pedidos.librosmario.store`)
+- **Push tag `v*`** → builds and pushes `:v1.0.0` + `:latest` → deploys to production (`pedidos.gchu.librosmario.com.ar`; the legacy `pedidos.librosmario.store` is kept as an alias)
 
 ### Rollback
 
@@ -66,7 +66,7 @@ Go to **Actions > Rollback > Run workflow**, pick the version tag (e.g. `v1.0.0`
 The running version is available at:
 
 ```bash
-curl https://pedidos.librosmario.store/version.json
+curl https://pedidos.gchu.librosmario.com.ar/version.json
 # {"version":"v1.0.0"}
 ```
 

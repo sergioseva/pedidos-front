@@ -2,5 +2,7 @@
     "baseUrl": "/api",
     "nombre":"Libros Mario",
     "direccion":"3 de Caballeria 761 - Gualeguaychu",
-    "telefono":"Telefono: 425900"
+    "telefono":"Telefono: 425900",
+    "sentryDsn": "",
+    "sentryEnvironment": "local"
 }
