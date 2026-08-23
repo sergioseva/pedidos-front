@@ -74,7 +74,13 @@
                                         <td>{{item.ri_editorial}}</td>
                                         <td>{{item.ri_isbn}}</td>
                                         <td>{{formatPrecio(item.ri_precio)}}</td>
-                                        <td>{{item.ri_cantidad}}</td>
+                                        <td>
+                                            <input type="number" min="1"
+                                                   class="form-control form-control-sm text-right"
+                                                   [disabled]="remito.finalizado"
+                                                   [ngModel]="item.ri_cantidad"
+                                                   (ngModelChange)="cambiarCantidad(item, $event)">
+                                        </td>
                                         <td>
                                             <div class="table-actions">
                                                 <button title="Eliminar" (click)="borrarItem(item)" type="button" class="btn btn-icon btn-icon-danger">

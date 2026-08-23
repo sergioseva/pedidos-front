@@ -123,12 +123,51 @@ describe('RemitosService', () => {
       expect(remito.items[0].ri_cantidad).toBe(2);
     });
 
-    it('should add as new when ri_isbn is falsy', () => {
+    it('should add as new when the titles differ and there is no ISBN', () => {
       const item1 = createRemitoItem({ ri_isbn: '', ri_nombre_libro: 'A' });
       const item2 = createRemitoItem({ ri_isbn: '', ri_nombre_libro: 'B' });
 
       service.addRemitoItem(item1);
       service.addRemitoItem(item2);
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.items.length).toBe(2);
+    });
+
+    /**
+     * Lo que se reporto: un libro sin ISBN se repetia una linea por clic en vez de sumar. En este
+     * catalogo son muchos los que no tienen ISBN.
+     */
+    it('should increment a book that has no ISBN instead of repeating it', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: '', ri_nombre_libro: 'Sin ISBN', ri_cantidad: 1 }));
+      service.addRemitoItem(createRemitoItem({ ri_isbn: '', ri_nombre_libro: 'Sin ISBN', ri_cantidad: 1 }));
+      service.addRemitoItem(createRemitoItem({ ri_isbn: '', ri_nombre_libro: 'Sin ISBN', ri_cantidad: 1 }));
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.items.length).toBe(1);
+      expect(remito.items[0].ri_cantidad).toBe(3);
+    });
+
+    /** Los titulos del catalogo suelen traer espacios adelante. */
+    it('should ignore surrounding whitespace and case when matching', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: '', ri_nombre_libro: '  El Principito', ri_cantidad: 1 }));
+      service.addRemitoItem(createRemitoItem({ ri_isbn: '', ri_nombre_libro: 'EL PRINCIPITO', ri_cantidad: 1 }));
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.items.length).toBe(1);
+      expect(remito.items[0].ri_cantidad).toBe(2);
+    });
+
+    /**
+     * Medio catalogo tiene el ISBN en notacion cientifica, asi que libros distintos comparten la
+     * cadena: agrupar solo por ISBN los fusionaria en uno.
+     */
+    it('should keep different titles apart even when they share an ISBN', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: '9.78987E+12', ri_nombre_libro: 'Uno' }));
+      service.addRemitoItem(createRemitoItem({ ri_isbn: '9.78987E+12', ri_nombre_libro: 'Otro' }));
 
       let remito: RemitoModel;
       service.currentRemito.subscribe(r => remito = r);
@@ -143,6 +182,50 @@ describe('RemitosService', () => {
       let remito: RemitoModel;
       service.currentRemito.subscribe(r => remito = r);
       expect(remito.items.length).toBe(0);
+    });
+  });
+
+  describe('actualizarCantidad', () => {
+    it('should set the quantity and re-emit', () => {
+      const item = createRemitoItem({ ri_cantidad: 1 });
+      service.addRemitoItem(item);
+
+      service.actualizarCantidad(item, 7);
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.items[0].ri_cantidad).toBe(7);
+    });
+
+    /** Para sacar el libro esta el boton de borrar; la cantidad nunca baja de 1. */
+    it('should never drop below one', () => {
+      const item = createRemitoItem({ ri_cantidad: 3 });
+      service.addRemitoItem(item);
+
+      service.actualizarCantidad(item, 0);
+      expect(item.ri_cantidad).toBe(1);
+
+      service.actualizarCantidad(item, -5);
+      expect(item.ri_cantidad).toBe(1);
+    });
+
+    it('should truncate a fractional quantity', () => {
+      const item = createRemitoItem({ ri_cantidad: 1 });
+      service.addRemitoItem(item);
+
+      service.actualizarCantidad(item, 2.9);
+
+      expect(item.ri_cantidad).toBe(2);
+    });
+
+    it('should not touch a finalized remito', () => {
+      const item = createRemitoItem({ ri_cantidad: 2 });
+      service.addRemitoItem(item);
+      service.finalizarRemito();
+
+      service.actualizarCantidad(item, 9);
+
+      expect(item.ri_cantidad).toBe(2);
     });
   });
 

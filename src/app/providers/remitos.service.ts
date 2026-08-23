@@ -87,13 +87,36 @@ export class RemitosService {
       return;
     }
     const items: RemitoItemModel[] = this.remitosSource.getValue().items;
-    const found: RemitoItemModel = items.find(e => e.ri_isbn === remitoItem.ri_isbn && !!remitoItem.ri_isbn);
+    const found: RemitoItemModel = items.find(e => this.claveLibro(e) === this.claveLibro(remitoItem));
     if (found) {
-      found.ri_cantidad++;
+      found.ri_cantidad += remitoItem.ri_cantidad > 0 ? remitoItem.ri_cantidad : 1;
     } else {
       this.remitosSource.getValue().addItem(remitoItem);
     }
     this.remitosSource.getValue().calcularTotal();
+    this.remitosSource.next(this.remitosSource.getValue());
+  }
+
+  /**
+   * Identifica al libro por ISBN Y titulo, la misma clave que usa el backend para los saldos.
+   *
+   * Antes se comparaba solo el ISBN y ademas se exigia que no fuera vacio, asi que un libro sin
+   * ISBN -- que en este catalogo son muchos -- nunca se agrupaba y se sumaba una linea nueva por
+   * cada clic. Incluir el titulo tampoco es opcional: medio catalogo tiene el ISBN guardado en
+   * notacion cientifica, y por esa via libros distintos comparten cadena y se fusionarian.
+   */
+  private claveLibro(item: RemitoItemModel): string {
+    const norm = (v: string) => (v || '').trim().toLowerCase();
+    return `${norm(item.ri_isbn)}|${norm(item.ri_nombre_libro)}`;
+  }
+
+  /** La cantidad se edita en la grilla. Nunca baja de 1: para sacar el libro esta el boton de borrar. */
+  actualizarCantidad(remitoItem: RemitoItemModel, cantidad: number) {
+    if (this.remitosSource.getValue().finalizado) {
+      return;
+    }
+    const n = Math.floor(Number(cantidad) || 0);
+    remitoItem.ri_cantidad = n < 1 ? 1 : n;
     this.remitosSource.next(this.remitosSource.getValue());
   }
 

@@ -173,6 +173,10 @@ export class RemitoComponent implements OnInit, OnDestroy {
     );
   }
 
+  cambiarCantidad(item: RemitoItemModel, cantidad: number) {
+    this.remitosService.actualizarCantidad(item, cantidad);
+  }
+
   borrarItem(item: RemitoItemModel) {
     this.remitosService.removeRemitoItem(item);
   }

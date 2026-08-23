@@ -42,6 +42,8 @@ Defined in `src/app/app.routes.ts`. All authenticated routes use `AuthGuard`; ad
 
 The consignment list asks the backend for a shop's **three** movement types at once (`CONSIGNACION,RETIRO,VENTA_CONSIGNACION`), otherwise the remitos produced by a settlement are invisible and cannot be reprinted. It also filters by type, by shop and by unpaid, and collects deferred payments — a sale remito with no receipt is money still owed.
 
+`RemitosService.addRemitoItem` identifies a book by **ISBN and title together** (`claveLibro`), the same key the backend uses for balances. Matching on ISBN alone fails twice over in this catalog: many books have no ISBN at all, so every click added a fresh line instead of incrementing, and many others share a scientific-notation ISBN, so different titles would be merged into one. The key trims and lowercases, since catalog titles routinely carry leading spaces. Quantities are editable in the items grid and never drop below 1 — removing a book is what the delete button is for.
+
 `EstadoCuentaConsignacionComponent` — shown to users as **"Consignaciones Actuales"** (route `consignaciones-actuales`) — is where copies are marked sold/returned and settled. The class and the backend endpoint still say *estado de cuenta*; the UI wording was changed because it read like a cash statement. After settling it **re-reads the balance from the server** rather than subtracting locally, and the server validates against the real balance anyway.
 
 ### Printing
