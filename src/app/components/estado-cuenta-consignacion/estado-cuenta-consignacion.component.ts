@@ -236,6 +236,14 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
     this.comercioLiquidado = null;
   }
 
+  /**
+   * Estado de cuenta del negocio, para entregarle el detalle de lo que tiene. Se imprime con las
+   * mismas fechas que tiene la pantalla, asi el papel coincide con lo que se esta mirando.
+   */
+  imprimirEstadoCuenta(grupo: GrupoComercio) {
+    this.printService.imprimirEstadoCuenta(grupo.comercioId, this.fromDate, this.toDate);
+  }
+
   imprimirRemito(remitoId: number) {
     this.printService.imprimirRemito(remitoId);
   }

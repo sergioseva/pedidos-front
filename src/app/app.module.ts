@@ -47,6 +47,7 @@ import { RemitosComponent } from './components/remitos/remitos.component';
 import { RemitoItemComponent } from './components/remito-item/remito-item.component';
 import { RemitoImpresoComponent } from './components/impresiones/remito-impreso/remito-impreso.component';
 import { ReciboImpresoComponent } from './components/impresiones/recibo-impreso/recibo-impreso.component';
+import { EstadoCuentaImpresoComponent } from './components/impresiones/estado-cuenta-impreso/estado-cuenta-impreso.component';
 import { DistribuidorasComponent } from './components/distribuidoras/distribuidoras.component';
 import { DistribuidoraComponent } from './components/distribuidora/distribuidora.component';
 import { ConfiguracionRemitoComponent } from './components/configuracion-remito/configuracion-remito.component';
@@ -128,6 +129,7 @@ export function load(http: HttpClient, config: ConfigService): (() => Promise<bo
     ComercioComponent,
     EstadoCuentaConsignacionComponent,
     ReciboImpresoComponent,
+    EstadoCuentaImpresoComponent,
   ],
 
   imports: [

@@ -1,0 +1,73 @@
+<!-- Dos copias: una queda en el negocio y la otra vuelve firmada de conformidad -->
+<ng-container *ngTemplateOutlet="estadoTemplate; context: {copia: 'ORIGINAL - PARA EL NEGOCIO'}"></ng-container>
+<ng-container *ngTemplateOutlet="estadoTemplate; context: {copia: 'DUPLICADO - CONFORME PARA LA LIBRERIA'}"></ng-container>
+
+<ng-template #estadoTemplate let-copia="copia">
+    <div class="estado-page">
+        <div style="text-align: center; font-size: 0.75rem; margin-bottom: 0.75rem;">{{ copia }}</div>
+
+        <div class="row">
+            <div class="col-6">Fecha: {{ fechaEmision | date:'mediumDate':'+0300': 'es-AR' }}</div>
+            <div class="col-6 text-right">De: {{ remitente | uppercase }}</div>
+        </div>
+        <hr>
+
+        <div style="font-weight: bold;">{{ comercio?.descripcion | uppercase }}</div>
+        <div *ngIf="comercio?.direccion">{{ comercio?.direccion }}</div>
+        <div *ngIf="comercio?.contacto">Contacto: {{ comercio?.contacto }}</div>
+        <div *ngIf="comercio?.cuit">CUIT: {{ comercio?.cuit }}</div>
+        <div *ngIf="comercio?.comision">Comision acordada: {{ comercio?.comision }}%</div>
+
+        <p class="leyenda">
+            Detalle de los libros entregados en consignacion que, segun nuestros registros,
+            se encuentran actualmente en su poder.
+        </p>
+
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Titulo</th>
+                    <th scope="col">Autor</th>
+                    <th scope="col">Editorial</th>
+                    <th scope="col">ISBN</th>
+                    <th scope="col" class="text-right">Cantidad</th>
+                    <th scope="col" class="text-right">Precio</th>
+                    <th scope="col" class="text-right">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let fila of filas">
+                    <td>{{fila.nombreLibro}}</td>
+                    <td>{{fila.autor}}</td>
+                    <td>{{fila.editorial}}</td>
+                    <td>{{fila.isbn}}</td>
+                    <td class="text-right">{{fila.cantidad}}</td>
+                    <td class="text-right">{{formatPrecio(fila.precio)}}</td>
+                    <td class="text-right">{{formatPrecio(fila.subtotal)}}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr style="font-weight: bold;">
+                    <td colspan="4" class="text-right">TOTALES</td>
+                    <td class="text-right">{{ unidades }}</td>
+                    <td></td>
+                    <td class="text-right">{{ formatPrecio(total) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div *ngIf="filas.length === 0" style="text-align: center; padding: 1rem;">
+            No hay libros en consignacion registrados a la fecha.
+        </div>
+
+        <p class="leyenda">
+            Los importes estan expresados a precio de tapa. Si encuentra diferencias entre este
+            detalle y las existencias del negocio, comuniquelas antes de la proxima liquidacion.
+        </p>
+
+        <div class="firma-row">
+            <div class="firma-box">{{ remitente | uppercase }}</div>
+            <div class="firma-box">Conforme del negocio — firma y aclaracion</div>
+        </div>
+    </div>
+</ng-template>

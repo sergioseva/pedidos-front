@@ -39,6 +39,19 @@ export class PrintRemitoService {
    * El temporizador es un seguro: si 'afterprint' no llega (algun navegador no lo emite), la
    * aplicacion no puede quedarse con la pantalla tapada para siempre.
    */
+  /**
+   * Estado de cuenta de un comercio, para entregarle el detalle de lo que tiene en su poder.
+   * Las fechas viajan como parametros de matriz para que el papel coincida con el filtro que
+   * tenia la pantalla.
+   */
+  imprimirEstadoCuenta(comercioId: number, desde: string, hasta: string) {
+    this.isPrinting = true;
+    this.router.navigate(['/',
+    { outlets: {
+      'print': ['print', 'printestadocuenta', comercioId, { desde: desde || '', hasta: hasta || '' }]
+    }}]);
+  }
+
   onDataReady() {
     setTimeout(() => {
       let terminado = false;

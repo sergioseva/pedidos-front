@@ -32,6 +32,25 @@ describe('PrintRemitoService', () => {
     });
   });
 
+  describe('imprimirEstadoCuenta', () => {
+    it('should navigate to the print outlet carrying the date range', () => {
+      service.imprimirEstadoCuenta(7, '2025-01-01', '2025-12-31');
+
+      expect(service.isPrinting).toBe(true);
+      expect(router.navigate).toHaveBeenCalledWith(['/', {
+        outlets: { 'print': ['print', 'printestadocuenta', 7, { desde: '2025-01-01', hasta: '2025-12-31' }] }
+      }]);
+    });
+
+    it('should send empty dates when the screen has no filter', () => {
+      service.imprimirEstadoCuenta(7, '', '');
+
+      expect(router.navigate).toHaveBeenCalledWith(['/', {
+        outlets: { 'print': ['print', 'printestadocuenta', 7, { desde: '', hasta: '' }] }
+      }]);
+    });
+  });
+
   describe('onDataReady', () => {
     /**
      * El documento tiene que seguir montado mientras el navegador imprime. Desarmarlo apenas

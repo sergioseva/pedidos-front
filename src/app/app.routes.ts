@@ -17,6 +17,7 @@ import { RemitoComponent } from './components/remito/remito.component';
 import { RemitosComponent } from './components/remitos/remitos.component';
 import { RemitoImpresoComponent } from './components/impresiones/remito-impreso/remito-impreso.component';
 import { ReciboImpresoComponent } from './components/impresiones/recibo-impreso/recibo-impreso.component';
+import { EstadoCuentaImpresoComponent } from './components/impresiones/estado-cuenta-impreso/estado-cuenta-impreso.component';
 import { DistribuidorasComponent } from './components/distribuidoras/distribuidoras.component';
 import { DistribuidoraComponent } from './components/distribuidora/distribuidora.component';
 import { ConfiguracionRemitoComponent } from './components/configuracion-remito/configuracion-remito.component';
@@ -67,7 +68,8 @@ export const ROUTES: Routes = [
             children: [
                         { path: 'printpedido/:pedidoId', component: PedidoImpresoComponent },
                         { path: 'printremito/:remitoId', component: RemitoImpresoComponent },
-                        { path: 'printrecibo/:remitoId', component: ReciboImpresoComponent }
+                        { path: 'printrecibo/:remitoId', component: ReciboImpresoComponent },
+                        { path: 'printestadocuenta/:comercioId', component: EstadoCuentaImpresoComponent }
             ]
     },
     { path: '**', component: HomeComponent },

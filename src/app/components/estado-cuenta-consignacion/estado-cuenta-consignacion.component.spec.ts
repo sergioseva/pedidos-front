@@ -42,6 +42,7 @@ describe('EstadoCuentaConsignacionComponent', () => {
     printService = {
       imprimirRemito: jasmine.createSpy('imprimirRemito'),
       imprimirRecibo: jasmine.createSpy('imprimirRecibo'),
+      imprimirEstadoCuenta: jasmine.createSpy('imprimirEstadoCuenta'),
       isPrinting: false
     };
 
@@ -292,6 +293,15 @@ describe('EstadoCuentaConsignacionComponent', () => {
       fixture.detectChanges();
 
       expect(fixture.nativeElement.firstElementChild.classList).not.toContain('isPrinting');
+    });
+
+    it('should print the comercio statement with the screen dates', () => {
+      component.fromDate = '2025-01-01';
+      component.toDate = '2025-12-31';
+
+      component.imprimirEstadoCuenta(hotel());
+
+      expect(printService.imprimirEstadoCuenta).toHaveBeenCalledWith(1, '2025-01-01', '2025-12-31');
     });
 
     it('should print a remito by id', () => {

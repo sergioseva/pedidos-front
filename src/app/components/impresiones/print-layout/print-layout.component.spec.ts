@@ -85,6 +85,12 @@ describe('PrintLayoutComponent', () => {
       expect(c.isPedido).toBeFalse();
     });
 
+    it('titles an estado de cuenta without the pedido footer', () => {
+      const c = conUrl('/print/printestadocuenta/1');
+      expect(c.titulo).toBe('ESTADO DE CUENTA');
+      expect(c.isPedido).toBeFalse();
+    });
+
     /** Sin este caso el recibo caia en el default y salia titulado "NOTA DE PEDIDO". */
     it('titles a recibo without the pedido footer', () => {
       const c = conUrl('/print/printrecibo/1');

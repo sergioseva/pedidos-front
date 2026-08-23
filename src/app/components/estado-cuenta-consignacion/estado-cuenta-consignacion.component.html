@@ -96,6 +96,11 @@
             <div class="summary-box" style="min-width: 220px; text-align: center;">
                 {{grupo.unidades}} en la calle — {{formatPrecio(grupo.total)}}
             </div>
+            <button class="btn btn-action-secondary btn-sm"
+                    title="Imprimir el detalle para entregarle al negocio"
+                    (click)="imprimirEstadoCuenta(grupo)">
+                <i class="fa fa-print" style="margin-right: 0.25rem;"></i> Estado de cuenta
+            </button>
             <button class="btn btn-action-secondary btn-sm" (click)="devolverTodo(grupo)">
                 <i class="fa fa-undo" style="margin-right: 0.25rem;"></i> Devolver todo
             </button>
