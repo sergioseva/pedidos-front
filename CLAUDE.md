@@ -46,6 +46,8 @@ The consignment list asks the backend for a shop's **three** movement types at o
 
 Its ten-column grid overflowed its `.container` by 27px with Bootstrap's default `.table` padding — enough for a permanent, annoying horizontal scrollbar and no more. The component tightens the cell padding and caps the column widths rather than hiding columns; the container keeps `overflow-x: auto` as a fallback for genuinely narrow screens. Measured at 0 overflow from 1280px up (`.container` caps at 1140px, so the figure does not change with the viewport).
 
+Prices are editable per row there, saved on blur rather than on every keystroke, and rolled back on screen if the server rejects them. A per-shop button pulls current prices from the catalog and says how many titles found no ISBN match, since those still need editing by hand.
+
 `EstadoCuentaConsignacionComponent` — shown to users as **"Consignaciones Actuales"** (route `consignaciones-actuales`) — is where copies are marked sold/returned and settled. The class and the backend endpoint still say *estado de cuenta*; the UI wording was changed because it read like a cash statement. After settling it **re-reads the balance from the server** rather than subtracting locally, and the server validates against the real balance anyway.
 
 ### Printing

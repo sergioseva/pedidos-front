@@ -30,6 +30,9 @@ describe('EstadoCuentaConsignacionComponent', () => {
   beforeEach(waitForAsync(() => {
     remitosService = {
       estadoCuentaConsignacion: jasmine.createSpy('estadoCuentaConsignacion').and.returnValue(of(filas)),
+      actualizarPrecioConsignacion: jasmine.createSpy('actualizarPrecioConsignacion').and.returnValue(of({})),
+      actualizarPreciosDesdeCatalogo: jasmine.createSpy('actualizarPreciosDesdeCatalogo')
+        .and.returnValue(of({ actualizados: 3, sinCoincidencia: 0 })),
       liquidarConsignacion: jasmine.createSpy('liquidarConsignacion').and.returnValue(
         of({ remitoRetiroId: 10, remitoVentaId: 11, reciboId: 12, totalTapa: 3000, comision: 20, netoAPagar: 2400 }))
     };
@@ -156,6 +159,85 @@ describe('EstadoCuentaConsignacionComponent', () => {
       component.devolverTodo(hotel());
       component.limpiarMarcas(hotel());
       expect(component.hayMarcas(hotel())).toBe(false);
+    });
+  });
+
+  describe('precios editables', () => {
+    it('should send the new price for that title', () => {
+      component.cambiarPrecio(hotel(), principito(), 2500);
+
+      expect(remitosService.actualizarPrecioConsignacion)
+        .toHaveBeenCalledWith(1, principito().isbn, 'El Principito', 2500);
+    });
+
+    it('should revalue the row and the group total', () => {
+      component.cambiarPrecio(hotel(), principito(), 2000);
+
+      expect(principito().precio).toBe(2000);
+      expect(principito().subtotal).toBe(10000);
+      expect(hotel().total).toBe(16000);
+    });
+
+    it('should ignore a price that did not change', () => {
+      component.cambiarPrecio(hotel(), principito(), principito().precio);
+
+      expect(remitosService.actualizarPrecioConsignacion).not.toHaveBeenCalled();
+    });
+
+    it('should reject a negative price without calling the server', () => {
+      component.cambiarPrecio(hotel(), principito(), -100);
+
+      expect(remitosService.actualizarPrecioConsignacion).not.toHaveBeenCalled();
+    });
+
+    /** La pantalla no puede quedar mostrando un precio que el servidor no acepto. */
+    it('should roll the row back when the server rejects it', () => {
+      remitosService.actualizarPrecioConsignacion.and.returnValue(
+        throwError(() => ({ error: { message: 'no' } })));
+
+      component.cambiarPrecio(hotel(), principito(), 9999);
+
+      expect(principito().precio).toBe(1000);
+      expect(principito().subtotal).toBe(5000);
+      expect(hotel().total).toBe(11000);
+    });
+  });
+
+  describe('precios del catalogo', () => {
+    it('should pull prices for that comercio and reload', () => {
+      remitosService.estadoCuentaConsignacion.calls.reset();
+
+      component.actualizarPreciosDesdeCatalogo(hotel());
+
+      expect(remitosService.actualizarPreciosDesdeCatalogo).toHaveBeenCalledWith(1);
+      expect(remitosService.estadoCuentaConsignacion).toHaveBeenCalled();
+      expect(component.actualizandoPrecios).toBe(false);
+    });
+
+    /** Los que no matchean por ISBN hay que corregirlos a mano: no se puede callar el dato. */
+    it('should report the titles left without a catalog match', () => {
+      remitosService.actualizarPreciosDesdeCatalogo.and.returnValue(
+        of({ actualizados: 2, sinCoincidencia: 5 }));
+
+      component.actualizarPreciosDesdeCatalogo(hotel());
+
+      expect(component.actualizandoPrecios).toBe(false);
+    });
+
+    it('should ignore a second click while one pull is running', () => {
+      component.actualizandoPrecios = true;
+
+      component.actualizarPreciosDesdeCatalogo(hotel());
+
+      expect(remitosService.actualizarPreciosDesdeCatalogo).not.toHaveBeenCalled();
+    });
+
+    it('should clear the flag when the pull fails', () => {
+      remitosService.actualizarPreciosDesdeCatalogo.and.returnValue(throwError(() => ({ status: 500 })));
+
+      component.actualizarPreciosDesdeCatalogo(hotel());
+
+      expect(component.actualizandoPrecios).toBe(false);
     });
   });
 

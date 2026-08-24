@@ -78,6 +78,17 @@ export class RemitosService {
     return this.chttp.getBlob(`${this.URLRemitosService}/consignacion/estadocuenta/reporte?${params}`);
   }
 
+  /** Precio nuevo para un titulo en consignacion. No toca el remito de entrega ya emitido. */
+  actualizarPrecioConsignacion(comercioId: number, isbn: string, nombreLibro: string, precio: number) {
+    return this.chttp.put(`${this.URLRemitosService}/consignacion/precio`,
+      { comercioId, isbn, nombreLibro, precio });
+  }
+
+  /** Trae del catalogo los precios vigentes; devuelve cuantos titulos no tuvieron coincidencia. */
+  actualizarPreciosDesdeCatalogo(comercioId: number) {
+    return this.chttp.post(`${this.URLRemitosService}/consignacion/${comercioId}/precios`, {});
+  }
+
   changeRemito(remito: RemitoModel) {
     this.remitosSource.next(remito);
   }

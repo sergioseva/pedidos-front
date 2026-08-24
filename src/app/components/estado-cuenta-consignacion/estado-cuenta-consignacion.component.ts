@@ -48,6 +48,7 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
   medioPago = 'Efectivo';
   liquidando = false;
   descargando = false;
+  actualizandoPrecios = false;
   modalRef: BsModalRef;
   /**
    * Los comprobantes de la ultima liquidacion se ofrecen desde la pantalla, no desde el modal.
@@ -150,6 +151,66 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
 
   limpiarMarcas(grupo: GrupoComercio) {
     grupo.filas.forEach(f => { f.vendidos = 0; f.devueltos = 0; });
+  }
+
+  // --- Precios ---
+
+  /**
+   * Guarda el precio al salir del campo, no en cada tecla. El precio nuevo queda en la entrega
+   * como valor vigente pero sin pisar el original, asi que el remito ya emitido no cambia.
+   */
+  cambiarPrecio(grupo: GrupoComercio, fila: FilaLiquidable, precio: number) {
+    const nuevo = Number(precio);
+    if (!(nuevo >= 0) || nuevo === fila.precio) {
+      fila.precio = fila.precio;
+      return;
+    }
+    const anterior = fila.precio;
+    fila.precio = nuevo;
+    fila.subtotal = fila.cantidad * nuevo;
+
+    this.rs.actualizarPrecioConsignacion(grupo.comercioId, fila.isbn, fila.nombreLibro, nuevo).subscribe(
+      () => this.recalcularGrupo(grupo),
+      (err) => {
+        // Si el servidor lo rechaza, la pantalla no puede quedar mostrando un precio que no se guardo.
+        fila.precio = anterior;
+        fila.subtotal = fila.cantidad * anterior;
+        this.recalcularGrupo(grupo);
+        Swal.fire({
+          title: 'Precio',
+          text: (err.error && err.error.message) || 'No se pudo actualizar el precio',
+          icon: 'error'
+        });
+      });
+  }
+
+  actualizarPreciosDesdeCatalogo(grupo: GrupoComercio) {
+    if (this.actualizandoPrecios) {
+      return;
+    }
+    this.actualizandoPrecios = true;
+    this.rs.actualizarPreciosDesdeCatalogo(grupo.comercioId).subscribe(
+      (r: any) => {
+        this.actualizandoPrecios = false;
+        this.buscar();
+        Swal.fire({
+          title: 'Precios',
+          html: `Se actualizaron <strong>${r.actualizados}</strong> titulos desde el catalogo.` +
+            (r.sinCoincidencia > 0
+              ? `<br><br>Quedaron <strong>${r.sinCoincidencia}</strong> sin coincidencia de ISBN` +
+                ' en el catalogo: esos hay que corregirlos a mano.'
+              : ''),
+          icon: r.sinCoincidencia > 0 ? 'warning' : 'success'
+        });
+      },
+      () => {
+        this.actualizandoPrecios = false;
+        Swal.fire({ title: 'Precios', text: 'No se pudieron actualizar', icon: 'error' });
+      });
+  }
+
+  private recalcularGrupo(grupo: GrupoComercio) {
+    grupo.total = grupo.filas.reduce((acc, f) => acc + (f.subtotal || 0), 0);
   }
 
   // --- Totales de lo marcado ---

@@ -97,6 +97,13 @@
                 {{grupo.unidades}} en la calle — {{formatPrecio(grupo.total)}}
             </div>
             <button class="btn btn-action-secondary btn-sm"
+                    [disabled]="actualizandoPrecios"
+                    title="Traer del catalogo los precios vigentes"
+                    (click)="actualizarPreciosDesdeCatalogo(grupo)">
+                <i class="fa fa-refresh" style="margin-right: 0.25rem;"></i>
+                {{ actualizandoPrecios ? 'Actualizando...' : 'Precios del catalogo' }}
+            </button>
+            <button class="btn btn-action-secondary btn-sm"
                     title="Imprimir el detalle para entregarle al negocio"
                     (click)="imprimirEstadoCuenta(grupo)">
                 <i class="fa fa-print" style="margin-right: 0.25rem;"></i> Detalle para el negocio
@@ -133,7 +140,7 @@
                         <th scope="col" class="text-right">Devuelto</th>
                         <th scope="col" class="text-right">Vendido</th>
                         <th scope="col" class="text-right">En la calle</th>
-                        <th scope="col" class="text-right">Precio</th>
+                        <th scope="col" class="col-precio text-right">Precio</th>
                         <th scope="col" class="col-input">Vender</th>
                         <th scope="col" class="col-input">Devolver</th>
                     </tr>
@@ -147,7 +154,12 @@
                         <td class="text-right text-muted">{{fila.devuelto}}</td>
                         <td class="text-right text-muted">{{fila.vendido}}</td>
                         <td class="text-right" style="font-weight: 600;">{{fila.cantidad}}</td>
-                        <td class="text-right">{{formatPrecio(fila.precio)}}</td>
+                        <td>
+                            <input type="number" min="0" step="0.01"
+                                   class="form-control form-control-sm text-right"
+                                   [ngModel]="fila.precio"
+                                   (change)="cambiarPrecio(grupo, fila, $any($event.target).value)">
+                        </td>
                         <td>
                             <input type="number" class="form-control form-control-sm text-right"
                                    min="0" [max]="maxVendidos(fila)"
