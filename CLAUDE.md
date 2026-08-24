@@ -96,6 +96,12 @@ CHROME_BIN=/usr/bin/google-chrome npx ng test --watch=false --browsers=ChromeHea
 
 Build expectations from dates in **local** time, never `toISOString()` — the components format with `DatePipe`, which is local by design (a till report's "Hoy" must mean today in the shop). Comparing a local value against a UTC expectation makes tests fail every evening after 21:00 in UTC-3.
 
+## Forms that create records
+
+`ComercioComponent`, `DistribuidoraComponent` and `ClienteComponent` guard against double submission with a `guardando` flag that both disables the button and short-circuits a re-entrant `onSubmit`. Without it the button was only disabled by an invalid form, never while the request was in flight, so two clicks — or Enter followed by the button — created two records. It never showed up locally because the response comes back instantly; over the network that window is hundreds of milliseconds and there was no spinner to suggest anything was happening. Any new create form needs the same guard.
+
+`UsuarioComponent` is safe by accident: it opens a blocking SweetAlert before firing. `ConfiguracionRemitoComponent` updates a single row, so it cannot duplicate.
+
 ## Linting Rules
 
 ESLint with `@angular-eslint` and `@typescript-eslint`. Config in `.eslintrc.json`.

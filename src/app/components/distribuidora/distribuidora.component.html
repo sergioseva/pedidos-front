@@ -33,8 +33,8 @@
 
                     <div class="row" style="margin-top: 1.5rem;">
                         <div class="col-6">
-                            <button [disabled]="!forma.valid" class="btn btn-action btn-block" type="submit">
-                                <i class="fa fa-save" style="margin-right: 0.25rem;"></i> Guardar
+                            <button [disabled]="!forma.valid || guardando" class="btn btn-action btn-block" type="submit">
+                                <i class="fa fa-save" style="margin-right: 0.25rem;"></i> {{ guardando ? 'Guardando...' : 'Guardar' }}
                             </button>
                         </div>
                         <div class="col-6">

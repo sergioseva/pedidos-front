@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 export class ClienteComponent implements OnInit {
   cliente: ClienteModel; 
   forma: FormGroup;
+  guardando = false;
   id: any;
   href: string;
   headerText = 'Nuevo Cliente';
@@ -69,7 +70,17 @@ export class ClienteComponent implements OnInit {
     console.log(this.forma);
   }
 
-  onSubmit(){
+  /**
+   * Un envio a la vez. El boton solo se deshabilitaba por formulario invalido, nunca mientras la
+   * peticion viajaba, asi que dos clics -- o Enter y despues el boton -- creaban dos registros.
+   * En local no se notaba porque la respuesta vuelve al instante; sobre la red esa ventana dura
+   * cientos de milisegundos y encima sin ningun indicador de que algo estaba pasando.
+   */
+  onSubmit() {
+    if (this.guardando) {
+      return;
+    }
+    this.guardando = true;
     this.cliente = this.forma.value;
     let peticion: Observable<any>;
 
@@ -80,6 +91,7 @@ export class ClienteComponent implements OnInit {
     }
 
     peticion.subscribe( resp => {
+      this.guardando = false;
       Swal.fire({
         title: 'CLiente',
         text: `Se procesó correctamente`,
@@ -87,7 +99,8 @@ export class ClienteComponent implements OnInit {
       });
       this.router.navigate(['/clientes']);
     },
-    errr=> {
+    errr => {
+        this.guardando = false;
       Swal.fire({
         title: 'Cliente',
         text: `Error al procesar la operacion`,
