@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-6">Recibo N°: {{ recibo?.rc_recibo_k }}</div>
             <div class="col-6 text-right">
-                Fecha: {{ recibo?.rc_fecha | date:'mediumDate':'+0300': 'es-AR' }}
+                Fecha: {{ recibo?.rc_fecha | date:'mediumDate':'-0300': 'es-AR' }}
             </div>
         </div>
         <hr>

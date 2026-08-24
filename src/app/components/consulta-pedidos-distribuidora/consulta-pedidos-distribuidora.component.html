@@ -84,7 +84,7 @@
         <tbody>
             <tr *ngFor="let pedido of filteredPedidos">
                 <td>{{pedido.distribuidora?.descripcion}}</td>
-                <td>{{pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
+                <td>{{pedido.fecha | date:'mediumDate':'-0300': 'es-AR' }}</td>
                 <td style="text-align: center;">
                     <i *ngIf="pedido.realizado" class="fa fa-check-circle" style="color: #16a34a;"></i>
                     <i *ngIf="!pedido.realizado" class="fa fa-clock-o" style="color: #d97706;"></i>
@@ -142,7 +142,7 @@
                     <strong>Cliente:</strong> {{pedidoDetalle.cliente?.nombre}}
                 </div>
                 <div class="col-md-3">
-                    <strong>Fecha:</strong> {{pedidoDetalle.fecha | date:'mediumDate':'+0300':'es-AR'}}
+                    <strong>Fecha:</strong> {{pedidoDetalle.fecha | date:'mediumDate':'-0300':'es-AR'}}
                 </div>
                 <div class="col-md-2">
                     <strong>Total:</strong> $ {{pedidoDetalle.total | number:'1.0-0':'es-AR'}}

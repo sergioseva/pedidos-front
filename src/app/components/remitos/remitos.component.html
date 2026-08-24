@@ -103,7 +103,7 @@
                     <span class="badge" [ngClass]="claseTipo(remito)">{{etiquetaTipo(remito)}}</span>
                 </td>
                 <td>{{destinatario(remito)}}</td>
-                <td>{{remito.re_fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
+                <td>{{remito.re_fecha | date:formatoFecha:'-0300': 'es-AR' }}</td>
                 <td>{{remito.re_observaciones}}</td>
                 <td>
                     <ul style="margin: 0; padding-left: 1rem;">

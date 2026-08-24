@@ -21,7 +21,7 @@
 <ng-template #remitoTemplate>
     <div class="remito-page">
         <div class="row">
-            <div class="col-4">Fecha: {{ remito?.re_fecha | date:'mediumDate':'+0300': 'es-AR' }}</div>
+            <div class="col-4">Fecha: {{ remito?.re_fecha | date:'mediumDate':'-0300': 'es-AR' }}</div>
             <div class="col-4">Remito: {{ remitoId }}</div>
             <div class="col-4">{{ titulo }}</div>
         </div>

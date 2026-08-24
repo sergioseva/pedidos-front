@@ -87,7 +87,7 @@
                     </button>
                 </td>
                 <td>{{pedido.cliente.nombre}}</td>
-                <td>{{pedido.fecha | date:'mediumDate':'+0300': 'es-AR' }}</td>
+                <td>{{pedido.fecha | date:'mediumDate':'-0300': 'es-AR' }}</td>
                 <td align="right">$ {{pedido.total | number:'1.0-0':'es-AR'}}</td>
                 <td align="right">$ {{pedido.senia | number:'1.0-0':'es-AR'}}</td>
                 <td>{{pedido.observaciones}}</td>
@@ -141,7 +141,7 @@
                     <strong>Cliente:</strong> {{pedidoDetalle.cliente?.nombre}}
                 </div>
                 <div class="col-md-3">
-                    <strong>Fecha:</strong> {{pedidoDetalle.fecha | date:'mediumDate':'+0300':'es-AR'}}
+                    <strong>Fecha:</strong> {{pedidoDetalle.fecha | date:'mediumDate':'-0300':'es-AR'}}
                 </div>
                 <div class="col-md-2">
                     <strong>Total:</strong> $ {{pedidoDetalle.total | number:'1.0-0':'es-AR'}}

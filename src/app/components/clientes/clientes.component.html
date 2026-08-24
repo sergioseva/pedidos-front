@@ -43,8 +43,8 @@
             <td>{{cliente.telefonoMovil}}</td>
             <td>{{cliente.telefonoFijo}}</td>
             <td>{{cliente.email}}</td>
-            <td>{{cliente.createdAt | date:'short':'+0300':'es-AR'}}</td>
-            <td>{{cliente.updatedAt | date:'short':'+0300':'es-AR'}}</td>
+            <td>{{cliente.createdAt | date:'short':'-0300':'es-AR'}}</td>
+            <td>{{cliente.updatedAt | date:'short':'-0300':'es-AR'}}</td>
             <td>
                 <div class="table-actions">
                     <button title="Modificar" [routerLink]="['/cliente', cliente.id]" type="button" class="btn btn-icon">

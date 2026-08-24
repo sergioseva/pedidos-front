@@ -75,7 +75,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let d of porDia">
-                    <td>{{ d.fecha | date:'mediumDate':'+0300':'es-AR' }}</td>
+                    <td>{{ d.fecha | date:'mediumDate':'-0300':'es-AR' }}</td>
                     <td class="text-right">{{ d.cantidadVentas | number:'1.0-0':'es-AR' }}</td>
                     <td class="text-right">{{ d.unidades | number:'1.0-0':'es-AR' }}</td>
                     <td class="text-right">$ {{ d.total | number:'1.0-0':'es-AR' }}</td>
@@ -105,7 +105,7 @@
             <tbody>
                 <tr *ngFor="let v of ventas">
                     <td>{{ v.id }}</td>
-                    <td>{{ v.fecha | date:'short':'+0300':'es-AR' }}</td>
+                    <td>{{ v.fecha | date:'short':'-0300':'es-AR' }}</td>
                     <td>{{ v.cliente?.nombre ?? '—' }}</td>
                     <td>{{ v.usuario ?? '—' }}</td>
                     <td class="text-right">{{ unidades(v) }}</td>
@@ -137,7 +137,7 @@
     </div>
     <div class="modal-body">
         <p class="text-hint">
-            {{ ventaSeleccionada?.fecha | date:'medium':'+0300':'es-AR' }}
+            {{ ventaSeleccionada?.fecha | date:'medium':'-0300':'es-AR' }}
             <span *ngIf="ventaSeleccionada?.cliente"> — {{ ventaSeleccionada?.cliente?.nombre }}</span>
             <span *ngIf="ventaSeleccionada?.usuario"> — vendio {{ ventaSeleccionada?.usuario }}</span>
         </p>

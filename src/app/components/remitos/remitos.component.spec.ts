@@ -13,6 +13,10 @@ import { mockBsModalService } from '../../testing/test-helpers';
 import { TIPO_CONSIGNACION, TIPO_DEVOLUCION, TIPO_RETIRO,
          TIPO_VENTA_CONSIGNACION } from '../../models/remito.model';
 import { of, throwError } from 'rxjs';
+import { registerLocaleData } from '@angular/common';
+import localeAr from '@angular/common/locales/es-AR';
+
+registerLocaleData(localeAr);
 
 describe('RemitosComponent', () => {
   let component: RemitosComponent;
@@ -181,6 +185,38 @@ describe('RemitosComponent', () => {
       expect(component.destinatario(remito)).toBe('Hotel Costa Azul');
       expect(component.labelDestinatario).toBe('Negocio');
       expect(component.columnaDestinatario).toBe('re_comercio_cm.descripcion');
+    });
+  });
+
+  describe('fecha y hora', () => {
+    beforeEach(() => {
+      configurar(TIPO_CONSIGNACION);
+    });
+
+    it('should include the time on consignment movements', () => {
+      expect(component.formatoFecha).toBe('dd/MM/yyyy HH:mm');
+    });
+
+    it('should keep just the date on devoluciones', () => {
+      configurar(TIPO_DEVOLUCION);
+      expect(component.formatoFecha).toBe('mediumDate');
+    });
+
+    /**
+     * La fecha viaja como instante UTC y se mostraba con zona '+0300' en vez de '-0300', asi que
+     * salia 6 horas adelantada: un remito de las 21:30 aparecia como del dia siguiente. Con solo
+     * la fecha a la vista casi no se notaba; al mostrar la hora salta enseguida.
+     */
+    it('should render the instant in Argentina time, not six hours ahead', () => {
+      // 2026-08-23T00:30:00Z son las 21:30 del 22 en Argentina.
+      component.remitos = [{ re_remito_k: 1, re_fecha: '2026-08-23T00:30:00.000+00:00',
+                             re_comercio_cm: { descripcion: 'X' }, items: [] }];
+      component.applySort();
+      fixture.detectChanges();
+
+      const celdas = fixture.nativeElement.querySelectorAll('tbody td');
+      const textos = Array.from(celdas).map((c: any) => c.textContent.trim());
+      expect(textos).toContain('22/08/2026 21:30');
     });
   });
 

@@ -69,6 +69,14 @@ export class RemitosComponent implements OnInit {
     return this.esConsignacion ? 'Consulta de Remitos de Consignacion' : 'Consulta de Remitos de Devolucion';
   }
 
+  /**
+   * La consignacion muestra la hora: un mismo dia puede tener la entrega, el retiro y la venta
+   * del mismo negocio, y sin la hora no hay forma de saber en que orden pasaron.
+   */
+  get formatoFecha(): string {
+    return this.esConsignacion ? 'dd/MM/yyyy HH:mm' : 'mediumDate';
+  }
+
   get labelDestinatario(): string {
     return this.esConsignacion ? 'Negocio' : 'Distribuidora';
   }

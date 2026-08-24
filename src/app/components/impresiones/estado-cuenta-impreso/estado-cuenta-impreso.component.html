@@ -4,7 +4,7 @@
 <ng-template #estadoTemplate>
     <div class="estado-page">
         <div class="row">
-            <div class="col-6">Fecha: {{ fechaEmision | date:'mediumDate':'+0300': 'es-AR' }}</div>
+            <div class="col-6">Fecha: {{ fechaEmision | date:'mediumDate':'-0300': 'es-AR' }}</div>
             <div class="col-6 text-right">De: {{ remitente | uppercase }}</div>
         </div>
         <hr>

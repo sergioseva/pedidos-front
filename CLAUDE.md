@@ -96,6 +96,12 @@ CHROME_BIN=/usr/bin/google-chrome npx ng test --watch=false --browsers=ChromeHea
 
 Build expectations from dates in **local** time, never `toISOString()` — the components format with `DatePipe`, which is local by design (a till report's "Hoy" must mean today in the shop). Comparing a local value against a UTC expectation makes tests fail every evening after 21:00 in UTC-3.
 
+## Dates
+
+The API sends dates as ISO instants with an explicit offset (`2026-08-23T00:30:00.000+00:00`), so the `date` pipe must be given **`'-0300'`** — Argentina is UTC−3. Every template said `'+0300'`, which rendered six hours ahead: anything created after 21:00 showed the next day's date, and the screens that print a time (ventas, clientes) showed the wrong hour outright. It went unnoticed for a long time because with only a date on screen it is wrong just a few hours a day.
+
+The consignment remito list shows date **and** time (`formatoFecha`): one day can hold a shop's delivery, pickup and sale, and without the hour there is no way to tell what happened first.
+
 ## Forms that create records
 
 `ComercioComponent`, `DistribuidoraComponent` and `ClienteComponent` guard against double submission with a `guardando` flag that both disables the button and short-circuits a re-entrant `onSubmit`. Without it the button was only disabled by an invalid form, never while the request was in flight, so two clicks — or Enter followed by the button — created two records. It never showed up locally because the response comes back instantly; over the network that window is hundreds of milliseconds and there was no spinner to suggest anything was happening. Any new create form needs the same guard.
