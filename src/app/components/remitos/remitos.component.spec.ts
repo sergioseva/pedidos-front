@@ -193,15 +193,6 @@ describe('RemitosComponent', () => {
       configurar(TIPO_CONSIGNACION);
     });
 
-    it('should include the time on consignment movements', () => {
-      expect(component.formatoFecha).toBe('dd/MM/yyyy HH:mm');
-    });
-
-    it('should keep just the date on devoluciones', () => {
-      configurar(TIPO_DEVOLUCION);
-      expect(component.formatoFecha).toBe('mediumDate');
-    });
-
     /**
      * La fecha viaja como instante UTC y se mostraba con zona '+0300' en vez de '-0300', asi que
      * salia 6 horas adelantada: un remito de las 21:30 aparecia como del dia siguiente. Con solo
@@ -216,6 +207,18 @@ describe('RemitosComponent', () => {
 
       const celdas = fixture.nativeElement.querySelectorAll('tbody td');
       const textos = Array.from(celdas).map((c: any) => c.textContent.trim());
+      expect(textos).toContain('22/08/2026 21:30');
+    });
+
+    it('should show the time on devoluciones too', () => {
+      configurar(TIPO_DEVOLUCION);
+      component.remitos = [{ re_remito_k: 1, re_fecha: '2026-08-23T00:30:00.000+00:00',
+                             re_distribuidora_ed: { descripcion: 'D' }, items: [] }];
+      component.applySort();
+      fixture.detectChanges();
+
+      const textos = Array.from(fixture.nativeElement.querySelectorAll('tbody td'))
+        .map((c: any) => c.textContent.trim());
       expect(textos).toContain('22/08/2026 21:30');
     });
   });

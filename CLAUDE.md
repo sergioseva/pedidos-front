@@ -100,7 +100,7 @@ Build expectations from dates in **local** time, never `toISOString()` — the c
 
 The API sends dates as ISO instants with an explicit offset (`2026-08-23T00:30:00.000+00:00`), so the `date` pipe must be given **`'-0300'`** — Argentina is UTC−3. Every template said `'+0300'`, which rendered six hours ahead: anything created after 21:00 showed the next day's date, and the screens that print a time (ventas, clientes) showed the wrong hour outright. It went unnoticed for a long time because with only a date on screen it is wrong just a few hours a day.
 
-The consignment remito list shows date **and** time (`formatoFecha`): one day can hold a shop's delivery, pickup and sale, and without the hour there is no way to tell what happened first.
+The remito and pedido lists show date **and** time (`dd/MM/yyyy HH:mm`): one day can hold a shop's delivery, pickup and sale, and without the hour there is no way to tell what happened first. Both `pe_fecha` and `re_fecha` store a real timestamp, so the hour is meaningful and not a row of `00:00`.
 
 ## Forms that create records
 
