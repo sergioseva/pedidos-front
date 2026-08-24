@@ -18,15 +18,21 @@
  * fuente y se aprieta el interlineado solo en este documento, que es una tabla de datos para
  * cotejar, no un texto para leer de corrido.
  */
-.estado-page,
-.estado-page .table {
+.estado-page {
     font-size: 0.72rem;
 }
 
+/*
+ * El font-size va en las celdas, no en la tabla: styles.css define `.table td { font-size }` y
+ * una regla que matchea el elemento le gana siempre a un valor heredado del contenedor, tenga
+ * la especificidad que tenga. Puesto arriba, el cuerpo no se achicaba y solo hacian efecto el
+ * padding y el interlineado.
+ */
 .estado-page .table th,
 .estado-page .table td {
-    padding: 0.15rem 0.3rem;
-    line-height: 1.15;
+    font-size: 0.62rem;
+    padding: 0.12rem 0.25rem;
+    line-height: 1.12;
 }
 
 /*
