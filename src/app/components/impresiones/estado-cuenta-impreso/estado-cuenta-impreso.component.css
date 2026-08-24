@@ -12,25 +12,55 @@
     padding: 1rem;
 }
 
+/*
+ * El listado suele tener decenas de titulos y con el cuerpo y el padding que bootstrap le da a
+ * .table cada renglon ocupaba mucho: el detalle se estiraba varias hojas de mas. Se achica la
+ * fuente y se aprieta el interlineado solo en este documento, que es una tabla de datos para
+ * cotejar, no un texto para leer de corrido.
+ */
+.estado-page,
+.estado-page .table {
+    font-size: 0.72rem;
+}
+
+.estado-page .table th,
+.estado-page .table td {
+    padding: 0.15rem 0.3rem;
+    line-height: 1.15;
+}
+
+/*
+ * Los importes y las cantidades no se parten: partidos gastaban un renglon entero de alto para
+ * mostrar "$ 24.000" en dos lineas, y de paso le robaban ancho al titulo, que entonces tambien
+ * se partia. Fijarlos en una linea deja que el titulo use el espacio que sobra.
+ */
+.estado-page .table .text-right {
+    white-space: nowrap;
+}
+
+.estado-page hr {
+    margin: 0.4rem 0;
+}
+
 .text-right {
     text-align: right;
 }
 
 .leyenda {
-    margin-top: 1rem;
-    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-size: 0.68rem;
 }
 
 .firma-row {
     display: flex;
     gap: 2rem;
-    margin-top: 3rem;
+    margin-top: 2rem;
 }
 
 .firma-box {
     flex: 1;
     border-top: 1px solid #000;
     padding-top: 0.25rem;
-    font-size: 0.75rem;
+    font-size: 0.68rem;
     text-align: center;
 }
