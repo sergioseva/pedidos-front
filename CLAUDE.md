@@ -104,6 +104,8 @@ A remito in progress is persisted to `localStorage` so closing the screen does n
 
 What gets stored is the rule that drives the whole lifecycle: an empty or finalized remito **erases** its draft, so saving and starting over clean up on their own with no extra code. Drafts are keyed by `re_tipo`, otherwise walking into the consignment screen would restore a devolución.
 
+The draft is kept in **two places**: `localStorage` written on every change, and the server debounced 1.5s behind it (`PUT /remitos/borrador`, one row per user and tipo). Browser-only was not enough — a browser set to clear site data on close loses it, and it never follows the operator to another machine. On restore both copies are read and the **newer wins**: neither is reliably ahead, since the server lags by the debounce and the browser copy can be stale or from another machine.
+
 Recovery is announced on screen with a discard button. Restoring silently would leave the operator unsure whether the items are stale, and reiniciar now asks before throwing away a loaded remito. Storage failures are swallowed: the draft is a convenience and must never block the load.
 
 ## Dates

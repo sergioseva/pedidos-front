@@ -98,7 +98,8 @@ export class RemitoComponent implements OnInit, OnDestroy {
     });
     // El remito vive en un BehaviorSubject compartido, asi que hay que reiniciarlo al entrar
     // para no arrastrar el de la otra pantalla. Si quedo una carga a medias, se recupera.
-    this.itemsRecuperados = this.remitosService.restaurarBorrador(this.tipo);
+    this.remitosService.restaurarBorrador(this.tipo)
+      .subscribe(recuperados => this.itemsRecuperados = recuperados);
     this.cargarDestinatarios();
     this.filterSubscription = this.filterSubject.pipe(
       debounceTime(400)

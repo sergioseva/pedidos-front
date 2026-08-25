@@ -51,7 +51,7 @@ describe('RemitoComponent', () => {
     remitosService = {
       currentRemito: of(new RemitoModel()),
       generarNuevoRemito: jasmine.createSpy('generarNuevoRemito'),
-      restaurarBorrador: jasmine.createSpy('restaurarBorrador').and.returnValue(0),
+      restaurarBorrador: jasmine.createSpy('restaurarBorrador').and.returnValue(of(0)),
       removeRemitoItem: jasmine.createSpy('removeRemitoItem'),
       addRemitoItem: jasmine.createSpy('addRemitoItem'),
       asignarDatos: jasmine.createSpy('asignarDatos'),
@@ -160,7 +160,7 @@ describe('RemitoComponent', () => {
 
     /** Restaurar en silencio haria dudar de si los items son viejos: hay que avisarlo. */
     it('should report how many items came back', () => {
-      remitosService.restaurarBorrador.and.returnValue(7);
+      remitosService.restaurarBorrador.and.returnValue(of(7));
 
       configurar(TIPO_DEVOLUCION);
 

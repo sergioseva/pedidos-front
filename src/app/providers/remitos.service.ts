@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CustomHttpClientService } from '../services/custom-http-client.service';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
+import { catchError, debounceTime, map } from 'rxjs/operators';
 import { RemitoModel, TIPO_DEVOLUCION } from '../models/remito.model';
 import { RemitoItemModel } from '../models/remito-item.model';
 import { ConfigService } from './config.service';
@@ -18,6 +19,7 @@ export class RemitosService {
   private URLRemitosService = '/api/remitos';
   private remitosSource = new BehaviorSubject(new RemitoModel());
   currentRemito = this.remitosSource.asObservable();
+  private borradorPendiente = new Subject<RemitoModel>();
 
   constructor(private chttp: CustomHttpClientService,
               private config: ConfigService) {
@@ -25,6 +27,10 @@ export class RemitosService {
     // Toda mutacion del remito termina emitiendo aca, asi que persistir en la emision cubre
     // agregar, borrar y cambiar cantidades sin tener que acordarse en cada metodo.
     this.currentRemito.subscribe(remito => this.guardarBorrador(remito));
+    // El servidor se actualiza con un respiro: una carga de decenas de libros no puede disparar
+    // una peticion por tecla. El localStorage ya cubrio el instante.
+    this.borradorPendiente.pipe(debounceTime(1500))
+      .subscribe(remito => this.sincronizarBorrador(remito));
   }
 
   private claveBorrador(tipo: string): string {
@@ -51,26 +57,73 @@ export class RemitosService {
     } catch (e) {
       // Sin espacio o storage bloqueado: el borrador es una comodidad y no puede romper la carga.
     }
+    this.borradorPendiente.next(remito);
   }
 
   /**
-   * Arranca la pantalla con lo que haya quedado sin terminar. Devuelve cuantos items se
-   * recuperaron, para poder avisarlo: restaurar en silencio haria dudar de si son items viejos.
+   * Copia del borrador en el servidor, que es la que sobrevive a que el navegador limpie sus
+   * datos y la que acompana al operador si cambia de maquina.
    */
-  restaurarBorrador(tipo: string = TIPO_DEVOLUCION): number {
-    const remito = new RemitoModel(tipo);
+  private sincronizarBorrador(remito: RemitoModel) {
+    const url = `${this.URLRemitosService}/borrador`;
+    if (remito.finalizado || !remito.items.length) {
+      this.chttp.delete(`${url}?tipo=${remito.re_tipo}`).subscribe({ error: () => null });
+      return;
+    }
+    const contenido = JSON.stringify({ items: remito.items, guardadoEn: new Date().toISOString() });
+    this.chttp.put(url, { tipo: remito.re_tipo, contenido }).subscribe({ error: () => null });
+  }
+
+  /**
+   * Arranca la pantalla con lo que haya quedado sin terminar. Emite cuantos items se recuperaron,
+   * para poder avisarlo: restaurar en silencio haria dudar de si son items viejos.
+   *
+   * Mira las dos copias y se queda con la mas reciente. Ninguna es siempre la buena: el servidor
+   * puede estar un instante atras porque la sincronizacion espera, y el navegador puede haber
+   * perdido la suya al cerrarse o ser de otra maquina.
+   */
+  restaurarBorrador(tipo: string = TIPO_DEVOLUCION): Observable<number> {
+    const local = this.leerBorradorLocal(tipo);
+    return this.chttp.get(`${this.URLRemitosService}/borrador?tipo=${tipo}`).pipe(
+      map((respuesta: any) => this.parsearBorrador(respuesta && respuesta.contenido)),
+      catchError(() => of(null)),
+      map(remoto => {
+        const elegido = this.masReciente(local, remoto);
+        const remito = new RemitoModel(tipo);
+        remito.items = elegido ? elegido.items : [];
+        this.remitosSource.next(remito);
+        return remito.items.length;
+      })
+    );
+  }
+
+  private leerBorradorLocal(tipo: string): { items: RemitoItemModel[], guardadoEn: string } {
     try {
-      const crudo = localStorage.getItem(this.claveBorrador(tipo));
-      if (crudo) {
-        const datos = JSON.parse(crudo);
-        remito.items = (datos.items || []).map(i => Object.assign(new RemitoItemModel(), i));
-      }
+      return this.parsearBorrador(localStorage.getItem(this.claveBorrador(tipo)));
+    } catch (e) {
+      try { localStorage.removeItem(this.claveBorrador(tipo)); } catch (e2) { /* ignorado */ }
+      return null;
+    }
+  }
+
+  private parsearBorrador(crudo: string): { items: RemitoItemModel[], guardadoEn: string } {
+    if (!crudo) {
+      return null;
+    }
+    try {
+      const datos = JSON.parse(crudo);
+      const items = (datos.items || []).map(i => Object.assign(new RemitoItemModel(), i));
+      return items.length ? { items, guardadoEn: datos.guardadoEn || '' } : null;
     } catch (e) {
       // Un borrador ilegible no sirve de nada y no puede impedir empezar uno nuevo.
-      try { localStorage.removeItem(this.claveBorrador(tipo)); } catch (e2) { /* ignorado */ }
+      return null;
     }
-    this.remitosSource.next(remito);
-    return remito.items.length;
+  }
+
+  private masReciente(a: { guardadoEn: string }, b: { guardadoEn: string }): any {
+    if (!a) { return b; }
+    if (!b) { return a; }
+    return (b.guardadoEn || '') > (a.guardadoEn || '') ? b : a;
   }
 
   /** Cuantos items tiene el borrador guardado, sin restaurarlo. */

@@ -5,7 +5,7 @@ import { CustomHttpClientService } from '../services/custom-http-client.service'
 import { AuthService } from '../services/auth.service';
 import { ConfigService } from './config.service';
 import { mockCustomHttpClient, mockAuthService, mockConfigService, createRemitoItem, createDistribuidora } from '../testing/test-helpers';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { RemitoModel, TIPO_CONSIGNACION, TIPO_DEVOLUCION } from '../models/remito.model';
 import { RemitoItemModel } from '../models/remito-item.model';
 import { DistribuidoraModel } from '../models/distribuidora.model';
@@ -355,8 +355,10 @@ describe('RemitosService', () => {
 
     it('should bring the items back', () => {
       service.addRemitoItem(createRemitoItem({ ri_isbn: 'A', ri_nombre_libro: 'Uno', ri_cantidad: 3 }));
+      chttp.get.and.returnValue(of(null));
 
-      const recuperados = service.restaurarBorrador(TIPO_DEVOLUCION);
+      let recuperados: number;
+      service.restaurarBorrador(TIPO_DEVOLUCION).subscribe(n => recuperados = n);
 
       let remito: RemitoModel;
       service.currentRemito.subscribe(r => remito = r);
@@ -368,8 +370,9 @@ describe('RemitosService', () => {
     /** Recuperado tiene que ser un modelo de verdad, no un objeto plano sin metodos. */
     it('should restore a usable remito, totals included', () => {
       service.addRemitoItem(createRemitoItem({ ri_isbn: 'A', ri_precio: 100, ri_cantidad: 2 }));
+      chttp.get.and.returnValue(of(null));
 
-      service.restaurarBorrador(TIPO_DEVOLUCION);
+      service.restaurarBorrador(TIPO_DEVOLUCION).subscribe();
 
       let remito: RemitoModel;
       service.currentRemito.subscribe(r => remito = r);
@@ -377,13 +380,22 @@ describe('RemitosService', () => {
     });
 
     it('should report zero when there is nothing saved', () => {
-      expect(service.restaurarBorrador(TIPO_DEVOLUCION)).toBe(0);
+      chttp.get.and.returnValue(of(null));
+
+      let recuperados: number;
+      service.restaurarBorrador(TIPO_DEVOLUCION).subscribe(n => recuperados = n);
+
+      expect(recuperados).toBe(0);
     });
 
     it('should keep drafts of each tipo apart', () => {
       service.addRemitoItem(createRemitoItem({ ri_isbn: 'A' }));
+      chttp.get.and.returnValue(of(null));
 
-      expect(service.restaurarBorrador(TIPO_CONSIGNACION)).toBe(0);
+      let recuperados: number;
+      service.restaurarBorrador(TIPO_CONSIGNACION).subscribe(n => recuperados = n);
+
+      expect(recuperados).toBe(0);
       expect(service.itemsEnBorrador(TIPO_DEVOLUCION)).toBe(1);
     });
 
@@ -405,9 +417,72 @@ describe('RemitosService', () => {
 
     it('should survive an unreadable draft', () => {
       localStorage.setItem(clave, 'esto no es json');
+      chttp.get.and.returnValue(of(null));
 
-      expect(() => service.restaurarBorrador(TIPO_DEVOLUCION)).not.toThrow();
-      expect(localStorage.getItem(clave)).toBeNull();
+      let recuperados: number;
+      expect(() => service.restaurarBorrador(TIPO_DEVOLUCION).subscribe(n => recuperados = n))
+        .not.toThrow();
+      expect(recuperados).toBe(0);
+    });
+
+    // --- La copia del servidor, que es la que sobrevive al navegador ---
+
+    it('should recover from the server when the browser has nothing', () => {
+      chttp.get.and.returnValue(of({ tipo: TIPO_DEVOLUCION, contenido: JSON.stringify({
+        items: [{ ri_nombre_libro: 'Del servidor', ri_cantidad: 2, ri_precio: 50 }],
+        guardadoEn: '2026-08-25T10:00:00.000Z'
+      })}));
+
+      let recuperados: number;
+      service.restaurarBorrador(TIPO_DEVOLUCION).subscribe(n => recuperados = n);
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(recuperados).toBe(1);
+      expect(remito.items[0].ri_nombre_libro).toBe('Del servidor');
+      expect(remito.calcularTotal()).toBe(100);
+    });
+
+    /**
+     * Ninguna copia es siempre la buena: el servidor puede estar un instante atras porque la
+     * sincronizacion espera, y la del navegador puede ser vieja o de otra maquina.
+     */
+    it('should prefer whichever copy was saved last', () => {
+      localStorage.setItem(clave, JSON.stringify({
+        items: [{ ri_nombre_libro: 'Local viejo' }], guardadoEn: '2026-08-25T09:00:00.000Z' }));
+      chttp.get.and.returnValue(of({ contenido: JSON.stringify({
+        items: [{ ri_nombre_libro: 'Servidor nuevo' }], guardadoEn: '2026-08-25T10:00:00.000Z' })}));
+
+      service.restaurarBorrador(TIPO_DEVOLUCION).subscribe();
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.items[0].ri_nombre_libro).toBe('Servidor nuevo');
+    });
+
+    it('should keep the local copy when it is the newer one', () => {
+      localStorage.setItem(clave, JSON.stringify({
+        items: [{ ri_nombre_libro: 'Local nuevo' }], guardadoEn: '2026-08-25T11:00:00.000Z' }));
+      chttp.get.and.returnValue(of({ contenido: JSON.stringify({
+        items: [{ ri_nombre_libro: 'Servidor viejo' }], guardadoEn: '2026-08-25T10:00:00.000Z' })}));
+
+      service.restaurarBorrador(TIPO_DEVOLUCION).subscribe();
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.items[0].ri_nombre_libro).toBe('Local nuevo');
+    });
+
+    /** Sin conexion todavia queda lo del navegador: no puede quedar en blanco. */
+    it('should fall back to the browser copy when the server fails', () => {
+      localStorage.setItem(clave, JSON.stringify({
+        items: [{ ri_nombre_libro: 'Local' }], guardadoEn: '2026-08-25T09:00:00.000Z' }));
+      chttp.get.and.returnValue(throwError(() => ({ status: 500 })));
+
+      let recuperados: number;
+      service.restaurarBorrador(TIPO_DEVOLUCION).subscribe(n => recuperados = n);
+
+      expect(recuperados).toBe(1);
     });
 
     /** El borrador es una comodidad: si el storage falla, la carga tiene que seguir. */
