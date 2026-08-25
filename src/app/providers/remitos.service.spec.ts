@@ -425,6 +425,38 @@ describe('RemitosService', () => {
       expect(recuperados).toBe(0);
     });
 
+    /**
+     * Recargar la pagina construye un servicio nuevo. Los tests anteriores agregaban y
+     * restauraban sobre la misma instancia, que no es lo que pasa al cerrar y abrir la pestana.
+     */
+    it('should survive a page reload with all its items', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'A', ri_nombre_libro: 'Uno' }));
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'B', ri_nombre_libro: 'Dos' }));
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'C', ri_nombre_libro: 'Tres' }));
+      expect(itemsGuardados().length).toBe(3);
+
+      // Nueva instancia = pagina recargada.
+      const otro = new RemitosService(chttp, mockConfigService() as any);
+      chttp.get.and.returnValue(of(null));
+
+      let recuperados: number;
+      otro.restaurarBorrador(TIPO_DEVOLUCION).subscribe(n => recuperados = n);
+
+      expect(recuperados).toBe(3);
+    });
+
+    /** Construir el servicio tampoco puede mandar un borrado al servidor. */
+    it('should not touch the server draft just by starting up', () => {
+      chttp.delete.calls.reset();
+      chttp.put.calls.reset();
+
+      const otro = new RemitosService(chttp, mockConfigService() as any);
+
+      expect(otro).toBeTruthy();
+      expect(chttp.delete).not.toHaveBeenCalled();
+      expect(chttp.put).not.toHaveBeenCalled();
+    });
+
     // --- La copia del servidor, que es la que sobrevive al navegador ---
 
     it('should recover from the server when the browser has nothing', () => {

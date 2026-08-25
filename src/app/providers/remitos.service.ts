@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CustomHttpClientService } from '../services/custom-http-client.service';
 import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
-import { catchError, debounceTime, map } from 'rxjs/operators';
+import { catchError, debounceTime, map, skip } from 'rxjs/operators';
 import { RemitoModel, TIPO_DEVOLUCION } from '../models/remito.model';
 import { RemitoItemModel } from '../models/remito-item.model';
 import { ConfigService } from './config.service';
@@ -26,7 +26,12 @@ export class RemitosService {
     this.URLRemitosService = `${config.baseUrl}/remitos`;
     // Toda mutacion del remito termina emitiendo aca, asi que persistir en la emision cubre
     // agregar, borrar y cambiar cantidades sin tener que acordarse en cada metodo.
-    this.currentRemito.subscribe(remito => this.guardarBorrador(remito));
+    //
+    // El skip(1) no es opcional: un BehaviorSubject emite su valor inicial apenas alguien se
+    // suscribe, y ese valor es un remito vacio. Sin saltearlo, construir el servicio -- o sea,
+    // cargar la pagina -- daba por vaciado el remito y borraba el borrador antes de que nadie
+    // pudiera recuperarlo. La regla de "vacio borra" solo vale para un vaciado de verdad.
+    this.currentRemito.pipe(skip(1)).subscribe(remito => this.guardarBorrador(remito));
     // El servidor se actualiza con un respiro: una carga de decenas de libros no puede disparar
     // una peticion por tecla. El localStorage ya cubrio el instante.
     this.borradorPendiente.pipe(debounceTime(1500))
