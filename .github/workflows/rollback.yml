@@ -6,40 +6,22 @@ on:
       version:
         description: 'Image tag to deploy (e.g. v1.0.0)'
         required: true
-      environment:
-        description: 'Target environment'
-        required: true
-        type: choice
-        options:
-          - production
-          - staging
 
+# Solo produccion: staging esta apagado a proposito y ofrecerlo como destino haria perder
+# tiempo justo en un rollback, que es cuando algo ya salio mal.
 jobs:
   rollback:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: production
     steps:
-      - name: Set server variables
-        id: server
-        run: |
-          if [ "${{ inputs.environment }}" = "production" ]; then
-            echo "host=${{ secrets.PROD_SERVER_HOST }}" >> "$GITHUB_OUTPUT"
-            echo "user=${{ secrets.PROD_SERVER_USER }}" >> "$GITHUB_OUTPUT"
-            echo "tag=latest" >> "$GITHUB_OUTPUT"
-          else
-            echo "host=${{ secrets.STAGING_SERVER_HOST }}" >> "$GITHUB_OUTPUT"
-            echo "user=${{ secrets.STAGING_SERVER_USER }}" >> "$GITHUB_OUTPUT"
-            echo "tag=master" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Deploy pedidos-front:${{ inputs.version }} to ${{ inputs.environment }}
+      - name: Deploy pedidos-front:${{ inputs.version }} to production
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ steps.server.outputs.host }}
-          username: ${{ steps.server.outputs.user }}
+          host: ${{ secrets.PROD_SERVER_HOST }}
+          username: ${{ secrets.PROD_SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             docker pull ghcr.io/sergioseva/pedidos-front:${{ inputs.version }}
-            docker tag ghcr.io/sergioseva/pedidos-front:${{ inputs.version }} ghcr.io/sergioseva/pedidos-front:${{ steps.server.outputs.tag }}
+            docker tag ghcr.io/sergioseva/pedidos-front:${{ inputs.version }} ghcr.io/sergioseva/pedidos-front:latest
             cd /aplicaciones/pedidos/docker
             docker compose up -d --no-deps pedidos-fo

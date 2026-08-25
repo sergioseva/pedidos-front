@@ -62,23 +62,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: BUILD_VERSION=${{ steps.meta.outputs.version }}
 
-  deploy-staging:
-    if: github.ref == 'refs/heads/master'
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - name: Deploy to staging
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.STAGING_SERVER_HOST }}
-          username: ${{ secrets.STAGING_SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd /aplicaciones/pedidos/docker
-            docker compose pull pedidos-fo
-            docker compose up -d pedidos-fo
-
   deploy-production:
     if: github.ref_type == 'tag'
     needs: build-and-push
