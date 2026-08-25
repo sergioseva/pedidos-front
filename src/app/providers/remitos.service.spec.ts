@@ -6,7 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { ConfigService } from './config.service';
 import { mockCustomHttpClient, mockAuthService, mockConfigService, createRemitoItem, createDistribuidora } from '../testing/test-helpers';
 import { of } from 'rxjs';
-import { RemitoModel, TIPO_CONSIGNACION } from '../models/remito.model';
+import { RemitoModel, TIPO_CONSIGNACION, TIPO_DEVOLUCION } from '../models/remito.model';
 import { RemitoItemModel } from '../models/remito-item.model';
 import { DistribuidoraModel } from '../models/distribuidora.model';
 import { ComercioModel } from '../models/comercio.model';
@@ -28,7 +28,12 @@ describe('RemitosService', () => {
       ]
     });
 
+    localStorage.clear();
     service = TestBed.inject(RemitosService);
+  });
+
+  afterEach(() => {
+    localStorage.clear();
   });
 
   it('should be created', () => {
@@ -310,6 +315,110 @@ describe('RemitosService', () => {
       service.currentRemito.subscribe(r => remito = r);
       expect(remito.re_comercio_cm).toBe(comercio);
       expect(remito.re_distribuidora_ed).toBeNull();
+    });
+  });
+
+  describe('borrador', () => {
+    const clave = `remito-borrador-${TIPO_DEVOLUCION}`;
+
+    function itemsGuardados(): any[] {
+      const crudo = localStorage.getItem(clave);
+      return crudo ? JSON.parse(crudo).items : [];
+    }
+
+    /** Lo que se pidio: cerrar la pantalla no puede costar toda la carga. */
+    it('should persist every item as it is added', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'A', ri_nombre_libro: 'Uno' }));
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'B', ri_nombre_libro: 'Dos' }));
+
+      expect(itemsGuardados().length).toBe(2);
+    });
+
+    it('should persist a quantity change too', () => {
+      const item = createRemitoItem({ ri_isbn: 'A', ri_cantidad: 1 });
+      service.addRemitoItem(item);
+
+      service.actualizarCantidad(item, 5);
+
+      expect(itemsGuardados()[0].ri_cantidad).toBe(5);
+    });
+
+    it('should persist a removal', () => {
+      const item = createRemitoItem({ ri_isbn: 'A' });
+      service.addRemitoItem(item);
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'B' }));
+
+      service.removeRemitoItem(item);
+
+      expect(itemsGuardados().length).toBe(1);
+    });
+
+    it('should bring the items back', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'A', ri_nombre_libro: 'Uno', ri_cantidad: 3 }));
+
+      const recuperados = service.restaurarBorrador(TIPO_DEVOLUCION);
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(recuperados).toBe(1);
+      expect(remito.items[0].ri_nombre_libro).toBe('Uno');
+      expect(remito.items[0].ri_cantidad).toBe(3);
+    });
+
+    /** Recuperado tiene que ser un modelo de verdad, no un objeto plano sin metodos. */
+    it('should restore a usable remito, totals included', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'A', ri_precio: 100, ri_cantidad: 2 }));
+
+      service.restaurarBorrador(TIPO_DEVOLUCION);
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.calcularTotal()).toBe(200);
+    });
+
+    it('should report zero when there is nothing saved', () => {
+      expect(service.restaurarBorrador(TIPO_DEVOLUCION)).toBe(0);
+    });
+
+    it('should keep drafts of each tipo apart', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'A' }));
+
+      expect(service.restaurarBorrador(TIPO_CONSIGNACION)).toBe(0);
+      expect(service.itemsEnBorrador(TIPO_DEVOLUCION)).toBe(1);
+    });
+
+    it('should drop the draft once the remito is saved', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'A' }));
+
+      service.finalizarRemito();
+
+      expect(localStorage.getItem(clave)).toBeNull();
+    });
+
+    it('should drop the draft when starting over', () => {
+      service.addRemitoItem(createRemitoItem({ ri_isbn: 'A' }));
+
+      service.generarNuevoRemito(TIPO_DEVOLUCION);
+
+      expect(localStorage.getItem(clave)).toBeNull();
+    });
+
+    it('should survive an unreadable draft', () => {
+      localStorage.setItem(clave, 'esto no es json');
+
+      expect(() => service.restaurarBorrador(TIPO_DEVOLUCION)).not.toThrow();
+      expect(localStorage.getItem(clave)).toBeNull();
+    });
+
+    /** El borrador es una comodidad: si el storage falla, la carga tiene que seguir. */
+    it('should keep working when storage is unavailable', () => {
+      spyOn(localStorage, 'setItem').and.throwError('QuotaExceededError');
+
+      expect(() => service.addRemitoItem(createRemitoItem({ ri_isbn: 'A' }))).not.toThrow();
+
+      let remito: RemitoModel;
+      service.currentRemito.subscribe(r => remito = r);
+      expect(remito.items.length).toBe(1);
     });
   });
 

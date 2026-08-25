@@ -1,5 +1,19 @@
 <div [class.isPrinting]="printService?.isPrinting">
 
+<!-- Aviso de recuperacion: restaurar en silencio haria dudar de si los items son viejos -->
+<div *ngIf="itemsRecuperados > 0 && !remito.finalizado" class="row" style="margin-bottom: 1rem;">
+    <div class="w-100 alert alert-warning" style="display: flex; justify-content: space-between; align-items: center;">
+        <span>
+            <i class="fa fa-history" style="margin-right: 0.375rem;"></i>
+            Se recupero una carga sin terminar con <strong>{{itemsRecuperados}}</strong> items.
+            Siga agregando o finalicela.
+        </span>
+        <button class="btn btn-action-secondary btn-sm" (click)="descartarRecuperado()">
+            <i class="fa fa-trash" style="margin-right: 0.25rem;"></i> Descartar
+        </button>
+    </div>
+</div>
+
 <div *ngIf="remito.finalizado" class="row" style="margin-bottom: 1rem;">
     <div class="w-100 text-center alert alert-info">
         <i class="fa fa-info-circle" style="margin-right: 0.375rem;"></i>

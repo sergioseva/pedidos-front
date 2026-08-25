@@ -51,6 +51,7 @@ describe('RemitoComponent', () => {
     remitosService = {
       currentRemito: of(new RemitoModel()),
       generarNuevoRemito: jasmine.createSpy('generarNuevoRemito'),
+      restaurarBorrador: jasmine.createSpy('restaurarBorrador').and.returnValue(0),
       removeRemitoItem: jasmine.createSpy('removeRemitoItem'),
       addRemitoItem: jasmine.createSpy('addRemitoItem'),
       asignarDatos: jasmine.createSpy('asignarDatos'),
@@ -93,8 +94,9 @@ describe('RemitoComponent', () => {
       expect(component.esConsignacion).toBe(false);
     });
 
-    it('should start a fresh remito of its own tipo', () => {
-      expect(remitosService.generarNuevoRemito).toHaveBeenCalledWith(TIPO_DEVOLUCION);
+    /** Arranca del borrador de SU tipo, para no arrastrar el de la otra pantalla. */
+    it('should start from its own tipo draft', () => {
+      expect(remitosService.restaurarBorrador).toHaveBeenCalledWith(TIPO_DEVOLUCION);
     });
   });
 
@@ -110,8 +112,8 @@ describe('RemitoComponent', () => {
       expect(component.esConsignacion).toBe(true);
     });
 
-    it('should start a fresh remito of its own tipo', () => {
-      expect(remitosService.generarNuevoRemito).toHaveBeenCalledWith(TIPO_CONSIGNACION);
+    it('should start from its own tipo draft', () => {
+      expect(remitosService.restaurarBorrador).toHaveBeenCalledWith(TIPO_CONSIGNACION);
     });
 
     it('should label the destinatario as the destination business', () => {
@@ -147,6 +149,22 @@ describe('RemitoComponent', () => {
       component.agregarAlRemito(libro);
 
       expect(remitosService.addRemitoItem).toHaveBeenCalled();
+    });
+  });
+
+  describe('borrador recuperado', () => {
+    it('should start from whatever was left unfinished', () => {
+      expect(remitosService.restaurarBorrador).toHaveBeenCalledWith(TIPO_DEVOLUCION);
+      expect(component.itemsRecuperados).toBe(0);
+    });
+
+    /** Restaurar en silencio haria dudar de si los items son viejos: hay que avisarlo. */
+    it('should report how many items came back', () => {
+      remitosService.restaurarBorrador.and.returnValue(7);
+
+      configurar(TIPO_DEVOLUCION);
+
+      expect(component.itemsRecuperados).toBe(7);
     });
   });
 

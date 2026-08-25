@@ -22,6 +22,65 @@ export class RemitosService {
   constructor(private chttp: CustomHttpClientService,
               private config: ConfigService) {
     this.URLRemitosService = `${config.baseUrl}/remitos`;
+    // Toda mutacion del remito termina emitiendo aca, asi que persistir en la emision cubre
+    // agregar, borrar y cambiar cantidades sin tener que acordarse en cada metodo.
+    this.currentRemito.subscribe(remito => this.guardarBorrador(remito));
+  }
+
+  private claveBorrador(tipo: string): string {
+    return `remito-borrador-${tipo}`;
+  }
+
+  /**
+   * Guarda el remito en curso para que cerrar la pantalla no cueste toda la carga.
+   *
+   * La regla de que se guarda resuelve sola todo el ciclo de vida: un remito vacio o ya
+   * finalizado borra el borrador, asi que reiniciar y grabar lo limpian sin codigo extra.
+   */
+  private guardarBorrador(remito: RemitoModel) {
+    try {
+      const clave = this.claveBorrador(remito.re_tipo);
+      if (remito.finalizado || !remito.items.length) {
+        localStorage.removeItem(clave);
+        return;
+      }
+      localStorage.setItem(clave, JSON.stringify({
+        items: remito.items,
+        guardadoEn: new Date().toISOString()
+      }));
+    } catch (e) {
+      // Sin espacio o storage bloqueado: el borrador es una comodidad y no puede romper la carga.
+    }
+  }
+
+  /**
+   * Arranca la pantalla con lo que haya quedado sin terminar. Devuelve cuantos items se
+   * recuperaron, para poder avisarlo: restaurar en silencio haria dudar de si son items viejos.
+   */
+  restaurarBorrador(tipo: string = TIPO_DEVOLUCION): number {
+    const remito = new RemitoModel(tipo);
+    try {
+      const crudo = localStorage.getItem(this.claveBorrador(tipo));
+      if (crudo) {
+        const datos = JSON.parse(crudo);
+        remito.items = (datos.items || []).map(i => Object.assign(new RemitoItemModel(), i));
+      }
+    } catch (e) {
+      // Un borrador ilegible no sirve de nada y no puede impedir empezar uno nuevo.
+      try { localStorage.removeItem(this.claveBorrador(tipo)); } catch (e2) { /* ignorado */ }
+    }
+    this.remitosSource.next(remito);
+    return remito.items.length;
+  }
+
+  /** Cuantos items tiene el borrador guardado, sin restaurarlo. */
+  itemsEnBorrador(tipo: string): number {
+    try {
+      const crudo = localStorage.getItem(this.claveBorrador(tipo));
+      return crudo ? (JSON.parse(crudo).items || []).length : 0;
+    } catch (e) {
+      return 0;
+    }
   }
 
   /** `tipo` vacio trae devoluciones y consignaciones juntas. */

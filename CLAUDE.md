@@ -98,6 +98,14 @@ CHROME_BIN=/usr/bin/google-chrome npx ng test --watch=false --browsers=ChromeHea
 
 Build expectations from dates in **local** time, never `toISOString()` — the components format with `DatePipe`, which is local by design (a till report's "Hoy" must mean today in the shop). Comparing a local value against a UTC expectation makes tests fail every evening after 21:00 in UTC-3.
 
+## Remito drafts
+
+A remito in progress is persisted to `localStorage` so closing the screen does not cost the whole load — these can run to dozens of books. `RemitosService` hooks the persistence to the `currentRemito` emission rather than to each mutation: every change already flows through there, so adding, removing and quantity edits are covered without remembering to call anything.
+
+What gets stored is the rule that drives the whole lifecycle: an empty or finalized remito **erases** its draft, so saving and starting over clean up on their own with no extra code. Drafts are keyed by `re_tipo`, otherwise walking into the consignment screen would restore a devolución.
+
+Recovery is announced on screen with a discard button. Restoring silently would leave the operator unsure whether the items are stale, and reiniciar now asks before throwing away a loaded remito. Storage failures are swallowed: the draft is a convenience and must never block the load.
+
 ## Dates
 
 The API sends dates as ISO instants with an explicit offset (`2026-08-23T00:30:00.000+00:00`), so the `date` pipe must be given **`'-0300'`** — Argentina is UTC−3. Every template said `'+0300'`, which rendered six hours ahead: anything created after 21:00 showed the next day's date, and the screens that print a time (ventas, clientes) showed the wrong hour outright. It went unnoticed for a long time because with only a date on screen it is wrong just a few hours a day.

@@ -34,6 +34,8 @@ export class RemitoComponent implements OnInit, OnDestroy {
   libros: LibroModel[];
   filteredLibros: LibroModel[];
   cantItemsRemito = 0;
+  /** Items que venian de una carga sin terminar, para avisarlo en pantalla. */
+  itemsRecuperados = 0;
   loading = false;
   searchPerformed = false;
   currentPage = 1;
@@ -94,9 +96,9 @@ export class RemitoComponent implements OnInit, OnDestroy {
       this.remito = remito;
       this.cantItemsRemito = remito.items.length;
     });
-    // El remito vive en un BehaviorSubject compartido: si vengo de la otra pantalla, arrastro
-    // su tipo y sus items. Arrancar de cero es lo unico correcto al entrar.
-    this.remitosService.generarNuevoRemito(this.tipo);
+    // El remito vive en un BehaviorSubject compartido, asi que hay que reiniciarlo al entrar
+    // para no arrastrar el de la otra pantalla. Si quedo una carga a medias, se recupera.
+    this.itemsRecuperados = this.remitosService.restaurarBorrador(this.tipo);
     this.cargarDestinatarios();
     this.filterSubscription = this.filterSubject.pipe(
       debounceTime(400)
@@ -121,10 +123,34 @@ export class RemitoComponent implements OnInit, OnDestroy {
   }
 
   onReiniciar() {
+    if (this.remito.items.length > 0 && !this.remito.finalizado) {
+      Swal.fire({
+        title: 'Reiniciar',
+        text: `Se van a descartar ${this.remito.items.length} items cargados. Continuar?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Si, descartar',
+        cancelButtonText: 'Cancelar'
+      }).then(r => {
+        if (r.value) {
+          this.reiniciar();
+        }
+      });
+      return;
+    }
+    this.reiniciar();
+  }
+
+  private reiniciar() {
     this.forma.reset();
     this.forma.enable();
     this.destinatarioSeleccionado = null;
+    this.itemsRecuperados = 0;
     this.remitosService.generarNuevoRemito(this.tipo);
+  }
+
+  descartarRecuperado() {
+    this.onReiniciar();
   }
 
   onSubmit() {
