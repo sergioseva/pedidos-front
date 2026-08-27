@@ -9,8 +9,7 @@ import { ConfiguracionRemitoService } from '../../../providers/configuracion-rem
 
 /**
  * Estado de cuenta de un comercio, para entregarle el detalle de lo que tenemos registrado en
- * su poder. Toma el mismo rango de fechas que tenia la pantalla, asi lo impreso coincide con lo
- * que el operador estaba mirando.
+ * su poder: todo lo que tiene, sin recortes por fecha.
  */
 @Component({
   selector: 'app-estado-cuenta-impreso',
@@ -34,10 +33,8 @@ export class EstadoCuentaImpresoComponent implements OnInit {
               private printService: PrintRemitoService,
               private configuracionRemitoService: ConfiguracionRemitoService) {
     this.comercioId = Number(route.snapshot.params['comercioId']);
-    const desde = route.snapshot.params['desde'] || '';
-    const hasta = route.snapshot.params['hasta'] || '';
 
-    this.remitosService.estadoCuentaConsignacion(this.comercioId, desde, hasta).subscribe(
+    this.remitosService.estadoCuentaConsignacion(this.comercioId).subscribe(
       (filas: ConsignacionEstadoCuentaModel[]) => {
         this.filas = filas || [];
         this.filasLoaded = true;

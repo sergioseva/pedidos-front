@@ -59,16 +59,15 @@ describe('EstadoCuentaImpresoComponent', () => {
   });
 
   it('should ask for that comercio only', () => {
-    expect(remitosService.estadoCuentaConsignacion).toHaveBeenCalledWith(1, '', '');
+    expect(remitosService.estadoCuentaConsignacion).toHaveBeenCalledWith(1);
     expect(comercioService.getComercio).toHaveBeenCalledWith(1);
   });
 
-  /** El papel tiene que coincidir con el filtro que tenia la pantalla. */
-  it('should carry the screen date range', () => {
-    crear({ comercioId: '2', desde: '2025-01-01', hasta: '2025-12-31' });
+  /** El detalle es todo lo que el negocio tiene: los recortes por fecha se sacaron. */
+  it('should ask for the whole balance, with no date range', () => {
+    crear({ comercioId: '2' });
 
-    expect(remitosService.estadoCuentaConsignacion)
-      .toHaveBeenCalledWith(2, '2025-01-01', '2025-12-31');
+    expect(remitosService.estadoCuentaConsignacion).toHaveBeenCalledWith(2);
   });
 
   /** El detalle se le deja al negocio: una sola hoja, sin duplicado. */

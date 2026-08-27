@@ -19,7 +19,7 @@
  * cotejar, no un texto para leer de corrido.
  */
 .estado-page {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
 }
 
 /*
@@ -30,7 +30,7 @@
  */
 .estado-page .table th,
 .estado-page .table td {
-    font-size: 0.62rem;
+    font-size: 0.66rem;
     padding: 0.12rem 0.25rem;
     line-height: 1.12;
 }

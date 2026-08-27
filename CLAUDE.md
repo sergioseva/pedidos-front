@@ -48,7 +48,7 @@ Its ten-column grid overflowed its `.container` by 27px with Bootstrap's default
 
 Prices are editable per row there, saved on blur rather than on every keystroke, and rolled back on screen if the server rejects them. A per-shop button pulls current prices from the catalog and says how many titles found no ISBN match, since those still need editing by hand.
 
-`EstadoCuentaConsignacionComponent` — shown to users as **"Consignaciones Actuales"** (route `consignaciones-actuales`) — is where copies are marked sold/returned and settled. The class and the backend endpoint still say *estado de cuenta*; the UI wording was changed because it read like a cash statement. After settling it **re-reads the balance from the server** rather than subtracting locally, and the server validates against the real balance anyway.
+`EstadoCuentaConsignacionComponent` — shown to users as **"Consignaciones Actuales"** (route `consignaciones-actuales`) — is where copies are marked sold/returned and settled. It **loads nothing on entry**: the operator picks a shop or searches a book first. With many shops each holding many titles, listing everything is a long wait for something that has to be narrowed down anyway. The book search runs in the query, not on the loaded rows — filtering after fetching everything would defeat the point — and works with no shop selected, which answers "who has this book". The class and the backend endpoint still say *estado de cuenta*; the UI wording was changed because it read like a cash statement. After settling it **re-reads the balance from the server** rather than subtracting locally, and the server validates against the real balance anyway.
 
 ### Printing
 

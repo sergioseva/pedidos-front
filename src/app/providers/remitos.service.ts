@@ -154,12 +154,11 @@ export class RemitosService {
   }
 
   /** Que libros hay entregados en consignacion, agrupados por comercio y titulo. */
-  estadoCuentaConsignacion(comercioId: number, desde: string, hasta: string):
+  estadoCuentaConsignacion(comercioId: number, libro: string = ''):
       Observable<ConsignacionEstadoCuentaModel[]> {
     const params = [
       comercioId ? `comercioId=${comercioId}` : '',
-      desde ? `fechaDesde=${desde}` : '',
-      hasta ? `fechaHasta=${hasta}` : ''
+      libro ? `libro=${encodeURIComponent(libro)}` : ''
     ].filter(p => p).join('&');
     const url = `${this.URLRemitosService}/consignacion/estadocuenta${params ? '?' + params : ''}`;
     return this.chttp.get(url) as Observable<ConsignacionEstadoCuentaModel[]>;

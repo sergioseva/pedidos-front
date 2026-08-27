@@ -66,19 +66,37 @@ describe('RemitosService', () => {
     it('should omit the query string when no filter is given', () => {
       chttp.get.and.returnValue(of([]));
 
-      service.estadoCuentaConsignacion(null, '', '');
+      service.estadoCuentaConsignacion(null, '');
 
       expect(chttp.get).toHaveBeenCalledWith('http://test-api/remitos/consignacion/estadocuenta');
     });
 
-    it('should only send the filters that are set', () => {
+    it('should send the comercio when one is picked', () => {
       chttp.get.and.returnValue(of([]));
 
-      service.estadoCuentaConsignacion(7, '2024-01-01', '');
+      service.estadoCuentaConsignacion(7);
 
       expect(chttp.get).toHaveBeenCalledWith(
-        'http://test-api/remitos/consignacion/estadocuenta?comercioId=7&fechaDesde=2024-01-01'
-      );
+        'http://test-api/remitos/consignacion/estadocuenta?comercioId=7');
+    });
+
+    /** Buscar un titulo sin negocio sirve para preguntar quien lo tiene. */
+    it('should search a book across every comercio', () => {
+      chttp.get.and.returnValue(of([]));
+
+      service.estadoCuentaConsignacion(null, 'el principito');
+
+      expect(chttp.get).toHaveBeenCalledWith(
+        'http://test-api/remitos/consignacion/estadocuenta?libro=el%20principito');
+    });
+
+    it('should combine comercio and book', () => {
+      chttp.get.and.returnValue(of([]));
+
+      service.estadoCuentaConsignacion(7, 'rayuela');
+
+      expect(chttp.get).toHaveBeenCalledWith(
+        'http://test-api/remitos/consignacion/estadocuenta?comercioId=7&libro=rayuela');
     });
   });
 

@@ -33,8 +33,8 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
 
   comercios: ComercioModel[] = [];
   comercioSeleccionado: ComercioModel;
-  fromDate = '';
-  toDate = '';
+  /** Titulo a buscar, para poder preguntar quien tiene un libro sin elegir negocio. */
+  libro = '';
   grupos: GrupoComercio[] = [];
   loading = false;
   error = false;
@@ -65,14 +65,24 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
 
   ngOnInit() {
     this.comercioService.getComercios().subscribe(comercios => this.comercios = comercios);
-    this.buscar();
+    // No se carga nada al entrar: con muchos negocios y muchos titulos, listar todo es una espera
+    // larga para algo que despues hay que filtrar igual. Primero se elige negocio o se busca libro.
+  }
+
+  /** Sin negocio ni titulo no hay nada que traer, y traerlo todo es justamente lo que se evita. */
+  get hayFiltro(): boolean {
+    return !!this.comercioSeleccionado || !!(this.libro && this.libro.trim());
   }
 
   buscar() {
-    this.loading = true;
     this.grupos = [];
+    if (!this.hayFiltro) {
+      this.searchPerformed = false;
+      return;
+    }
+    this.loading = true;
     const comercioId = this.comercioSeleccionado ? this.comercioSeleccionado.id : null;
-    this.rs.estadoCuentaConsignacion(comercioId, this.fromDate, this.toDate).subscribe(
+    this.rs.estadoCuentaConsignacion(comercioId, this.libro).subscribe(
       (filas: ConsignacionEstadoCuentaModel[]) => {
         this.grupos = this.agrupar(filas);
         this.loading = false;
@@ -88,9 +98,9 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
 
   limpiar() {
     this.comercioSeleccionado = null;
-    this.fromDate = '';
-    this.toDate = '';
-    this.buscar();
+    this.libro = '';
+    this.grupos = [];
+    this.searchPerformed = false;
   }
 
   /** El backend ya devuelve las filas ordenadas por comercio, asi que un solo recorrido alcanza. */
@@ -303,7 +313,7 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
    * mismas fechas que tiene la pantalla, asi el papel coincide con lo que se esta mirando.
    */
   imprimirEstadoCuenta(grupo: GrupoComercio) {
-    this.printService.imprimirEstadoCuenta(grupo.comercioId, this.fromDate, this.toDate);
+    this.printService.imprimirEstadoCuenta(grupo.comercioId);
   }
 
   /**
@@ -315,7 +325,7 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
       return;
     }
     this.descargando = true;
-    this.rs.descargarReporteConsignacion(grupo.comercioId, this.fromDate, this.toDate).subscribe(
+    this.rs.descargarReporteConsignacion(grupo.comercioId, '', '').subscribe(
       (blob: Blob) => {
         const limpio = (grupo.comercio || 'negocio').replace(/[^a-zA-Z0-9]+/g, '_');
         const url = window.URL.createObjectURL(blob);

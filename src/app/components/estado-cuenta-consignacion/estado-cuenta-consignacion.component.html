@@ -6,9 +6,10 @@
 
 <div class="alert alert-info" style="margin-bottom: 1rem;">
     <i class="fa fa-info-circle" style="margin-right: 0.375rem;"></i>
-    Libros entregados que siguen en poder del negocio. Marque cuantos ejemplares se
-    <strong>vendieron</strong> y cuantos <strong>vuelven</strong>, y liquide: se emite un remito de
-    retiro por lo devuelto y uno de venta por lo vendido, con su recibo de pago.
+    Elija un negocio para ver lo que tiene en consignacion, o busque un libro para saber
+    quien lo tiene. Marque cuantos ejemplares se <strong>vendieron</strong> y cuantos
+    <strong>vuelven</strong>, y liquide: se emite un remito de retiro por lo devuelto y uno de
+    venta por lo vendido, con su recibo de pago.
 </div>
 
 <!-- Comprobantes de la ultima liquidacion. Vive fuera del modal: imprimir con un modal abierto
@@ -58,14 +59,16 @@
                 (change)="buscar()">
             </ng-select>
         </div>
-        <div class="col-auto">
-            <input type="date" class="form-control" [(ngModel)]="fromDate" title="Entregado desde">
+        <div class="col">
+            <div style="position: relative;">
+                <input type="text" class="form-control" placeholder="Buscar libro por titulo"
+                       style="padding-left: 2.25rem;"
+                       [(ngModel)]="libro" (keyup.enter)="buscar()">
+                <i class="fa fa-search" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #8C7A6A;"></i>
+            </div>
         </div>
         <div class="col-auto">
-            <input type="date" class="form-control" [(ngModel)]="toDate" title="Entregado hasta">
-        </div>
-        <div class="col-auto">
-            <button class="btn btn-action btn-sm" (click)="buscar()">
+            <button class="btn btn-action btn-sm" [disabled]="!hayFiltro" (click)="buscar()">
                 <i class="fa fa-search" style="margin-right: 0.25rem;"></i> Buscar
             </button>
         </div>
@@ -190,6 +193,11 @@
 <div *ngIf="loading" class="alert alert-info text-center mt-3 animated fadeIn faster">
     <h4 class="alert-heading"><i class="fa fa-search" style="margin-right: 0.375rem;"></i>Buscando</h4>
     <p><i class="fa fa-spinner fa-spin fa-2x"></i></p>
+</div>
+
+<div *ngIf="!loading && !searchPerformed && !error" class="text-center" style="padding: 3rem 1rem; color: #8C7A6A;">
+    <i class="fa fa-shopping-bag" style="font-size: 2.5rem; margin-bottom: 0.75rem; display: block; opacity: 0.35;"></i>
+    Elija un negocio o busque un libro para empezar.
 </div>
 
 <div *ngIf="!loading && !error && searchPerformed && grupos.length === 0"

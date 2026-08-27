@@ -33,20 +33,13 @@ describe('PrintRemitoService', () => {
   });
 
   describe('imprimirEstadoCuenta', () => {
-    it('should navigate to the print outlet carrying the date range', () => {
-      service.imprimirEstadoCuenta(7, '2025-01-01', '2025-12-31');
+    /** El detalle es todo lo que el negocio tiene, sin recortes por fecha. */
+    it('should navigate to the print outlet for that comercio', () => {
+      service.imprimirEstadoCuenta(7);
 
       expect(service.isPrinting).toBe(true);
       expect(router.navigate).toHaveBeenCalledWith(['/', {
-        outlets: { 'print': ['print', 'printestadocuenta', 7, { desde: '2025-01-01', hasta: '2025-12-31' }] }
-      }]);
-    });
-
-    it('should send empty dates when the screen has no filter', () => {
-      service.imprimirEstadoCuenta(7, '', '');
-
-      expect(router.navigate).toHaveBeenCalledWith(['/', {
-        outlets: { 'print': ['print', 'printestadocuenta', 7, { desde: '', hasta: '' }] }
+        outlets: { 'print': ['print', 'printestadocuenta', 7] }
       }]);
     });
   });

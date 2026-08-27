@@ -69,6 +69,12 @@ describe('EstadoCuentaConsignacionComponent', () => {
     fixture.detectChanges();
   });
 
+  /** Ya no se carga nada al entrar: los tests que miran datos tienen que pedirlos. */
+  function cargarGrupos() {
+    component.comercioSeleccionado = { id: 1 } as any;
+    component.buscar();
+  }
+
   function hotel() {
     return component.grupos[0];
   }
@@ -81,12 +87,55 @@ describe('EstadoCuentaConsignacionComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should load comercios and search on init', () => {
+  /**
+   * Con muchos negocios y muchos titulos, listar todo al entrar es una espera larga para algo
+   * que despues hay que filtrar igual: primero se elige.
+   */
+  it('should load the comercios but not the balances on init', () => {
     expect(comercioService.getComercios).toHaveBeenCalled();
-    expect(remitosService.estadoCuentaConsignacion).toHaveBeenCalledWith(null, '', '');
+    expect(remitosService.estadoCuentaConsignacion).not.toHaveBeenCalled();
+    expect(component.grupos.length).toBe(0);
+    expect(component.searchPerformed).toBe(false);
+  });
+
+  describe('hay que elegir algo antes de buscar', () => {
+    it('should refuse to search with no comercio and no book', () => {
+      component.buscar();
+
+      expect(remitosService.estadoCuentaConsignacion).not.toHaveBeenCalled();
+      expect(component.hayFiltro).toBe(false);
+    });
+
+    it('should search once a comercio is picked', () => {
+      component.comercioSeleccionado = { id: 3 } as any;
+
+      component.buscar();
+
+      expect(remitosService.estadoCuentaConsignacion).toHaveBeenCalledWith(3, '');
+    });
+
+    /** Buscar un titulo sin negocio responde "quien tiene este libro". */
+    it('should search a book with no comercio', () => {
+      component.libro = 'rayuela';
+
+      component.buscar();
+
+      expect(remitosService.estadoCuentaConsignacion).toHaveBeenCalledWith(null, 'rayuela');
+      expect(component.hayFiltro).toBe(true);
+    });
+
+    it('should ignore a blank book term', () => {
+      component.libro = '   ';
+
+      component.buscar();
+
+      expect(remitosService.estadoCuentaConsignacion).not.toHaveBeenCalled();
+    });
   });
 
   describe('agrupado', () => {
+    beforeEach(() => cargarGrupos());
+
     it('should group the rows by comercio', () => {
       expect(component.grupos.length).toBe(2);
       expect(hotel().filas.length).toBe(2);
@@ -109,6 +158,8 @@ describe('EstadoCuentaConsignacionComponent', () => {
   });
 
   describe('marcado', () => {
+    beforeEach(() => cargarGrupos());
+
     it('should cap a quantity at the outstanding balance', () => {
       const fila = principito();
       fila.vendidos = 99;
@@ -163,6 +214,8 @@ describe('EstadoCuentaConsignacionComponent', () => {
   });
 
   describe('precios editables', () => {
+    beforeEach(() => cargarGrupos());
+
     it('should send the new price for that title', () => {
       component.cambiarPrecio(hotel(), principito(), 2500);
 
@@ -204,6 +257,8 @@ describe('EstadoCuentaConsignacionComponent', () => {
   });
 
   describe('precios del catalogo', () => {
+    beforeEach(() => cargarGrupos());
+
     it('should pull prices for that comercio and reload', () => {
       remitosService.estadoCuentaConsignacion.calls.reset();
 
@@ -242,6 +297,8 @@ describe('EstadoCuentaConsignacionComponent', () => {
   });
 
   describe('totales de lo marcado', () => {
+    beforeEach(() => cargarGrupos());
+
     it('should apply the comision to what was sold', () => {
       principito().vendidos = 3;
       expect(component.totalTapaDe(hotel())).toBe(3000);
@@ -263,6 +320,7 @@ describe('EstadoCuentaConsignacionComponent', () => {
 
   describe('liquidar', () => {
     beforeEach(() => {
+      cargarGrupos();
       principito().vendidos = 3;
       hotel().filas[1].devueltos = 2;
       component.abrirLiquidacion(hotel(), {} as any);
@@ -357,6 +415,8 @@ describe('EstadoCuentaConsignacionComponent', () => {
   });
 
   describe('impresion', () => {
+    beforeEach(() => cargarGrupos());
+
     /**
      * El truco de impresion es global: la pantalla se tapa sola con .isPrinting y el
      * app-print-layout, que vive fuera, queda visible. Sin esta clase se imprime la lista entera
@@ -381,6 +441,7 @@ describe('EstadoCuentaConsignacionComponent', () => {
       let clickSpy: jasmine.Spy;
 
       beforeEach(() => {
+        cargarGrupos();
         remitosService.descargarReporteConsignacion = jasmine.createSpy('descargarReporteConsignacion')
           .and.returnValue(of(new Blob(['x'])));
         spyOn(window.URL, 'createObjectURL').and.returnValue('blob:fake');
@@ -388,14 +449,10 @@ describe('EstadoCuentaConsignacionComponent', () => {
         clickSpy = spyOn(HTMLAnchorElement.prototype, 'click');
       });
 
-      it('should ask for that comercio with the screen dates', () => {
-        component.fromDate = '2025-01-01';
-        component.toDate = '2025-12-31';
-
+      it('should ask for that comercio', () => {
         component.exportarExcel(hotel());
 
-        expect(remitosService.descargarReporteConsignacion)
-          .toHaveBeenCalledWith(1, '2025-01-01', '2025-12-31');
+        expect(remitosService.descargarReporteConsignacion).toHaveBeenCalledWith(1, '', '');
       });
 
       it('should save the blob under a filename built from the comercio', () => {
@@ -424,13 +481,10 @@ describe('EstadoCuentaConsignacionComponent', () => {
       });
     });
 
-    it('should print the comercio statement with the screen dates', () => {
-      component.fromDate = '2025-01-01';
-      component.toDate = '2025-12-31';
-
+    it('should print the comercio statement', () => {
       component.imprimirEstadoCuenta(hotel());
 
-      expect(printService.imprimirEstadoCuenta).toHaveBeenCalledWith(1, '2025-01-01', '2025-12-31');
+      expect(printService.imprimirEstadoCuenta).toHaveBeenCalledWith(1);
     });
 
     it('should print a remito by id', () => {
@@ -455,29 +509,23 @@ describe('EstadoCuentaConsignacionComponent', () => {
   });
 
   describe('filtros', () => {
-    it('should pass the selected comercio and dates to the service', () => {
+
+    it('should clear the filters and empty the screen', () => {
       component.comercioSeleccionado = { id: 7 } as any;
-      component.fromDate = '2025-01-01';
-      component.toDate = '2025-12-31';
-
-      component.buscar();
-
-      expect(remitosService.estadoCuentaConsignacion).toHaveBeenCalledWith(7, '2025-01-01', '2025-12-31');
-    });
-
-    it('should clear the filters and search again', () => {
-      component.comercioSeleccionado = { id: 7 } as any;
-      component.fromDate = '2025-01-01';
+      component.libro = 'algo';
+      component.grupos = [{} as any];
 
       component.limpiar();
 
       expect(component.comercioSeleccionado).toBeNull();
-      expect(component.fromDate).toBe('');
-      expect(remitosService.estadoCuentaConsignacion).toHaveBeenCalledWith(null, '', '');
+      expect(component.libro).toBe('');
+      expect(component.grupos.length).toBe(0);
+      expect(component.searchPerformed).toBe(false);
     });
 
     it('should handle an empty result', () => {
       remitosService.estadoCuentaConsignacion.and.returnValue(of([]));
+      component.comercioSeleccionado = { id: 1 } as any;
 
       component.buscar();
 
@@ -488,6 +536,7 @@ describe('EstadoCuentaConsignacionComponent', () => {
     it('should surface an error', () => {
       remitosService.estadoCuentaConsignacion.and.returnValue(
         throwError(() => ({ error: { message: 'fail' } })));
+      component.comercioSeleccionado = { id: 1 } as any;
 
       component.buscar();
 
@@ -497,6 +546,8 @@ describe('EstadoCuentaConsignacionComponent', () => {
   });
 
   describe('totales generales', () => {
+    beforeEach(() => cargarGrupos());
+
     it('should total across groups', () => {
       expect(component.unidadesGenerales).toBe(11);
       expect(component.totalGeneral).toBe(23000);
