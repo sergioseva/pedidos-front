@@ -53,8 +53,8 @@
     <div class="row align-items-center">
         <div class="col">
             <ng-select [items]="comercios"
-                bindLabel="descripcion"
-                placeholder="Todos los negocios"
+                bindLabel="etiqueta"
+                placeholder="Elija un negocio"
                 [(ngModel)]="comercioSeleccionado"
                 (change)="buscar()">
             </ng-select>

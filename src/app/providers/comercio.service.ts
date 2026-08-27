@@ -21,6 +21,16 @@ export class ComercioService {
       .pipe(map((comercios: ComercioModel[]) => comercios));
   }
 
+  /**
+   * Cada comercio con cuantos ejemplares tiene en consignacion. Se calcula en el momento y no se
+   * cachea: es una sola consulta agregada de un par de milisegundos, y una cache habria que
+   * invalidarla en cada movimiento, con el riesgo de mostrar un numero equivocado en silencio.
+   */
+  getResumenConsignacion(): Observable<ComercioModel[]> {
+    return this.chttp.get(`${this.URLComerciosService}/consignacion`)
+      .pipe(map((comercios: ComercioModel[]) => comercios));
+  }
+
   getComercio(id: number) {
     return this.chttp.get(`${this.URLComerciosService}/${id}`);
   }

@@ -37,9 +37,10 @@ describe('EstadoCuentaConsignacionComponent', () => {
         of({ remitoRetiroId: 10, remitoVentaId: 11, reciboId: 12, totalTapa: 3000, comision: 20, netoAPagar: 2400 }))
     };
     comercioService = {
-      getComercios: jasmine.createSpy('getComercios').and.returnValue(of([
-        { id: 1, descripcion: 'Hotel Costa Azul', comision: 20 },
-        { id: 2, descripcion: 'Almacen Don Pedro' }
+      getComercios: jasmine.createSpy('getComercios').and.returnValue(of([])),
+      getResumenConsignacion: jasmine.createSpy('getResumenConsignacion').and.returnValue(of([
+        { id: 1, descripcion: 'Hotel Costa Azul', comision: 20, unidades: 7 },
+        { id: 2, descripcion: 'Almacen Don Pedro', unidades: 4 }
       ]))
     };
     printService = {
@@ -92,10 +93,47 @@ describe('EstadoCuentaConsignacionComponent', () => {
    * que despues hay que filtrar igual: primero se elige.
    */
   it('should load the comercios but not the balances on init', () => {
-    expect(comercioService.getComercios).toHaveBeenCalled();
+    expect(comercioService.getResumenConsignacion).toHaveBeenCalled();
     expect(remitosService.estadoCuentaConsignacion).not.toHaveBeenCalled();
     expect(component.grupos.length).toBe(0);
     expect(component.searchPerformed).toBe(false);
+  });
+
+  describe('el desplegable dice cuanto tiene cada negocio', () => {
+    it('should label each comercio with its outstanding count', () => {
+      expect((component.comercios[0] as any).etiqueta).toBe('Hotel Costa Azul — 7 libros');
+    });
+
+    it('should say "1 libro" in singular', () => {
+      comercioService.getResumenConsignacion.and.returnValue(
+        of([{ id: 9, descripcion: 'Kiosco', unidades: 1 }]));
+
+      component.ngOnInit();
+
+      expect((component.comercios[0] as any).etiqueta).toBe('Kiosco — 1 libro');
+    });
+
+    /** Un negocio sin nada tiene que poder elegirse igual, para entregarle. */
+    it('should still list a comercio with nothing out', () => {
+      comercioService.getResumenConsignacion.and.returnValue(
+        of([{ id: 9, descripcion: 'Kiosco', unidades: 0 }]));
+
+      component.ngOnInit();
+
+      expect((component.comercios[0] as any).etiqueta).toBe('Kiosco — 0 libros');
+    });
+
+    /** Despues de liquidar el numero cambio: dejarlo viejo seria mentirle al operador. */
+    it('should refresh the counts after settling', () => {
+      cargarGrupos();
+      principito().vendidos = 1;
+      component.abrirLiquidacion(hotel(), {} as any);
+      comercioService.getResumenConsignacion.calls.reset();
+
+      component.confirmarLiquidacion();
+
+      expect(comercioService.getResumenConsignacion).toHaveBeenCalled();
+    });
   });
 
   describe('hay que elegir algo antes de buscar', () => {

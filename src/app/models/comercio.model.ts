@@ -8,6 +8,8 @@ export class ComercioModel {
     cuit: string;
     /** Porcentaje que el negocio retiene de cada venta (0-100). */
     comision: number;
+    /** Ejemplares que tiene hoy en consignacion. Lo trae el resumen, calculado al momento. */
+    unidades: number;
 
     constructor(id?, descripcion?, direccion?, contacto?, telefono?, cuit?, comision?) {
         this.id = id;

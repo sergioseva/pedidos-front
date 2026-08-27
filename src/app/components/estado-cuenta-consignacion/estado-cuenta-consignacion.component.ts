@@ -64,9 +64,34 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
               private modalService: BsModalService) { }
 
   ngOnInit() {
-    this.comercioService.getComercios().subscribe(comercios => this.comercios = comercios);
+    this.comercioService.getResumenConsignacion()
+      .subscribe(comercios => this.comercios = comercios.map(c => this.conEtiqueta(c)));
     // No se carga nada al entrar: con muchos negocios y muchos titulos, listar todo es una espera
     // larga para algo que despues hay que filtrar igual. Primero se elige negocio o se busca libro.
+  }
+
+  /**
+   * El desplegable dice cuantos ejemplares tiene cada negocio, para elegir sabiendo cual tiene
+   * algo pendiente. ng-select muestra una propiedad, asi que la etiqueta se arma aca.
+   */
+  private conEtiqueta(comercio: any): any {
+    const unidades = comercio.unidades || 0;
+    const detalle = unidades === 1 ? '1 libro' : `${unidades} libros`;
+    return { ...comercio, etiqueta: `${comercio.descripcion} — ${detalle}` };
+  }
+
+  /** Tras liquidar o cambiar precios, los numeros del desplegable quedaron viejos. */
+  private refrescarComercios() {
+    this.comercioService.getResumenConsignacion()
+      .subscribe(comercios => {
+        this.comercios = comercios.map(c => this.conEtiqueta(c));
+        if (this.comercioSeleccionado) {
+          const actualizado = this.comercios.find(c => c.id === this.comercioSeleccionado.id);
+          if (actualizado) {
+            this.comercioSeleccionado = actualizado;
+          }
+        }
+      });
   }
 
   /** Sin negocio ni titulo no hay nada que traer, y traerlo todo es justamente lo que se evita. */
@@ -292,6 +317,7 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
         this.cerrarModal();
         // El saldo cambio: hay que releerlo, no descontarlo a mano en la pantalla.
         this.buscar();
+        this.refrescarComercios();
       },
       (err) => {
         this.liquidando = false;
