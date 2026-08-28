@@ -112,7 +112,12 @@
                         </li>
                     </ul>
                 </td>
-                <td class="text-right">{{total(remito)}}</td>
+                <td class="text-right">
+                    <div [class.text-muted-tapa]="tieneComision(remito)">{{total(remito)}}</div>
+                    <div *ngIf="tieneComision(remito)" class="neto-a-cobrar">
+                        Neto {{netoFormateado(remito)}}
+                    </div>
+                </td>
                 <td *ngIf="esConsignacion">
                     <ng-container *ngIf="esVenta(remito)">
                         <span *ngIf="remito.recibo" class="badge badge-success">

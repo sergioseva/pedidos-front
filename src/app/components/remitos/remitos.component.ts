@@ -98,6 +98,19 @@ export class RemitosComponent implements OnInit {
     return this.esVenta(remito) && !remito.recibo;
   }
 
+  /**
+   * En una venta lo que se cobra no es el precio de tapa sino el neto, ya descontada la comision.
+   * Mostrar los dos solo tiene sentido cuando difieren: si el negocio no tiene comision cargada,
+   * repetir el mismo numero dos veces es ruido.
+   */
+  tieneComision(remito: any): boolean {
+    return this.esVenta(remito) && !!remito.re_comision;
+  }
+
+  netoFormateado(remito: any): string {
+    return this.formatPrecio(this.netoAPagar(remito));
+  }
+
   netoAPagar(remito: any): number {
     const tapa = ((remito && remito.items) || []).reduce((acc, i) => acc + i.ri_cantidad * (i.ri_precio || 0), 0);
     return tapa * (100 - (remito.re_comision || 0)) / 100;

@@ -249,6 +249,26 @@ describe('RemitosComponent', () => {
       expect(component.netoAPagar(venta())).toBe(2400);
     });
 
+    /** En una venta lo que se cobra es el neto, no el precio de tapa. */
+    it('should show both amounts on a sale with comision', () => {
+      const v = venta();
+
+      expect(component.tieneComision(v)).toBe(true);
+      expect(component.total(v)).toBe('$ 3.000');
+      expect(component.netoFormateado(v)).toBe('$ 2.400');
+    });
+
+    /** Sin comision los dos numeros son el mismo: repetirlo seria ruido. */
+    it('should show a single amount when there is no comision', () => {
+      expect(component.tieneComision({ ...venta(), re_comision: null })).toBe(false);
+    });
+
+    /** Una entrega o un retiro no se cobran: no tienen neto que mostrar. */
+    it('should not show a neto on entregas or retiros', () => {
+      expect(component.tieneComision({ re_tipo: TIPO_CONSIGNACION, re_comision: 20, items: [] })).toBe(false);
+      expect(component.tieneComision({ re_tipo: TIPO_RETIRO, re_comision: 20, items: [] })).toBe(false);
+    });
+
     it('should filter down to unpaid ventas', () => {
       component.remitos = [venta(), venta({ rc_recibo_k: 1 }), { re_tipo: TIPO_RETIRO, items: [] }];
       component.soloImpagos = true;

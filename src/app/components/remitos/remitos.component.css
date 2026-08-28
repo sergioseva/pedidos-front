@@ -2,3 +2,16 @@
     .isPrinting > * { display: none; }
     .isPrinting app-print-layout { display: block; }
 }
+
+/*
+ * En una venta el numero que importa es el neto, no el de tapa: se destaca ese y el de tapa
+ * queda como referencia. Solo aparecen los dos cuando difieren, o sea cuando hay comision.
+ */
+.text-muted-tapa {
+    color: #8C7A6A;
+    font-size: 0.85em;
+}
+
+.neto-a-cobrar {
+    font-weight: 600;
+}
