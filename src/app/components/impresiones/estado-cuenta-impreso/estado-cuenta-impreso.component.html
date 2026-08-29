@@ -34,7 +34,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let fila of filas">
-                    <td>{{fila.nombreLibro}}</td>
+                    <td><div class="titulo-truncado" [title]="fila.nombreLibro">{{fila.nombreLibro}}</div></td>
                     <td>{{fila.autor}}</td>
                     <td>{{fila.editorial}}</td>
                     <td>{{fila.isbn}}</td>

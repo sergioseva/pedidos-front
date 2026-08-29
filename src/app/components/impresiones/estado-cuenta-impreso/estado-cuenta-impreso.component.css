@@ -19,7 +19,7 @@
  * cotejar, no un texto para leer de corrido.
  */
 .estado-page {
-    font-size: 0.78rem;
+    font-size: 12px;
 }
 
 /*
@@ -30,9 +30,21 @@
  */
 .estado-page .table th,
 .estado-page .table td {
-    font-size: 0.66rem;
+    font-size: 12px;
     padding: 0.12rem 0.25rem;
-    line-height: 1.12;
+    line-height: 1.15;
+}
+
+/*
+ * El titulo se corta con puntos suspensivos en vez de partirse en dos lineas: a 12px muchos no
+ * entran, y dejarlos envolver duplicaba el alto de la fila y las hojas del detalle. Va sobre un
+ * div y no sobre la celda porque una celda de tabla con ancho automatico ignora el max-width.
+ */
+.titulo-truncado {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /*
