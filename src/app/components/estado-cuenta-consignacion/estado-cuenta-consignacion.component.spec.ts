@@ -251,6 +251,58 @@ describe('EstadoCuentaConsignacionComponent', () => {
     });
   });
 
+  /**
+   * Lo que reporto el usuario: buscar un negocio, marcar un titulo como vendido y despues buscar
+   * otro titulo para marcarlo borraba la marca anterior, porque la busqueda por titulo filtra en
+   * el servidor y reemplaza las filas visibles.
+   */
+  describe('las marcas sobreviven a una nueva busqueda', () => {
+    beforeEach(() => cargarGrupos());
+
+    it('should keep a mark from a previous search after searching a different title', () => {
+      principito().vendidos = 2;
+      component.onCantidadChange(principito());
+
+      // Buscar otro titulo: el servidor devuelve solo esa fila, Principito no viene en la respuesta.
+      remitosService.estadoCuentaConsignacion.and.returnValue(of([filas[1]]));
+      component.libro = 'rayuela';
+      component.buscar();
+      expect(hotel().filas.length).toBe(1);
+
+      // Volver a traer todo el negocio: Principito reaparece, y su marca sigue ahi.
+      remitosService.estadoCuentaConsignacion.and.returnValue(of(filas));
+      component.libro = '';
+      component.buscar();
+
+      expect(principito().vendidos).toBe(2);
+    });
+
+    it('limpiar should discard marks made so far', () => {
+      principito().vendidos = 2;
+      component.onCantidadChange(principito());
+
+      component.limpiar();
+      component.comercioSeleccionado = { id: 1 } as any;
+      component.buscar();
+
+      expect(principito().vendidos).toBe(0);
+    });
+
+    /** Una marca ya liquidada no debe reaplicarse sobre el saldo nuevo que se vuelve a leer. */
+    it('should not reapply a settled mark to the reloaded balance', () => {
+      principito().vendidos = 3;
+      component.onCantidadChange(principito());
+      component.abrirLiquidacion(hotel(), {} as any);
+
+      remitosService.estadoCuentaConsignacion.and.returnValue(of([
+        { ...filas[0], entregado: 5, devuelto: 0, vendido: 3, cantidad: 2 }
+      ]));
+      component.confirmarLiquidacion();
+
+      expect(principito().vendidos).toBe(0);
+    });
+  });
+
   describe('precios editables', () => {
     beforeEach(() => cargarGrupos());
 

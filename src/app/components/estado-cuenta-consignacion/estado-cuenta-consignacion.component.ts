@@ -41,6 +41,13 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
   errMessage: string;
   searchPerformed = false;
 
+  /**
+   * Lo marcado sin confirmar, por negocio y libro. Vive aca y no en `grupos` porque la busqueda
+   * por titulo filtra en el servidor: buscar otro titulo reemplaza las filas visibles, y sin este
+   * mapa lo marcado en el titulo anterior -- que ya no esta en la respuesta -- se perdia.
+   */
+  private marcas = new Map<string, { vendidos: number; devueltos: number }>();
+
   /** Grupo que se esta liquidando en el modal. */
   grupoALiquidar: GrupoComercio;
   observaciones = '';
@@ -121,11 +128,28 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
       });
   }
 
+  /** Reinicio explicito de la pantalla: a diferencia de re-buscar, aca si se descarta lo marcado. */
   limpiar() {
     this.comercioSeleccionado = null;
     this.libro = '';
     this.grupos = [];
     this.searchPerformed = false;
+    this.marcas.clear();
+  }
+
+  /** Misma clave que el backend usa para el saldo: negocio, ISBN y titulo. */
+  private claveMarca(comercioId: number, isbn: string, nombreLibro: string): string {
+    const norm = (v: string) => (v || '').trim().toLowerCase();
+    return `${comercioId}|${norm(isbn)}|${norm(nombreLibro)}`;
+  }
+
+  private marcarEnMapa(comercioId: number, isbn: string, nombreLibro: string, vendidos: number, devueltos: number) {
+    const clave = this.claveMarca(comercioId, isbn, nombreLibro);
+    if ((vendidos || 0) > 0 || (devueltos || 0) > 0) {
+      this.marcas.set(clave, { vendidos: vendidos || 0, devueltos: devueltos || 0 });
+    } else {
+      this.marcas.delete(clave);
+    }
   }
 
   /** El backend ya devuelve las filas ordenadas por comercio, asi que un solo recorrido alcanza. */
@@ -142,7 +166,10 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
         };
         grupos.push(grupo);
       }
-      grupo.filas.push({ ...fila, vendidos: 0, devueltos: 0 });
+      const marca = this.marcas.get(this.claveMarca(fila.comercioId, fila.isbn, fila.nombreLibro));
+      const vendidos = marca ? Math.min(marca.vendidos, fila.cantidad) : 0;
+      const devueltos = marca ? Math.min(marca.devueltos, fila.cantidad - vendidos) : 0;
+      grupo.filas.push({ ...fila, vendidos, devueltos });
       grupo.unidades += fila.cantidad;
       grupo.total += fila.subtotal;
     });
@@ -172,6 +199,7 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
   onCantidadChange(fila: FilaLiquidable) {
     fila.vendidos = this.acotar(fila.vendidos, fila.cantidad);
     fila.devueltos = this.acotar(fila.devueltos, fila.cantidad - fila.vendidos);
+    this.marcarEnMapa(fila.comercioId, fila.isbn, fila.nombreLibro, fila.vendidos, fila.devueltos);
   }
 
   private acotar(valor: number, max: number): number {
@@ -181,11 +209,19 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
 
   /** Marca todo el saldo de un grupo como devuelto, que es el caso mas comun al levantar. */
   devolverTodo(grupo: GrupoComercio) {
-    grupo.filas.forEach(f => { f.vendidos = 0; f.devueltos = f.cantidad; });
+    grupo.filas.forEach(f => {
+      f.vendidos = 0;
+      f.devueltos = f.cantidad;
+      this.marcarEnMapa(f.comercioId, f.isbn, f.nombreLibro, f.vendidos, f.devueltos);
+    });
   }
 
   limpiarMarcas(grupo: GrupoComercio) {
-    grupo.filas.forEach(f => { f.vendidos = 0; f.devueltos = 0; });
+    grupo.filas.forEach(f => {
+      f.vendidos = 0;
+      f.devueltos = 0;
+      this.marcarEnMapa(f.comercioId, f.isbn, f.nombreLibro, 0, 0);
+    });
   }
 
   // --- Precios ---
@@ -313,6 +349,8 @@ export class EstadoCuentaConsignacionComponent implements OnInit {
         this.liquidando = false;
         this.resultado = resultado;
         this.comercioLiquidado = grupo.comercio;
+        // Ya se confirmaron: no deben reaplicarse sobre el saldo nuevo que se va a releer.
+        liquidacion.lineas.forEach(l => this.marcas.delete(this.claveMarca(grupo.comercioId, l.isbn, l.nombreLibro)));
         // El modal se cierra: los comprobantes se imprimen desde el panel de la pantalla.
         this.cerrarModal();
         // El saldo cambio: hay que releerlo, no descontarlo a mano en la pantalla.
