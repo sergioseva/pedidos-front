@@ -50,6 +50,8 @@ export class RemitosComponent implements OnInit {
 
   /** Solo los remitos de venta impagos, para poder salir a cobrarlos. */
   soloImpagos = false;
+  /** Vista de "sin pagar de siempre", sin limite de periodo: ver {@link verSinPagar}. */
+  modoSinPagar = false;
   remitoACobrar: any;
   medioPago = 'Efectivo';
   cobrando = false;
@@ -218,6 +220,7 @@ export class RemitosComponent implements OnInit {
   }
 
   buscarTermino(termino: string) {
+    this.modoSinPagar = false;
     this.ultimoTermino = termino;
     this.loading = true;
     this.remitos = new Array();
@@ -236,6 +239,35 @@ export class RemitosComponent implements OnInit {
         this.loading = false;
         this.error = true;
         this.errMessage = (err.error && err.error.message) || 'Error al buscar remitos';
+      });
+  }
+
+  /**
+   * Todas las ventas impagas de cualquier negocio, sin importar cuando se hicieron. El checkbox
+   * "Solo impagos" filtra sobre lo ya traido por la busqueda normal, que esta acotado al periodo
+   * elegido: una venta vieja sin cobrar queda invisible ahi hasta ensanchar el rango a mano. Esta
+   * consulta no tiene ese limite, asi que no se puede perder una deuda por no haber filtrado el
+   * periodo correcto.
+   */
+  verSinPagar() {
+    this.modoSinPagar = true;
+    this.filtroActivo = null;
+    this.tipoFiltro = TIPO_VENTA_CONSIGNACION;
+    this.soloImpagos = true;
+    this.comercioFiltro = null;
+    this.loading = true;
+    this.remitos = new Array();
+    this.rs.ventasSinPagar().subscribe((data: any) => {
+        this.remitos = data;
+        this.applySort();
+        this.loading = false;
+        this.error = false;
+        this.searchPerformed = true;
+      },
+      (err) => {
+        this.loading = false;
+        this.error = true;
+        this.errMessage = (err.error && err.error.message) || 'Error al buscar ventas sin pagar';
       });
   }
 

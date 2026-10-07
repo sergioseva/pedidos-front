@@ -15,3 +15,22 @@
 .neto-a-cobrar {
     font-weight: 600;
 }
+
+/* Se distingue de los pills de periodo: no es un rango de fechas, es "ignora la fecha". */
+.filter-pills .pill-impagos {
+    border-color: rgba(185, 28, 28, 0.4);
+    color: #B91C1C;
+}
+
+.filter-pills .pill-impagos:hover {
+    background: #FEF2F2;
+    border-color: #B91C1C;
+    color: #991B1B;
+}
+
+.filter-pills .pill-impagos.active,
+.filter-pills .pill-impagos.active:hover {
+    background: #B91C1C;
+    border-color: #B91C1C;
+    color: #FFFFFF;
+}

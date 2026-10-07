@@ -148,6 +148,15 @@ export class RemitosService {
     return this.chttp.get(url);
   }
 
+  /**
+   * Todas las ventas de consignacion impagas, de cualquier negocio y sin limite de fecha. La
+   * busqueda normal siempre acota por periodo, asi que una venta vieja sin cobrar queda invisible
+   * hasta ensanchar el rango a mano; esta consulta no tiene ese filtro.
+   */
+  ventasSinPagar() {
+    return this.chttp.get(`${this.URLRemitosService}/consignacion/impagos`);
+  }
+
   getRemito(id: number) {
     const url = `${this.URLRemitosService}/${id}`;
     return this.chttp.get(url);
